@@ -288,14 +288,23 @@ public class QuantumNumber {
         StringBuilder sb = new StringBuilder();
         sb.append("QuantumNumber {\n");
         
-        // Show ordinals with their signs
+        // Show ordinals with their signs, highlighting imaginary component
         for (int i = 0; i < NUM_ORDINALS; i++) {
             sb.append("  ").append(ORDINAL_NAMES[i]).append(" = ");
             sb.append(signs[i] ? "-" : "+").append(ordinals[i]);
+            if (i == 8) { // ordinal 'i' is the imaginary component
+                sb.append(" <imaginary>");
+            }
             sb.append("\n");
         }
         
         sb.append("  checksum = 0x").append(Integer.toHexString(checksum & 0x0F).toUpperCase());
+        sb.append("\n");
+        
+        // Show complex number representation
+        sb.append("  Complex Form: ");
+        sb.append("Real = (±a ± g) / (±b ± g) / (±c ± h) / ((±d(±b ± h)) / (±eb) / (±fb))");
+        sb.append(", Imaginary = ").append(getSignedOrdinal(8)).append("i");
         sb.append("\n");
         
         // Show the mathematical structure
@@ -305,11 +314,41 @@ public class QuantumNumber {
         sb.append("(").append(getSignedOrdinal(1)).append(" + ").append(getSignedOrdinal(6)).append(") / ");
         sb.append("(").append(getSignedOrdinal(2)).append(" + ").append(getSignedOrdinal(7)).append(") / ");
         sb.append("((").append(getSignedOrdinal(3)).append("(").append(getSignedOrdinal(1)).append(" + ").append(getSignedOrdinal(7)).append(")) / ");
-        sb.append("(").append(getSignedOrdinal(4)).append("*").append(getSignedOrdinal(1)).append("(").append(getSignedOrdinal(8)).append(")) / ");
+        sb.append("(").append(getSignedOrdinal(4)).append("*").append(getSignedOrdinal(1)).append("(").append(getSignedOrdinal(8)).append("i)) / ");
         sb.append("(").append(getSignedOrdinal(5)).append("*").append(getSignedOrdinal(1)).append("(").append(getSignedOrdinal(9)).append(")))");
         sb.append("\n}");
         
         return sb.toString();
+    }
+    
+    /**
+     * Get the real component of this Quantum Number
+     */
+    public QuantumNumber getRealComponent() {
+        QuantumNumber real = new QuantumNumber(this);
+        // Set imaginary ordinal to 1 (neutral) for real component
+        real.setOrdinal(8, 1);
+        real.setSign(8, false);
+        real.updateChecksum();
+        return real;
+    }
+    
+    /**
+     * Get the imaginary component of this Quantum Number
+     */
+    public int getImaginaryComponent() {
+        return getSignedOrdinal(8); // ordinal 'i' represents the imaginary component
+    }
+    
+    /**
+     * Create a complex Quantum Number with real and imaginary components
+     */
+    public static QuantumNumber createComplex(QuantumNumber real, int imaginary) {
+        QuantumNumber complex = new QuantumNumber(real);
+        complex.setOrdinal(8, Math.abs(imaginary));
+        complex.setSign(8, imaginary < 0);
+        complex.updateChecksum();
+        return complex;
     }
     
     /**
