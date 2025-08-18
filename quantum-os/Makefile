@@ -23,6 +23,7 @@ KERNEL_SOURCES = \
 	$(KERNEL_DIR)/memory.c \
 	$(KERNEL_DIR)/process.c \
 	$(KERNEL_DIR)/syscalls.c \
+	$(KERNEL_DIR)/quantix_scheduler.c \
 	$(KERNEL_DIR)/kernel.c
 
 # Object files
@@ -107,9 +108,22 @@ help:
 	@echo "  Kernel     = $(KERNEL_TARGET)"
 	@echo "  Debug      = $(DEBUG_TARGET)"
 
+# Test targets
+TEST_DIR = test
+TEST_TARGET = $(BIN_DIR)/quantix_scheduler_test
+
+test-quantix: $(TEST_TARGET)
+	@echo "Running Quantix scheduler test..."
+	./$(TEST_TARGET)
+
+$(TEST_TARGET): $(TEST_DIR)/quantix_scheduler_test.c $(KERNEL_OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -I$(KERNEL_DIR) $< $(KERNEL_OBJECTS) $(LDFLAGS) -o $@
+	@echo "Quantix scheduler test built successfully: $@"
+
 # Dependencies
 $(BUILD_DIR)/quantum_number.o: $(KERNEL_DIR)/quantum_number.h
 $(BUILD_DIR)/memory.o: $(KERNEL_DIR)/memory.h $(KERNEL_DIR)/quantum_number.h
 $(BUILD_DIR)/process.o: $(KERNEL_DIR)/process.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h
 $(BUILD_DIR)/syscalls.o: $(KERNEL_DIR)/syscalls.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/process.h $(KERNEL_DIR)/memory.h
+$(BUILD_DIR)/quantix_scheduler.o: $(KERNEL_DIR)/quantix_scheduler.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/process.h $(KERNEL_DIR)/memory.h
 $(BUILD_DIR)/kernel.o: $(KERNEL_DIR)/kernel.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h $(KERNEL_DIR)/process.h $(KERNEL_DIR)/syscalls.h
