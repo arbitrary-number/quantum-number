@@ -79,6 +79,60 @@ QFS replaces byte-based, string-based, or stream-based file formats with symboli
 
 ---
 
+## Why Quantum Numbers? — Lossless and Exact Mathematics
+
+### Limitations of Floating Point
+
+Traditional floating-point arithmetic (e.g. IEEE 754) is widely used but suffers from inherent flaws:
+
+- **Loss of precision**: Due to rounding and finite bit widths, results can be inexact.
+- **Non-associativity**: (a + b) + c ≠ a + (b + c) in many cases.
+- **Accumulated error**: In iterative or recursive computations, errors propagate and amplify.
+- **Representation gaps**: Certain numbers (e.g. 1/3, π, or irrational roots) cannot be exactly represented.
+- **Undefined operations**: Division by zero results in `NaN` or exceptions rather than symbolic or meaningful output.
+
+---
+
+### Rational Numbers: An Improvement, but Still Limited
+
+The **Rational Number** system improves upon floating point by representing numbers as exact ratios of integers (fractions). However:
+
+- It cannot represent or preserve symbolic expressions like `1/0`, `√2`, or nested divisions.
+- It cannot encode the *structure* of a computation (i.e. how a number was derived).
+- It collapses expressions into simplified forms, losing important symbolic detail.
+
+**Conclusion:** Rational numbers are a **collapsed subset** of the Quantum Number system. They are suitable for simplified, final forms — not for preserving the full richness of symbolic math.
+
+---
+
+## Quantum Numbers: The Superior System for Exact Math
+
+Quantum Numbers are designed to go beyond both floating point and rational arithmetic. They are:
+
+- **256-bit symbolic expressions**, not just numeric values.
+- Built from **12 structured ordinals** and **12 independent sign bits**, plus a checksum.
+- Structured as deeply nested division equations that preserve **symbolic identity**.
+- **Non-collapsible by default**, allowing symbolic manipulation, AST interpretation, and precise computation.
+- Capable of handling **divide-by-zero** as a **first-class symbolic construct**, rather than undefined or erroneous behavior.
+
+### Advantages
+
+- ✅ **Lossless**: No rounding, no representation gaps. Every number is stored exactly.
+- ✅ **Symbolically rich**: Numbers retain structure — enabling full symbolic transformation, simplification, and analysis.
+- ✅ **Stable for AI and physics**: Perfect for scientific, AI, or simulation domains where symbolic continuity and exactness are critical.
+- ✅ **Fully reversible**: The original form of a number can always be recovered.
+- ✅ **Supports Rational Numbers**: Rational numbers are trivially representable as a simplified special case.
+
+### Rational Numbers as a Subsystem
+
+Quantum Numbers subsume Rational Numbers. Any rational number `a/b` can be encoded in the Quantum Number format using two ordinals. However, the Quantum Number can also retain the **non-simplified**, **symbolically informative** version of `a/b` within a larger expression tree. Rational numbers are thus **an inferior, collapsed, and memoryless subset** of the Quantum Number system.
+
+---
+
+Quantum Numbers provide a **unified, lossless, and symbolically structured framework** for mathematics, symbolic computation, physics, and artificial intelligence — enabling precise and traceable computation far beyond the scope of floating point or rational numbers.
+
+---
+
 ## 🔧 What Is the x256 Chip Design?
 
 The **x256** is a novel 256-bit processor architecture developed specifically to implement Quantum Hardware principles. It supports:
