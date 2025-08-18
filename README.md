@@ -135,55 +135,55 @@ The Quantum Number system and supporting hardware/software ecosystem provide a f
 - **Quantum Number Subatomic Modelling**  
 - **Quantum Number Universe Simulation**  
 - **Quantum Number Multiverse Simulation**
-- **Quantum Number Cosmology  
-- **Quantum Number Quantum Computing  
-- **Quantum Number Neural Networks  
-- **Quantum Number Artificial Intelligence  
-- **Quantum Number Robotics  
-- **Quantum Number Materials Science  
-- **Quantum Number Nanotechnology  
-- **Quantum Number Astrophysics  
-- **Quantum Number Plasma Physics  
-- **Quantum Number Thermodynamics  
-- **Quantum Number Statistical Mechanics  
-- **Quantum Number Fluid Dynamics  
-- **Quantum Number Meteorology  
-- **Quantum Number Geophysics  
-- **Quantum Number Environmental Science  
-- **Quantum Number Pharmacology  
-- **Quantum Number Molecular Biology  
-- **Quantum Number Systems Biology  
-- **Quantum Number Cognitive Science  
-- **Quantum Number Linguistics  
-- **Quantum Number Cryptography  
-- **Quantum Number Financial Modelling  
-- **Quantum Number Data Science  
-- **Quantum Number Network Theory  
-- **Quantum Number Control Systems  
-- **Quantum Number Signal Processing  
-- **Quantum Number Optics  
-- **Quantum Number Photonics  
-- **Quantum Number Acoustics  
-- **Quantum Number Biomechanics  
-- **Quantum Number Biophysics  
-- **Quantum Number Evolutionary Biology  
-- **Quantum Number Synthetic Biology  
-- **Quantum Number Space Exploration  
-- **Quantum Number Quantum Gravity  
-- **Quantum Number Dark Matter Modelling  
-- **Quantum Number Dark Energy Research  
-- **Quantum Number String Theory  
-- **Quantum Number Particle Physics  
-- **Quantum Number Nuclear Physics  
-- **Quantum Number Chemical Engineering  
-- **Quantum Number Electrical Engineering  
-- **Quantum Number Mechanical Engineering  
-- **Quantum Number Civil Engineering  
-- **Quantum Number Aerospace Engineering  
-- **Quantum Number Systems Engineering  
-- **Quantum Number Computational Biology  
-- **Quantum Number Computational Chemistry  
-- **Quantum Number Computational Physics
+- **Quantum Number Cosmology**  
+- **Quantum Number Quantum Computing** 
+- **Quantum Number Neural Networks**
+- **Quantum Number Artificial Intelligence**
+- **Quantum Number Robotics** 
+- **Quantum Number Materials Science**
+- **Quantum Number Nanotechnology**
+- **Quantum Number Astrophysics**
+- **Quantum Number Plasma Physics**  
+- **Quantum Number Thermodynamics**  
+- **Quantum Number Statistical Mechanics**
+- **Quantum Number Fluid Dynamics**
+- **Quantum Number Meteorology**
+- **Quantum Number Geophysics**  
+- **Quantum Number Environmental Science**
+- **Quantum Number Pharmacology**
+- **Quantum Number Molecular Biology**  
+- **Quantum Number Systems Biology**  
+- **Quantum Number Cognitive Science**  
+- **Quantum Number Linguistics**  
+- **Quantum Number Cryptography**  
+- **Quantum Number Financial Modelling**
+- **Quantum Number Data Science**
+- **Quantum Number Network Theory**  
+- **Quantum Number Control Systems** 
+- **Quantum Number Signal Processing**  
+- **Quantum Number Optics**  
+- **Quantum Number Photonics**  
+- **Quantum Number Acoustics**  
+- **Quantum Number Biomechanics**  
+- **Quantum Number Biophysics**  
+- **Quantum Number Evolutionary Biology**  
+- **Quantum Number Synthetic Biology**  
+- **Quantum Number Space Exploration**  
+- **Quantum Number Quantum Gravity**  
+- **Quantum Number Dark Matter Modelling**
+- **Quantum Number Dark Energy Research**
+- **Quantum Number String Theory**
+- **Quantum Number Particle Physics**  
+- **Quantum Number Nuclear Physics**  
+- **Quantum Number Chemical Engineering**  
+- **Quantum Number Electrical Engineering**  
+- **Quantum Number Mechanical Engineering**  
+- **Quantum Number Civil Engineering**  
+- **Quantum Number Aerospace Engineering**  
+- **Quantum Number Systems Engineering**  
+- **Quantum Number Computational Biology**  
+- **Quantum Number Computational Chemistry**  
+- **Quantum Number Computational Physics**
 - **Quantum Number <Field>  
 - **Quantum Number [Field]  
 - **Quantum Number *  
