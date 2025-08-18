@@ -86,6 +86,14 @@ x256 represents a fundamental departure from conventional 64-bit architectures t
 
 ---
 
+## 📚 Reference to Prior Art
+
+The complete technical and architectural specification for the x256 chip design is publicly disclosed in the **[x256 Chip Design Document](./x256_chip_design_document.md)**. This document establishes the detailed architecture, design principles, instruction set, and innovations of the x256 processor.
+
+By publicly releasing this detailed design under the Apache License 2.0, the x256 chip design constitutes **prior art**, legally preventing third parties from patenting or exclusively claiming this technology and architecture.
+
+---
+
 ## 🔐 Intellectual Property & Legal Definition
 
 This repository **coins and defines** the following terms and architectures:
