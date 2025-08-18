@@ -1,0 +1,16 @@
+Quantum Number System, Quantum Operating System, and Quantum File System
+Copyright 2025 Arbitrary Number Project Team
+
+This project defines and claims the following concepts and terminology:
+
+- Quantum Number — a 256-bit atomic symbolic numeric unit for exact math and quantum arithmetic
+- Quantum Operating System (QOS) — an AI-native OS architecture built on symbolic computation
+- Quantum File System (QFS) — a symbolic, math-native storage system for persistent computation
+- Quantum AST — a symbolic abstract syntax tree for structured, ordered quantum math
+- Quantition — a transformation that symbolically evaluates divide-by-zero and symbolic expressions
+
+All concepts, designs, and implementations are released under the Apache License, Version 2.0.
+
+This NOTICE file is provided as required under Section 4(d) of the Apache License, Version 2.0.
+
+Redistributions of the source code or derivatives must retain this NOTICE file alongside the LICENSE file.
