@@ -90,6 +90,13 @@ x256 represents a fundamental departure from conventional 64-bit architectures t
 
 The complete technical and architectural specification for the x256 chip design is publicly disclosed in the **[x256 Chip Design Document](./x256_chip_design_document.md)**. This document establishes the detailed architecture, design principles, instruction set, and innovations of the x256 processor.
 
+- The design and specification of the **x256 processor architecture** form the hardware foundation of this system, enabling native 256-bit Quantum Number operations and symbolic AST manipulation.
+- The **x256 Assembly Language Syntax Specification** document (see [`x256-assembly-syntax.md`](./docs/x256-assembly-syntax.md)) provides the full instruction set architecture and symbolic computation model.
+  
+  This document serves as **prior art** and a technical reference for the x256 chip design, assembly language, and quantum symbolic instruction set.
+
+- The combined ecosystem — Quantum Numbers, Quantum OS, Quantum FS, and x256 hardware — form a comprehensive framework for future-proof, AI-optimized computation grounded in exact mathematics.
+
 By publicly releasing this detailed design under the Apache License 2.0, the x256 chip design constitutes **prior art**, legally preventing third parties from patenting or exclusively claiming this technology and architecture.
 
 ---
