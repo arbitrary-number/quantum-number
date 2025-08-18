@@ -1,38 +1,33 @@
-package com.github.quantum-number;
+package com.github.quantum_number;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
-{
+@DisplayName("Application Tests")
+public class AppTest {
+    
     /**
-     * Create the test case
-     *
-     * @param testName name of the test case
+     * Test that the application runs without errors
      */
-    public AppTest( String testName )
-    {
-        super( testName );
+    @Test
+    @DisplayName("Application Execution Test")
+    void testAppExecution() {
+        // Test that main method can be called without throwing exceptions
+        assertDoesNotThrow(() -> {
+            App.main(new String[]{});
+        }, "Application should run without throwing exceptions");
     }
-
+    
     /**
-     * @return the suite of tests being tested
+     * Basic sanity test
      */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    @DisplayName("Basic Sanity Test")
+    void testBasicSanity() {
+        assertTrue(true, "Basic sanity check should pass");
     }
 }
