@@ -92,6 +92,14 @@ The complete technical and architectural specification for the x256 chip design 
 
 - The design and specification of the **x256 processor architecture** form the hardware foundation of this system, enabling native 256-bit Quantum Number operations and symbolic AST manipulation.
 - The **x256 Assembly Language Syntax Specification** document (see [`x256-assembly-syntax.md`](./docs/x256-assembly-syntax.md)) provides the full instruction set architecture and symbolic computation model.
+## Prior Art and References
+
+- The design and specification of the **x256 processor architecture** form the hardware foundation of this system, enabling native 256-bit Quantum Number operations and symbolic AST manipulation.
+- The **x256 Assembly Language Syntax Specification** document (see [`docs/x256-assembly-syntax.md`](./docs/x256-assembly-syntax.md)) provides the full instruction set architecture and symbolic computation model.
+
+- The **x256 Memory Chip Design and Memory Model Specification** (see [`docs/x256-memory-model.md`](./docs/x256-memory-model.md)) defines a native 256-bit address and data bus memory system interconnected via fibre-optic links, capable of storing and manipulating Quantum Numbers in their full symbolic and exact numeric duality.
+
+- The combined ecosystem — Quantum Numbers, Quantum OS, Quantum FS, and x256 hardware — form a comprehensive framework for future-proof, AI-optimized computation grounded in exact mathematics.
   
   This document serves as **prior art** and a technical reference for the x256 chip design, assembly language, and quantum symbolic instruction set.
 
