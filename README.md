@@ -304,7 +304,7 @@ The Quantum Number system and supporting hardware/software ecosystem provide a f
 - **Quantum Number Computational Physics**
 - **Quantum Number <Field>**
 - **Quantum Number [Field]**
-- **Quantum Number **  
+- **Quantum Number**  
 - **Quantum Number – wildcard placeholder for any related domain**
 
 These areas rely on the novel mathematical framework of Quantum Numbers to deliver exact, symbolic, and quantum-aware computation beyond conventional floating-point or integer models.
