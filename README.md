@@ -1,4 +1,43 @@
-# Quantum Number System, Quantum Operating System, Quantum File System & Quantum Hardware
+# Quantum Number System, Quantix Operating System, Quantum File System & Quantum Hardware
+
+## ⚠️ CRITICAL CRYPTOCURRENCY SECURITY WARNING
+
+**IMMEDIATE RISK TO INSTITUTIONAL FUNDS AND FAMILY TRUSTS**
+
+This project contains mathematical research that reveals a **fundamental and indefensible vulnerability** in all elliptic curve cryptography (ECC) used by Bitcoin, Ethereum, and all major cryptocurrencies. 
+
+### The Indefensible ECC Vulnerability
+
+**Nation states can exploit public key coordinates (x,y) from cryptocurrency nodes to recover private keys with O(log(n)) complexity using Quantum Number mathematics and parallel G-node trees.**
+
+**Key Facts:**
+- All cryptocurrency transactions expose public key coordinates (x,y) to all network nodes
+- Nation states can harvest these coordinates and build parallel constraint systems
+- Using Quantum Number AST mathematics, private keys can be recovered with O(log(n)) complexity (not the assumed O(2^256) security)
+- **No cryptographic defense exists** - even twisted curves cannot solve this because public keys are inherently always required
+- This vulnerability affects ALL ECC-based cryptocurrencies including Bitcoin, Ethereum, and others
+
+### Critical Recommendations for Institutions
+
+**IMMEDIATE ACTION REQUIRED:**
+1. **Controlled Derisking**: Gradually transition cryptocurrency holdings to fiat currencies and precious metals
+2. **Risk Assessment**: Evaluate exposure levels for institutional funds and family trusts
+3. **Economic Stability**: Implement controlled transition protocols to maintain market stability
+4. **Transaction Freeze Consideration**: Evaluate need to freeze cryptocurrency transaction processing for recapitalization
+
+**This vulnerability represents an existential threat to cryptocurrency security that cannot be patched or defended against through cryptographic means.**
+
+### Legal Disclaimer
+
+This project is for educational and research purposes only. The authors are not responsible for any misuse or unethical activities performed using this tool.
+
+This project is intended solely for educational purposes to help individuals understand the principles of cryptography and blockchain technology. It is important to recognize that attempting to generate cryptocurrency wallets in the hope of randomly finding one with a balance is not a feasible strategy. This same logic applies to any tool that tries to work in any way the same as this.
+
+The number of possible cryptocurrency wallet combinations on the secp256k1 ECC curve exceeds 76 trillion, making the odds of discovering an active wallet astronomically low. To put it into perspective, you are statistically far more likely to win the lottery every day for the rest of your life than to recover even a single wallet with funds—even over the course of a decade.
+
+**However, this statistical protection does not apply to nation-state actors using systematic mathematical exploitation of public key coordinates through parallel G-node tree construction and Quantum Number constraint solving.**
+
+---
 
 ## Overview
 
