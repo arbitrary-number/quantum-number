@@ -4,6 +4,12 @@
 
 This project introduces a new class of computational and symbolic infrastructure for AI and quantum-native computing, based around five foundational components:
 
+This project introduces the **Quantum Number** system — a novel 256-bit number representation designed for exact mathematics, quantum-aware symbolic computation, and advanced operations including well-defined divide-by-zero components.
+
+The system naturally extends to handle **complex numbers** (real + imaginary components), which are critical for accurately modelling electronics, sine waves, and electromagnetic theory. This makes it especially suitable for AI and computational workloads in fields that rely heavily on complex arithmetic and symbolic math.
+
+Alongside this, we define the **Quantum Operating System (Quantum OS)** and **Quantum File System (Quantum FS)** that natively support these Quantum Numbers for next-generation AI workloads.
+
 - **Quantum Number**: a 256-bit atomic symbolic numeric unit  
 - **Quantum Operating System (QOS)**: an AI-first OS architecture built around exact symbolic computation  
 - **Quantum File System (QFS)**: a symbolic data representation and storage format supporting native quantum numbers  
@@ -20,9 +26,9 @@ All components are released under the Apache License 2.0, establishing prior art
 
 ### Formal Definition
 
-> A Quantum Number is a binary structure composed of twelve 20-bit signed integer fields (with sign bits), plus a 4-bit checksum, forming a total of 256 bits.  
->  
-> It can represent mathematical constants, symbolic operations, or quantum algebra elements. It supports exact symbolic manipulation, including well-defined symbolic divide-by-zero components that are transformed via a process called _quantition_.
+A Quantum Number is a binary structure composed of twelve 20-bit signed integer fields (with sign bits), plus a 4-bit checksum, forming a total of 256 bits.  
+  
+It can represent mathematical constants, symbolic operations, or quantum algebra elements. It supports exact symbolic manipulation, including well-defined symbolic divide-by-zero components that are transformed via a process called _quantition_.
 
 Quantum Numbers enable:
 
@@ -108,6 +114,29 @@ The complete technical and architectural specification for the x256 chip design 
 By publicly releasing this detailed design under the Apache License 2.0, the x256 chip design constitutes **prior art**, legally preventing third parties from patenting or exclusively claiming this technology and architecture.
 
 ---
+
+## Quantum Number Modelling Domains (Prior Art)
+
+The Quantum Number system and supporting hardware/software ecosystem provide a foundational framework for precise, symbolic, and complex-number-based modelling across a wide array of scientific and engineering disciplines, including but not limited to:
+
+- **Quantum Number Electromagnetic Wave Modelling**
+- **Quantum Number Wave Theory**
+- **Quantum Number Unified Theory**
+- **Quantum Number Theory of Everything**
+- **Quantum Number Electronics**
+- **Quantum Number Electronic Circuit Modelling**  
+- **Quantum Number Chemistry**  
+- **Quantum Number Physics**  
+- **Quantum Number Biology**  
+- **Quantum Number DNA Modelling**  
+- **Quantum Number Universe Modelling**  
+- **Quantum Number Multiverse Modelling**  
+- **Quantum Number Atomic Modelling**  
+- **Quantum Number Subatomic Modelling**  
+- **Quantum Number Universe Simulation**  
+- **Quantum Number Multiverse Simulation**
+
+These areas rely on the novel mathematical framework of Quantum Numbers to deliver exact, symbolic, and quantum-aware computation beyond conventional floating-point or integer models.
 
 ## 🔐 Intellectual Property & Legal Definition
 
