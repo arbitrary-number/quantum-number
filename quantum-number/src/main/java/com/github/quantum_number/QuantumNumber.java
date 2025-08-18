@@ -352,6 +352,234 @@ public class QuantumNumber {
     }
     
     /**
+     * Create a complex Quantum Number from real and imaginary integer values
+     */
+    public static QuantumNumber createComplex(int real, int imaginary) {
+        QuantumNumber complex = new QuantumNumber();
+        // Set the primary real component (ordinal 'a')
+        complex.setOrdinal(0, Math.abs(real));
+        complex.setSign(0, real < 0);
+        // Set imaginary component
+        complex.setOrdinal(8, Math.abs(imaginary));
+        complex.setSign(8, imaginary < 0);
+        complex.updateChecksum();
+        return complex;
+    }
+    
+    /**
+     * Complex multiplication: (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
+     */
+    public QuantumNumber multiplyComplex(QuantumNumber other) {
+        // Extract real and imaginary components
+        int thisReal = this.getSignedOrdinal(0);  // Use ordinal 'a' as primary real component
+        int thisImag = this.getImaginaryComponent();
+        int otherReal = other.getSignedOrdinal(0);
+        int otherImag = other.getImaginaryComponent();
+        
+        // Complex multiplication formula: (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
+        long realPart = (long)thisReal * otherReal - (long)thisImag * otherImag;
+        long imagPart = (long)thisReal * otherImag + (long)thisImag * otherReal;
+        
+        // Clamp to valid range
+        int clampedReal = (int)Math.max(ORDINAL_MIN, Math.min(ORDINAL_MAX, realPart));
+        int clampedImag = (int)Math.max(ORDINAL_MIN, Math.min(ORDINAL_MAX, imagPart));
+        
+        return createComplex(clampedReal, clampedImag);
+    }
+    
+    /**
+     * Complex division: (a + bi) / (c + di) = ((ac + bd) + (bc - ad)i) / (c² + d²)
+     */
+    public QuantumNumber divideComplex(QuantumNumber other) {
+        int thisReal = this.getSignedOrdinal(0);
+        int thisImag = this.getImaginaryComponent();
+        int otherReal = other.getSignedOrdinal(0);
+        int otherImag = other.getImaginaryComponent();
+        
+        // Check for division by zero
+        long denominator = (long)otherReal * otherReal + (long)otherImag * otherImag;
+        if (denominator == 0) {
+            throw new ArithmeticException("Division by zero in complex division");
+        }
+        
+        // Complex division formula
+        long realNumerator = (long)thisReal * otherReal + (long)thisImag * otherImag;
+        long imagNumerator = (long)thisImag * otherReal - (long)thisReal * otherImag;
+        
+        int realPart = (int)(realNumerator / denominator);
+        int imagPart = (int)(imagNumerator / denominator);
+        
+        return createComplex(realPart, imagPart);
+    }
+    
+    /**
+     * Complex conjugate: (a + bi)* = (a - bi)
+     */
+    public QuantumNumber conjugate() {
+        QuantumNumber result = new QuantumNumber(this);
+        result.setSign(8, !result.getSign(8)); // Flip imaginary sign
+        result.updateChecksum();
+        return result;
+    }
+    
+    /**
+     * Complex magnitude squared: |a + bi|² = a² + b²
+     */
+    public long magnitudeSquared() {
+        int real = this.getSignedOrdinal(0);
+        int imag = this.getImaginaryComponent();
+        return (long)real * real + (long)imag * imag;
+    }
+    
+    /**
+     * Complex magnitude: |a + bi| = √(a² + b²)
+     */
+    public double magnitude() {
+        return Math.sqrt(magnitudeSquared());
+    }
+    
+    /**
+     * Complex argument (phase angle) in radians
+     */
+    public double argument() {
+        int real = this.getSignedOrdinal(0);
+        int imag = this.getImaginaryComponent();
+        return Math.atan2(imag, real);
+    }
+    
+    /**
+     * Check if this is a pure real number (imaginary component is 0 or 1)
+     */
+    public boolean isPureReal() {
+        int imag = this.getImaginaryComponent();
+        return imag == 0 || imag == 1;
+    }
+    
+    /**
+     * Check if this is a pure imaginary number (real component is 0)
+     */
+    public boolean isPureImaginary() {
+        return this.getSignedOrdinal(0) == 0;
+    }
+    
+    /**
+     * Symbolic multiplication of two Quantum Numbers
+     * For non-complex multiplication, this performs ordinal-wise operations
+     */
+    public QuantumNumber multiply(QuantumNumber other) {
+        // For this reference implementation, we perform ordinal-wise multiplication
+        // In a full implementation, this would create symbolic AST structures
+        QuantumNumber result = new QuantumNumber();
+        
+        for (int i = 0; i < NUM_ORDINALS; i++) {
+            long thisValue = this.getSignedOrdinal(i);
+            long otherValue = other.getSignedOrdinal(i);
+            long product = thisValue * otherValue;
+            
+            // Handle overflow by clamping to valid range
+            if (product > ORDINAL_MAX) product = ORDINAL_MAX;
+            if (product < ORDINAL_MIN) product = ORDINAL_MIN;
+            
+            result.setOrdinal(i, (int)Math.abs(product));
+            result.setSign(i, product < 0);
+        }
+        
+        result.updateChecksum();
+        return result;
+    }
+    
+    /**
+     * Symbolic division of two Quantum Numbers
+     */
+    public QuantumNumber divide(QuantumNumber other) {
+        // Check for division by zero
+        if (other.isZero()) {
+            throw new ArithmeticException("Division by zero");
+        }
+        
+        QuantumNumber result = new QuantumNumber();
+        
+        for (int i = 0; i < NUM_ORDINALS; i++) {
+            long thisValue = this.getSignedOrdinal(i);
+            long otherValue = other.getSignedOrdinal(i);
+            
+            if (otherValue == 0) {
+                // Handle division by zero in individual ordinal
+                result.setOrdinal(i, ORDINAL_MAX);
+                result.setSign(i, thisValue < 0);
+            } else {
+                long quotient = thisValue / otherValue;
+                
+                // Handle overflow by clamping to valid range
+                if (quotient > ORDINAL_MAX) quotient = ORDINAL_MAX;
+                if (quotient < ORDINAL_MIN) quotient = ORDINAL_MIN;
+                
+                result.setOrdinal(i, (int)Math.abs(quotient));
+                result.setSign(i, quotient < 0);
+            }
+        }
+        
+        result.updateChecksum();
+        return result;
+    }
+    
+    /**
+     * Power operation: raise this Quantum Number to an integer power
+     */
+    public QuantumNumber power(int exponent) {
+        if (exponent == 0) {
+            return QuantumNumber.one();
+        }
+        if (exponent == 1) {
+            return new QuantumNumber(this);
+        }
+        if (exponent < 0) {
+            throw new IllegalArgumentException("Negative exponents not supported in this implementation");
+        }
+        
+        QuantumNumber result = QuantumNumber.one();
+        QuantumNumber base = new QuantumNumber(this);
+        
+        // Exponentiation by squaring
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = result.multiply(base);
+            }
+            base = base.multiply(base);
+            exponent /= 2;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Complex power using De Moivre's theorem: (r(cos θ + i sin θ))^n = r^n(cos nθ + i sin nθ)
+     */
+    public QuantumNumber complexPower(int exponent) {
+        if (exponent == 0) {
+            return createComplex(1, 0);
+        }
+        if (exponent == 1) {
+            return new QuantumNumber(this);
+        }
+        
+        double r = magnitude();
+        double theta = argument();
+        
+        double newR = Math.pow(r, exponent);
+        double newTheta = exponent * theta;
+        
+        int realPart = (int)(newR * Math.cos(newTheta));
+        int imagPart = (int)(newR * Math.sin(newTheta));
+        
+        // Clamp to valid range
+        realPart = Math.max(ORDINAL_MIN, Math.min(ORDINAL_MAX, realPart));
+        imagPart = Math.max(ORDINAL_MIN, Math.min(ORDINAL_MAX, imagPart));
+        
+        return createComplex(realPart, imagPart);
+    }
+    
+    /**
      * Equals method for Quantum Number comparison
      */
     @Override
