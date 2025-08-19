@@ -28,6 +28,7 @@ KERNEL_SOURCES = \
 	$(KERNEL_DIR)/quantix_qfs_ast.c \
 	$(KERNEL_DIR)/quantix_ecc.c \
 	$(KERNEL_DIR)/quantix_bip39.c \
+	$(KERNEL_DIR)/quantix_ultrascale_map.c \
 	$(KERNEL_DIR)/kernel.c
 
 # Object files
@@ -145,6 +146,10 @@ $(ECC_TEST_TARGET): $(TEST_DIR)/quantix_ecc_test.c $(KERNEL_OBJECTS) | $(BIN_DIR
 	$(CC) $(CFLAGS) -I$(KERNEL_DIR) $< $(KERNEL_OBJECTS) $(LDFLAGS) -o $@
 	@echo "Quantix ECC test built successfully: $@"
 
+$(ULTRASCALE_MAP_TEST_TARGET): $(TEST_DIR)/quantix_ultrascale_map_test.c $(KERNEL_OBJECTS) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -I$(KERNEL_DIR) $< $(KERNEL_OBJECTS) $(LDFLAGS) -o $@
+	@echo "Quantix Ultra-Scale Map test built successfully: $@"
+
 # Dependencies
 $(BUILD_DIR)/quantum_number.o: $(KERNEL_DIR)/quantum_number.h
 $(BUILD_DIR)/memory.o: $(KERNEL_DIR)/memory.h $(KERNEL_DIR)/quantum_number.h
@@ -155,4 +160,5 @@ $(BUILD_DIR)/quantix_qfs.o: $(KERNEL_DIR)/quantix_qfs.h $(KERNEL_DIR)/quantum_nu
 $(BUILD_DIR)/quantix_qfs_ast.o: $(KERNEL_DIR)/quantix_qfs.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h
 $(BUILD_DIR)/quantix_ecc.o: $(KERNEL_DIR)/quantix_ecc.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h
 $(BUILD_DIR)/quantix_bip39.o: $(KERNEL_DIR)/quantix_bip39.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h
+$(BUILD_DIR)/quantix_ultrascale_map.o: $(KERNEL_DIR)/quantix_ultrascale_map.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/quantix_ecc.h $(KERNEL_DIR)/memory.h
 $(BUILD_DIR)/kernel.o: $(KERNEL_DIR)/kernel.h $(KERNEL_DIR)/quantum_number.h $(KERNEL_DIR)/memory.h $(KERNEL_DIR)/process.h $(KERNEL_DIR)/syscalls.h
