@@ -15,7 +15,7 @@
  */
 
 /**
- * Quantum OS - Network Manager
+ * Quantix - Network Manager
  * 
  * Revolutionary distributed quantum computing network system that enables
  * mathematical computation across quantum nodes, with native support for
