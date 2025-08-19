@@ -28,6 +28,11 @@ The Arbitrary Number Project Team hereby declares and claims original authorship
 4. **Quantum Register File (QRF)** - 256-bit register architecture with symbolic state support
 5. **Quantum Memory Management Unit (QMMU)** - Memory management for symbolic storage
 6. **Fibre-Linked Memory Model** - 256-bit address/data buses over fibre-optic interconnection
+7. **Quantum Number Graphical Processing Unit (QNGPU)** - Revolutionary graphics processor using exact mathematical precision
+8. **g256 Graphics Processor** - Hardware implementation of QNGPU with 256-bit Quantum Number graphics processing
+9. **Exact Rasterization Engine** - Pixel-perfect rendering without floating-point approximation
+10. **Quantum Graphics Processing Units (QGPUs)** - Native 256-bit graphics processing cores
+11. **Collapse Module** - Hybrid architecture support for integration with existing NVIDIA GPUs
 
 ### Software System Innovations
 
@@ -44,6 +49,11 @@ The Arbitrary Number Project Team hereby declares and claims original authorship
 4. **"Quantum Hardware"** - Hardware designed for symbolic computation
 5. **"Quantum OS"** and **"Quantum FS"** - Operating system and file system concepts
 6. **"x256"** - The 256-bit processor architecture designation
+7. **"QNGPU"** - Quantum Number Graphical Processing Unit for exact mathematical graphics
+8. **"g256"** - The 256-bit graphics processor chip designation
+9. **"QGPU"** - Quantum Graphics Processing Unit cores within the g256 architecture
+10. **"Collapse Module"** - Hybrid architecture component for NVIDIA GPU integration
+11. **"Exact Rasterization"** - Pixel-perfect rendering without floating-point approximation
 
 ---
 
