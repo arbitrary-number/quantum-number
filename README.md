@@ -156,13 +156,12 @@ This is the base, indivisible unit of symbolic computation.
 
 - **256 bits total**, comprised of:
   - **12 ordinals** (`a` to `l`)
+  - **g, h, i, j, k and l being the complex number imaginary parts (often 0)** 
   - **12 independent sign bits**
   - **4-bit checksum**
 - Represents a structured nested division expression:
 
-\[
-(\pm a \pm g)/(\pm b \pm g)/(\pm c \pm h)/((\pm d(\pm b \pm h))/(\pm e b (\pm i))/(\pm f b (\pm j)))
-\]
+((±a + ±gi)/((±b + ±hi)/(±c + ii)))/((±d + ±ji)/((±e + ±ki)/(±f ± li)))
 
 - Each unit is **symbolic and non-collapsible** by design.
 - This structure enables **reversible**, **traceable**, and **mathematically sound** encoding of operations and values — including **divide-by-zero** as a first-class symbolic construct.

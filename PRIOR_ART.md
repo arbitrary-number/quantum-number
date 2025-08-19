@@ -112,7 +112,7 @@ This document establishes comprehensive prior art for the Quantum Number System 
 
 ### Mathematical Specifications
 1. **Quantum Number Structure**: 12 × 20-bit ordinals + 12 sign bits + 4-bit checksum = 256 bits
-2. **Division Expression**: (±a ± g) / (±b ± g) / (±c ± h) / ((±d(±b ± h)) / (±eb(±i)) / (±fb(±j)))
+2. **Division Expression**: ((±a + ±gi)/((±b + ±hi)/(±c + ii)))/((±d + ±ji)/((±e + ±ki)/(±f ± li)))
 3. **Standard Unit Construction**: Infinite series of Minimum Units for arbitrary precision
 4. **AST Unit Definition**: Hierarchical symbolic computation trees with Quantum Numbers as leaves
 
