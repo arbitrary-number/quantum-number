@@ -42,7 +42,7 @@ Where:
 Each Quantum Number represents the nested division expression:
 
 ```
-Q = (±a ± g) / (±b ± g) / (±c ± h) / ((±d(±b ± h)) / (±eb(±i)) / (±fb(±j)))
+Q = ((±a + ±gi)/((±b + ±hi)/(±c + ±ii)))/((±d + ±ji)/((±e + ±ki)/(±f ± li)
 ```
 
 This structure encodes:
