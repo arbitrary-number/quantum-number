@@ -71,16 +71,18 @@ This claim covers:
 
 ### Legal Basis
 
-Under the Apache License 2.0, with 100% copyright maintained by the Arbitrary Number Project Team, we hereby:
+Under the Apache License 2.0, with 100% copyright maintained by the Arbitrary Number Project Team, and with all legal rights reserved under Copyright and Common Law:
 
-1. **Maintain Full Copyright**: The Arbitrary Number Project Team retains complete copyright ownership of all materials
-2. **Grant Patent License**: Provide perpetual, worldwide, non-exclusive patent license under controlled terms
-3. **Require Attribution**: Mandate proper attribution in all derivative works
-4. **Prevent Patent Trolling**: Establish comprehensive prior art protection
-5. **Enable Commercial Use**: Allow commercial applications under license terms with legal clarity
-6. **Provide Legal Certainty**: Apache 2.0 offers superior legal framework compared to public domain dedication
+1. **Reserve All Legal Rights**: All rights under Copyright, Common Law, and applicable intellectual property law are fully reserved
+2. **Apache License Precedence**: The terms of the Apache License 2.0 take precedence in case of any doubt as to legal precedence
+3. **Limited License Grant**: Rights are granted only as specifically enumerated in the Apache License 2.0 terms
+4. **Require Attribution**: Mandate proper attribution in all derivative works as specified in Apache License 2.0
+5. **Establish Prior Art Protection**: Comprehensive prior art protection through public disclosure
+6. **Provide Legal Framework**: Apache 2.0 offers superior legal framework compared to public domain dedication
 
-**Why Apache 2.0 Over Public Domain**: Public domain dedication creates legal ambiguities in many jurisdictions and provides no patent protection. Apache 2.0 provides clear legal terms, patent grants, attribution requirements, and worldwide enforceability while still enabling open innovation.
+**No Broad Patent License**: This disclosure does not grant a full worldwide non-exclusive patent license. Patent rights, if any, are governed strictly by the Apache License 2.0 terms and conditions.
+
+**Legal Protection Framework**: The work is protected under prior art, copyright, and the Apache License 2.0. All legal rights are reserved under Copyright and Common Law, with the Apache License terms taking precedence if there is any doubt as to precedence.
 
 ---
 
@@ -215,10 +217,14 @@ Any attempt to patent or exclusively claim these innovations may be challenged u
 
 **Copyright Status**: 100% copyright ownership maintained by the Arbitrary Number Project Team  
 **License Framework**: Apache License 2.0 exclusively - no public domain dedication  
-**Patent Protection**: Comprehensive patent license grants with defensive termination clauses  
+**Rights Reservation**: All legal rights reserved under Copyright, Common Law, and applicable intellectual property law  
+**Patent Rights**: Patent rights, if any, governed strictly by Apache License 2.0 terms - no broad patent license granted  
 **Attribution Requirements**: Mandatory attribution and license preservation in all derivative works  
-**Commercial Use**: Permitted under Apache 2.0 terms with full legal clarity  
+**Commercial Use**: Permitted only under Apache 2.0 terms with full legal clarity  
+**Legal Precedence**: Apache License 2.0 terms take precedence in case of any doubt as to legal precedence  
 **Legal Jurisdiction**: Worldwide enforceability with clear legal standing  
+
+**Triple Protection Framework**: The work is protected under prior art, copyright, and the Apache License 2.0. All legal rights are reserved under Copyright and Common Law.
 
 **Public Domain Rejection**: This project explicitly rejects public domain dedication due to its legal ambiguities, lack of patent protection, and inconsistent international recognition. The Apache 2.0 license provides superior legal protection while maintaining open innovation principles.
 
