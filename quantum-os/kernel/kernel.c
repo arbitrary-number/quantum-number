@@ -258,6 +258,39 @@ int kernel_fs_init(void) {
         return KERNEL_ERROR_INIT_FAILED;
     }
     
+    // Initialize Quantum Device Manager
+    qdm_result_t qdm_result = qdm_initialize();
+    if (qdm_result != QDM_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "Quantum Device Manager initialization failed: %s", 
+                  qdm_result_to_string(qdm_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
+    // Initialize Quantum Network Manager
+    qnm_quantum_address_t local_address = {0};
+    // Generate quantum network address based on system configuration
+    for (int i = 0; i < 32; i++) {
+        local_address.quantum_id[i] = (uint8_t)(i ^ 0xAB); // Placeholder quantum ID
+    }
+    local_address.node_type = QNM_NODE_MATHEMATICAL_COMPUTE;
+    local_address.capabilities = QNM_CAP_QUANTUM_COMPUTATION | QNM_CAP_MATHEMATICAL_FUNCTIONS;
+    local_address.port = 8080;
+    
+    qnm_result_t qnm_result = qnm_initialize(&local_address);
+    if (qnm_result != QNM_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "Quantum Network Manager initialization failed: %s", 
+                  qnm_result_to_string(qnm_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
+    // Initialize Quantum Virtualization Manager
+    qvm_result_t qvm_result = qvm_initialize();
+    if (qvm_result != QVM_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "Quantum Virtualization Manager initialization failed: %s", 
+                  qvm_result_to_string(qvm_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
     // Create essential QFS directories
     const char* essential_dirs[] = {
         "/qfs",

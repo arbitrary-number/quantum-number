@@ -36,6 +36,9 @@
 #include "quantix_qfs_advanced.h"
 #include "quantix_ultrascale_map_persistent.h"
 #include "quantum_file_operations.h"
+#include "quantum_device_manager.h"
+#include "quantum_network_manager.h"
+#include "quantum_virtualization_manager.h"
 #include <stdint.h>
 #include <stddef.h>
 
