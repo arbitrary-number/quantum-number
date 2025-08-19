@@ -32,6 +32,10 @@
 #include "memory.h"
 #include "process.h"
 #include "syscalls.h"
+#include "quantix_qfs.h"
+#include "quantix_qfs_advanced.h"
+#include "quantix_ultrascale_map_persistent.h"
+#include "quantum_file_operations.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -66,6 +70,14 @@ typedef struct kernel_state {
     uint32_t symbolic_computations;     // Symbolic computations count
     char version_string[64];            // Kernel version string
     uint32_t kernel_flags;              // Kernel configuration flags
+    
+    // QFS Integration
+    qump_persistent_context_t *qfs_metadata_context;  // QFS metadata storage
+    qfs_file_handle_t qfs_root_handle;                 // QFS root file system handle
+    bool qfs_initialized;                              // QFS initialization status
+    uint64_t qfs_operations_count;                     // Total QFS operations
+    uint64_t qfs_bytes_written;                        // Total bytes written to QFS
+    uint64_t qfs_bytes_read;                           // Total bytes read from QFS
 } kernel_state_t;
 
 // Kernel configuration flags

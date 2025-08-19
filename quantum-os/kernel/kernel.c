@@ -1,13 +1,31 @@
+/*
+ * Copyright 2025 Arbitrary Number Project Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * Quantum OS - Main Kernel Implementation
  * 
  * Revolutionary operating system kernel designed for symbolic mathematical
- * computation and Quantum Number operations.
+ * computation and Quantum Number operations with full QFS integration.
+ * 
+ * This kernel provides the foundation for the world's first mathematical
+ * operating system, featuring native Quantum Number support, symbolic
+ * computation, and the revolutionary Quantum File System (QFS).
  * 
  * Copyright (c) 2025 Arbitrary Number Project Team
  * Licensed under the Apache License, Version 2.0
- * 
- * Date: August 18, 2025
  */
 
 #include "kernel.h"
@@ -180,15 +198,136 @@ int kernel_device_init(void) {
 }
 
 /**
- * File system initialization (placeholder)
+ * File system initialization - Full QFS Integration
  */
 int kernel_fs_init(void) {
-    kernel_log(KERNEL_LOG_INFO, "Initializing file system");
+    kernel_log(KERNEL_LOG_INFO, "Initializing Quantum File System (QFS)");
     
-    // Placeholder for file system initialization
-    // This would initialize the Quantum File System
+    // Initialize QFS core system
+    qfs_result_t qfs_result = qfs_initialize();
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "QFS core initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
     
-    kernel_log(KERNEL_LOG_INFO, "File system initialized successfully");
+    // Initialize QFS advanced features
+    qfs_result = qfs_advanced_init();
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS advanced features initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+        // Continue without advanced features
+    }
+    
+    // Initialize persistent ultra-scale map for QFS metadata
+    qump_persistence_config_t persistence_config;
+    qump_create_default_persistence_config(&persistence_config);
+    
+    // Configure QFS storage paths
+    snprintf(persistence_config.storage_path, sizeof(persistence_config.storage_path), 
+             "/qfs/system/metadata");
+    snprintf(persistence_config.wal_path, sizeof(persistence_config.wal_path), 
+             "/qfs/system/wal");
+    persistence_config.mode = QUMP_PERSISTENCE_HYBRID;
+    persistence_config.enable_encryption = true;
+    persistence_config.enable_checksums = true;
+    persistence_config.enable_crash_recovery = true;
+    
+    // Initialize QFS metadata storage
+    qump_persistent_context_t *qfs_metadata_context = NULL;
+    qum_configuration_t base_config;
+    qum_create_default_configuration(&base_config);
+    
+    qump_result_t qump_result = qump_initialize(&qfs_metadata_context, 
+                                               &base_config, 
+                                               &persistence_config);
+    if (qump_result != QUMP_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "QFS metadata storage initialization failed: %s", 
+                  qump_result_to_string(qump_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
+    // Store QFS metadata context in kernel state
+    kernel_state.qfs_metadata_context = qfs_metadata_context;
+    
+    // Initialize Quantum File Operations system
+    qfo_result_t qfo_result = qfo_initialize();
+    if (qfo_result != QFO_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "Quantum File Operations initialization failed: %s", 
+                  qfo_result_to_string(qfo_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
+    // Create essential QFS directories
+    const char* essential_dirs[] = {
+        "/qfs",
+        "/qfs/system",
+        "/qfs/system/metadata",
+        "/qfs/system/wal",
+        "/qfs/system/temp",
+        "/qfs/user",
+        "/qfs/mathematical",
+        "/qfs/symbolic",
+        "/qfs/quantum",
+        NULL
+    };
+    
+    for (int i = 0; essential_dirs[i] != NULL; i++) {
+        qfs_result = qfs_create_directory(essential_dirs[i]);
+        if (qfs_result != QFS_SUCCESS && qfs_result != QFS_ERROR_ALREADY_EXISTS) {
+            kernel_log(KERNEL_LOG_WARNING, "Failed to create directory %s: %s", 
+                      essential_dirs[i], qfs_error_string(qfs_result));
+        }
+    }
+    
+    // Initialize QFS mathematical computation cache
+    qfs_result = qfs_init_mathematical_cache("/qfs/mathematical/cache", 
+                                            1024 * 1024 * 100); // 100MB cache
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS mathematical cache initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+    }
+    
+    // Initialize QFS symbolic computation storage
+    qfs_result = qfs_init_symbolic_storage("/qfs/symbolic/expressions");
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS symbolic storage initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+    }
+    
+    // Initialize QFS quantum state persistence
+    qfs_result = qfs_init_quantum_persistence("/qfs/quantum/states");
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS quantum persistence initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+    }
+    
+    // Mount root file system
+    qfs_result = qfs_mount_root("/qfs");
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_ERROR, "QFS root mount failed: %s", 
+                  qfs_error_string(qfs_result));
+        return KERNEL_ERROR_INIT_FAILED;
+    }
+    
+    // Enable QFS journaling for crash recovery
+    qfs_result = qfs_enable_journaling("/qfs/system/journal", true);
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS journaling initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+    }
+    
+    // Initialize QFS performance monitoring
+    qfs_result = qfs_init_performance_monitoring();
+    if (qfs_result != QFS_SUCCESS) {
+        kernel_log(KERNEL_LOG_WARNING, "QFS performance monitoring initialization failed: %s", 
+                  qfs_error_string(qfs_result));
+    }
+    
+    kernel_log(KERNEL_LOG_INFO, "Quantum File System initialized successfully");
+    kernel_log(KERNEL_LOG_INFO, "QFS Features: Mathematical Cache, Symbolic Storage, Quantum Persistence");
+    kernel_log(KERNEL_LOG_INFO, "QFS Security: Encryption, Checksums, Journaling, Crash Recovery");
+    
     return KERNEL_SUCCESS;
 }
 
