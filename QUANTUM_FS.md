@@ -1,9 +1,24 @@
+<!--
+Copyright 2025 Arbitrary Number Project Team
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Quantum File System Specification
 
 **Document Version:** 1.0  
 **Date:** August 18, 2025  
-**Author:** Arbitrary Number Project Team  
-**License:** Apache License 2.0
+**Author:** Arbitrary Number Project Team
 
 ## Executive Summary
 
@@ -505,5 +520,3 @@ The Quantum File System introduces fundamental innovations in file system design
 This document establishes prior art for the Quantum File System innovations described herein. All concepts, architectures, and technical approaches are original contributions to file system design, first disclosed publicly on August 18, 2025.
 
 The Quantum File System represents a fundamental paradigm shift in data storage architecture, establishing new foundations for mathematical data management that transcend the limitations of all existing file systems.
-
-**Copyright © 2025 Arbitrary Number Project Team. Licensed under the Apache License, Version 2.0.**

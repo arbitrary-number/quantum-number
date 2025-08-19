@@ -1,9 +1,24 @@
+<!--
+Copyright 2025 Arbitrary Number Project Team
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Collapser Specification: Quantum Number to Rational/Real Conversion
 
 **Document Version:** 1.0  
 **Date:** August 18, 2025  
-**Author:** Arbitrary Number Project Team  
-**License:** Apache License 2.0
+**Author:** Arbitrary Number Project Team
 
 ## Executive Summary
 
@@ -636,5 +651,3 @@ The Collapser introduces fundamental innovations in numeric conversion:
 This document establishes prior art for the Collapser innovations described herein. All conversion algorithms, strategies, and technical approaches are original contributions to numerical computing, first disclosed publicly on August 18, 2025.
 
 The Collapser represents a fundamental advancement in numeric conversion technology, providing the first comprehensive system for controlled conversion from exact symbolic representation to approximate numeric representation with complete error quantification and traceability.
-
-**Copyright © 2025 Arbitrary Number Project Team. Licensed under the Apache License, Version 2.0.**

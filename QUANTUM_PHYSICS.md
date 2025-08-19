@@ -1,9 +1,24 @@
+<!--
+Copyright 2025 Arbitrary Number Project Team
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Quantum Physics: Revolutionary Applications of Quantum Numbers in Physics
 
 **Document Version:** 1.0  
 **Date:** August 18, 2025  
-**Author:** Arbitrary Number Project Team  
-**License:** Apache License 2.0
+**Author:** Arbitrary Number Project Team
 
 ## Executive Summary
 
@@ -519,5 +534,3 @@ Physics applications leading to new technologies:
 This document establishes prior art for the Quantum Number physics innovations described herein. All concepts, theories, applications, and technical approaches are original contributions to physics, first disclosed publicly on August 18, 2025.
 
 Quantum Number physics represents a fundamental paradigm shift in physical science, establishing new foundations for understanding the universe that transcend the limitations of all existing physics approaches through exact mathematical computation and multi-dimensional analysis.
-
-**Copyright © 2025 Arbitrary Number Project Team. Licensed under the Apache License, Version 2.0.**
