@@ -71,12 +71,16 @@ This claim covers:
 
 ### Legal Basis
 
-Under the Apache License 2.0, we hereby:
+Under the Apache License 2.0, with 100% copyright maintained by the Arbitrary Number Project Team, we hereby:
 
-1. **Grant Patent License**: Provide perpetual, worldwide, non-exclusive patent license
-2. **Require Attribution**: Mandate proper attribution in all derivative works
-3. **Prevent Patent Trolling**: Establish comprehensive prior art protection
-4. **Enable Commercial Use**: Allow commercial applications under license terms
+1. **Maintain Full Copyright**: The Arbitrary Number Project Team retains complete copyright ownership of all materials
+2. **Grant Patent License**: Provide perpetual, worldwide, non-exclusive patent license under controlled terms
+3. **Require Attribution**: Mandate proper attribution in all derivative works
+4. **Prevent Patent Trolling**: Establish comprehensive prior art protection
+5. **Enable Commercial Use**: Allow commercial applications under license terms with legal clarity
+6. **Provide Legal Certainty**: Apache 2.0 offers superior legal framework compared to public domain dedication
+
+**Why Apache 2.0 Over Public Domain**: Public domain dedication creates legal ambiguities in many jurisdictions and provides no patent protection. Apache 2.0 provides clear legal terms, patent grants, attribution requirements, and worldwide enforceability while still enabling open innovation.
 
 ---
 
@@ -137,14 +141,19 @@ The Arbitrary Number Project Team declares that:
 
 ---
 
-## Public Domain Dedication Elements
+## Apache 2.0 License Coverage
 
-While maintaining authorship attribution, we dedicate the following to the public domain:
+All elements of this project are covered exclusively under the Apache License 2.0, with full copyright maintained by the Arbitrary Number Project Team:
 
-1. **Core Mathematical Concepts**: The fundamental mathematical principles
-2. **Terminology**: The coined terms and naming conventions
-3. **Architectural Principles**: The basic design concepts and approaches
-4. **Application Domains**: The enumerated use cases and application areas
+1. **Core Mathematical Concepts**: All fundamental mathematical principles and innovations
+2. **Terminology**: All coined terms, naming conventions, and conceptual frameworks
+3. **Architectural Principles**: All design concepts, approaches, and methodologies
+4. **Application Domains**: All enumerated use cases and application areas
+5. **Documentation**: All technical specifications, designs, and written materials
+6. **Source Code**: All implementations, tests, and supporting code
+7. **Hardware Designs**: All processor architectures and hardware specifications
+
+**No Public Domain Dedication**: Nothing in this project is dedicated to the public domain. The Apache 2.0 license provides superior legal protection and clarity compared to public domain dedication, which can have ambiguous legal status in various jurisdictions.
 
 ---
 
@@ -192,15 +201,33 @@ For verification of this claim or questions regarding licensing:
 
 ## Conclusion
 
-This Claim of Origin serves as a formal declaration of authorship, public disclosure, and legal protection for the Quantum Number System and all associated innovations. By publicly releasing this comprehensive system under the Apache License 2.0, we establish unassailable prior art while enabling global innovation and collaboration.
+This Claim of Origin serves as a formal declaration of authorship, public disclosure, and legal protection for the Quantum Number System and all associated innovations. By publicly releasing this comprehensive system under the Apache License 2.0, with 100% copyright maintained by the Arbitrary Number Project Team, we establish unassailable prior art while enabling controlled global innovation and collaboration.
 
-Any attempt to patent or exclusively claim these innovations may be challenged using this documentation as evidence of prior public disclosure and original authorship.
+**Copyright Ownership**: The Arbitrary Number Project Team maintains complete and exclusive copyright ownership of all materials, innovations, and intellectual property described herein. The Apache 2.0 license grants specific usage rights while preserving full copyright ownership.
+
+**Legal Framework Superiority**: The Apache 2.0 license provides a robust legal framework that surpasses public domain dedication by offering clear terms, patent protection, attribution requirements, and worldwide legal enforceability.
+
+Any attempt to patent or exclusively claim these innovations may be challenged using this documentation as evidence of prior public disclosure and original authorship under the Apache License 2.0 framework.
 
 ---
 
-**LEGAL NOTICE**: This document constitutes a formal claim of origin and public disclosure. It establishes comprehensive prior art protection and authorship claims for all described innovations under the Apache License 2.0.
+## Legal Framework Summary
+
+**Copyright Status**: 100% copyright ownership maintained by the Arbitrary Number Project Team  
+**License Framework**: Apache License 2.0 exclusively - no public domain dedication  
+**Patent Protection**: Comprehensive patent license grants with defensive termination clauses  
+**Attribution Requirements**: Mandatory attribution and license preservation in all derivative works  
+**Commercial Use**: Permitted under Apache 2.0 terms with full legal clarity  
+**Legal Jurisdiction**: Worldwide enforceability with clear legal standing  
+
+**Public Domain Rejection**: This project explicitly rejects public domain dedication due to its legal ambiguities, lack of patent protection, and inconsistent international recognition. The Apache 2.0 license provides superior legal protection while maintaining open innovation principles.
+
+---
+
+**LEGAL NOTICE**: This document constitutes a formal claim of origin and public disclosure. It establishes comprehensive prior art protection and authorship claims for all described innovations under the Apache License 2.0 framework, with 100% copyright maintained by the Arbitrary Number Project Team.
 
 ---
 
 © 2025 Arbitrary Number Project Team  
-Licensed under Apache License 2.0
+Licensed under Apache License 2.0  
+All Rights Reserved - Licensed under Apache 2.0
