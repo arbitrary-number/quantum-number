@@ -52,10 +52,10 @@ public class QuantumRegister {
         qubits.set(index, q);
     }
 
-    public void applyGate(int index, QuantumNumber gate) {
-        QuantumNumber current = qubits.get(index);
-        QuantumNumber updated = current.add(gate);
-        qubits.set(index, updated);
+    public void applyGate(int qubitIndex, QuantumNumber gate) {
+        QuantumNumber qubit = qubits.get(qubitIndex);
+        QuantumNumber result = qubit.multiply(gate);
+        qubits.set(qubitIndex, result);
     }
 
     public int measureQubit(int index) {

@@ -16,6 +16,7 @@
  */
 package com.github.quantum_number.qubit;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class QuantumNumber {
@@ -75,6 +76,46 @@ public class QuantumNumber {
         return new Random().nextDouble() < p0 ? 0 : 1;
     }
 
+    /**
+     * Multiply this QuantumNumber by another, component-wise,
+     * treating each pair (real, imaginary) as a complex number.
+     *
+     * Returns a new QuantumNumber.
+     */
+    public QuantumNumber multiply(QuantumNumber other) {
+        // Helper lambda to multiply complex numbers (a+bi)*(c+di) = (ac - bd) + (ad + bc)i
+        java.util.function.BiFunction<Double, Double, java.util.function.Function<Double, Double>> mulReal = (a, b) -> (c) -> (double) (a * c);
+        // We'll just write it straightforwardly here:
+
+        double[] res = new double[12];
+        double[] thisArr = {a, g, b, h, c, i, d, j, e, k, f, l};
+        double[] otherArr = {other.a, other.g, other.b, other.h, other.c, other.i, other.d, other.j, other.e, other.k, other.f, other.l};
+
+        for (int idx = 0; idx < 12; idx += 2) {
+            double ar = thisArr[idx];
+            double ai = thisArr[idx + 1];
+            double br = otherArr[idx];
+            double bi = otherArr[idx + 1];
+
+            // complex multiplication
+            double real = ar * br - ai * bi;
+            double imag = ar * bi + ai * br;
+
+            res[idx] = real;
+            res[idx + 1] = imag;
+        }
+
+        return new QuantumNumber(
+            res[0], res[1],  // a, g
+            res[2], res[3],  // b, h
+            res[4], res[5],  // c, i
+            res[6], res[7],  // d, j
+            res[8], res[9],  // e, k
+            res[10], res[11] // f, l
+        );
+    }
+
+
     public QuantumNumber normalize() {
         // Sum of squares of all 12 components (real and imaginary parts)
         double sumSquares =
@@ -101,6 +142,34 @@ public class QuantumNumber {
 
 
     @Override
+	public int hashCode() {
+		return Objects.hash(a, b, c, d, e, f, g, h, i, j, k, l);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		QuantumNumber other = (QuantumNumber) obj;
+		return Double.doubleToLongBits(a) == Double.doubleToLongBits(other.a)
+				&& Double.doubleToLongBits(b) == Double.doubleToLongBits(other.b)
+				&& Double.doubleToLongBits(c) == Double.doubleToLongBits(other.c)
+				&& Double.doubleToLongBits(d) == Double.doubleToLongBits(other.d)
+				&& Double.doubleToLongBits(e) == Double.doubleToLongBits(other.e)
+				&& Double.doubleToLongBits(f) == Double.doubleToLongBits(other.f)
+				&& Double.doubleToLongBits(g) == Double.doubleToLongBits(other.g)
+				&& Double.doubleToLongBits(h) == Double.doubleToLongBits(other.h)
+				&& Double.doubleToLongBits(i) == Double.doubleToLongBits(other.i)
+				&& Double.doubleToLongBits(j) == Double.doubleToLongBits(other.j)
+				&& Double.doubleToLongBits(k) == Double.doubleToLongBits(other.k)
+				&& Double.doubleToLongBits(l) == Double.doubleToLongBits(other.l);
+	}
+
+	@Override
     public String toString() {
         return String.format(
             "((%.2f + %.2fi) / ((%.2f + %.2fi) / (%.2f + %.2fi))) ÷ ((%.2f + %.2fi) / ((%.2f + %.2fi) / (%.2f + %.2fi)))",

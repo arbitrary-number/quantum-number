@@ -18,17 +18,14 @@ package com.github.quantum_number.qubit;
 
 public class QuantumGates {
 
-    // Identity Gate (I): Leaves qubit unchanged
-    public static QuantumNumber identity() {
-        return new QuantumNumber(
-            0, 0,
-            0, 0,
-            0, 0,
-            0, 0,
-            0, 0,
-            0, 0
-        );
-    }
+	public static QuantumNumber identity() {
+	    return new QuantumNumber(
+	        1, 0,
+	        0, 0, 0, 0,
+	        1, 0,
+	        0, 0, 0, 0
+	    );
+	}
 
     // Pauli-X (NOT gate): Flips |0⟩ ↔ |1⟩
     public static QuantumNumber pauliX() {
@@ -71,17 +68,17 @@ public class QuantumGates {
         );
     }
 
-    // T Gate (π/4 phase)
     public static QuantumNumber tGate() {
-        double cos = Math.cos(Math.PI / 4);
-        double sin = Math.sin(Math.PI / 4);
         return new QuantumNumber(
-            1, 0,
-            0, 0, 0, 0,
-            cos, sin,
-            0, 0, 0, 0
+            1, 0,  // α multiplied by 1 (no change)
+            0, 0,
+            0, 0,
+            Math.cos(Math.PI / 4), Math.sin(Math.PI / 4), // β multiplied by e^(iπ/4)
+            0, 0,
+            0, 0
         );
     }
+
 
     // Custom user-defined gate
     public static QuantumNumber custom(double[] realImagPairs) {
