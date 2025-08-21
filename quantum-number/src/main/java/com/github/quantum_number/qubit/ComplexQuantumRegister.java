@@ -26,6 +26,7 @@ import java.util.Arrays;
  */
 public class ComplexQuantumRegister {
 
+    private final int dimension;
     private final ComplexQuantumNumber[] amplitudes;
 
     /**
@@ -39,6 +40,19 @@ public class ComplexQuantumRegister {
         }
         // Set amplitude[0] to basis |a⟩ with coefficient 1
         amplitudes[0].addComponent(QuantumNumberComponent.a, Complex.ONE);
+        this.dimension = 1;
+    }
+
+
+    public ComplexQuantumRegister(int dimension) {
+        this.dimension = dimension;
+        this.amplitudes = new ComplexQuantumNumber[dimension];
+        // Initialize amplitudes here...
+    }
+
+    // Add this method:
+    public int getDimension() {
+        return this.dimension;
     }
 
     /**
