@@ -164,4 +164,36 @@ public class ComplexQuantumNumber {
         }
         return sb.toString();
     }
+
+    public static ComplexQuantumNumber tensorProduct(ComplexQuantumNumber amp1, ComplexQuantumNumber amp2) {
+        ComplexQuantumNumber result = new ComplexQuantumNumber();
+
+        for (QuantumNumberComponent comp1 : amp1.getComponents().keySet()) {
+            Complex coeff1 = amp1.getCoefficient(comp1);
+
+            for (QuantumNumberComponent comp2 : amp2.getComponents().keySet()) {
+                Complex coeff2 = amp2.getCoefficient(comp2);
+
+                QuantumNumberComponent combinedComponent = QuantumNumberComponent.combine(comp1, comp2);
+                Complex combinedCoeff = coeff1.multiply(coeff2);
+
+                result.addComponent(combinedComponent, combinedCoeff);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Adds all components from another ComplexQuantumNumber into this one,
+     * summing coefficients for matching components.
+     * @param other the ComplexQuantumNumber whose components will be added
+     */
+    public void addComponents(ComplexQuantumNumber other) {
+        for (QuantumNumberComponent comp : other.getComponents().keySet()) {
+            Complex coeff = other.getCoefficient(comp);
+            this.addComponent(comp, coeff);
+        }
+    }
 }

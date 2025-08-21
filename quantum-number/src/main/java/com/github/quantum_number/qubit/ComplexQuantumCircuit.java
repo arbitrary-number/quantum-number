@@ -61,4 +61,73 @@ public class ComplexQuantumCircuit {
         }
         return sb.toString();
     }
+
+    /**
+     * Insert a gate at the specified index.
+     * @param index position to insert the gate
+     * @param gate gate to insert
+     */
+    public void insertGate(int index, ComplexQuantumGate gate) {
+        if (gate == null) {
+            throw new IllegalArgumentException("Gate cannot be null");
+        }
+        if (index < 0 || index > gates.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        gates.add(index, gate);
+    }
+
+    /**
+     * Remove the gate at the specified index.
+     * @param index index of gate to remove
+     * @return the removed gate
+     */
+    public ComplexQuantumGate removeGate(int index) {
+        if (index < 0 || index >= gates.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        return gates.remove(index);
+    }
+
+    /**
+     * Get the gate at the specified index.
+     * @param index index of gate
+     * @return gate at the index
+     */
+    public ComplexQuantumGate getGate(int index) {
+        if (index < 0 || index >= gates.size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+        return gates.get(index);
+    }
+
+
+    /**
+     * Applies all gates in sequence to the input register,
+     * returning an array of intermediate registers after each gate.
+     * @param input Initial quantum register state
+     * @return List of intermediate quantum registers after each gate
+     */
+    public List<ComplexQuantumRegister> runStepwise(ComplexQuantumRegister input) {
+        List<ComplexQuantumRegister> states = new ArrayList<>();
+        ComplexQuantumRegister current = input;
+        for (ComplexQuantumGate gate : gates) {
+            current = gate.apply(current);
+            states.add(current);
+        }
+        return states;
+    }
+
+
+//    @Override
+//    public String toString() {
+//        StringBuilder sb = new StringBuilder("ComplexQuantumCircuit with ")
+//            .append(gates.size())
+//            .append(" gates:\n");
+//        for (int i = 0; i < gates.size(); i++) {
+//            sb.append("Gate ").append(i).append(":\n");
+//            sb.append(gates.get(i).toString()).append("\n");
+//        }
+//        return sb.toString();
+//    }
 }

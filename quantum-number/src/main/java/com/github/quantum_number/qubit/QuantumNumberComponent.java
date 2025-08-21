@@ -20,6 +20,11 @@ public class QuantumNumberComponent {
         return label;
     }
 
+    // Combines two components by concatenating their labels
+    public static QuantumNumberComponent combine(QuantumNumberComponent c1, QuantumNumberComponent c2) {
+        return new QuantumNumberComponent(c1.label + c2.label);
+    }
+
     @Override
     public String toString() {
         return label;

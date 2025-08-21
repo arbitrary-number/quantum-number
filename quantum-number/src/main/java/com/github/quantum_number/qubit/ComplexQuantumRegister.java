@@ -59,6 +59,28 @@ public class ComplexQuantumRegister {
         return reg;
     }
 
+    public static ComplexQuantumRegister tensorProduct(ComplexQuantumRegister r1, ComplexQuantumRegister r2) {
+        int size1 = r1.size();
+        int size2 = r2.size();
+
+        ComplexQuantumRegister result = new ComplexQuantumRegister(size1 * size2);
+
+        for (int i = 0; i < size1; i++) {
+            ComplexQuantumNumber amp1 = r1.getAmplitude(i);
+
+            for (int j = 0; j < size2; j++) {
+                ComplexQuantumNumber amp2 = r2.getAmplitude(j);
+
+                ComplexQuantumNumber combined = ComplexQuantumNumber.tensorProduct(amp1, amp2);
+
+                result.setAmplitude(i * size2 + j, combined);
+            }
+        }
+
+        return result;
+    }
+
+
     // Add this method:
     public int getDimension() {
         return this.dimension;
