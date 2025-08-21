@@ -30,6 +30,14 @@ public class ComplexQuantumNumber {
         }
     }
 
+    public void scale(double scalar) {
+        if (scalar == 0.0) {
+            components.clear();
+        } else {
+            components.replaceAll((basis, coeff) -> coeff.multiply(scalar));
+        }
+    }
+
     /**
      * Add or update a component with the given coefficient.
      * If the coefficient is zero, remove the component.
@@ -47,6 +55,11 @@ public class ComplexQuantumNumber {
             components.put(basis, sum);
         }
     }
+
+    public double magnitudeSquared() {
+        return normSquared();
+    }
+
 
     public boolean hasComponent(QuantumNumberComponent basis) {
         return components.containsKey(basis);
