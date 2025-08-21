@@ -102,4 +102,84 @@ public class ComplexQuantumGateTest {
 
         assertThrows(IllegalArgumentException.class, () -> gate.apply(smallRegister));
     }
+
+    @Test
+    public void testYGate() {
+        Complex i = Complex.I;
+        Complex minusI = i.negate();
+
+        Complex[][] yGate = {
+            {zero, minusI},
+            {i, zero}
+        };
+
+        ComplexQuantumGate gate = new ComplexQuantumGate(yGate);
+        ComplexQuantumRegister result = gate.apply(input);
+
+        Complex expected = Complex.I; // Pauli-Y on |0⟩ → i|1⟩
+        assertTrue(result.getAmplitude(0).isZero());
+        assertComplexEquals(expected, result.getAmplitude(1).getCoefficient(a), 1e-10);
+    }
+
+    @Test
+    public void testZGate() {
+        Complex[][] zGate = {
+            {one, zero},
+            {zero, one.negate()}
+        };
+
+        ComplexQuantumGate gate = new ComplexQuantumGate(zGate);
+        ComplexQuantumRegister result = gate.apply(input);
+
+        // Should remain |0⟩ unchanged
+        assertEquals(input.getAmplitude(0), result.getAmplitude(0));
+        assertTrue(result.getAmplitude(1).isZero());
+    }
+
+    @Test
+    public void testPhaseGate() {
+        Complex i = Complex.I;
+
+        Complex[][] sGate = {
+            {one, zero},
+            {zero, i}
+        };
+
+        ComplexQuantumGate gate = new ComplexQuantumGate(sGate);
+        ComplexQuantumRegister result = gate.apply(input);
+
+        // Since |0⟩ → |0⟩ under phase gate
+        assertEquals(input.getAmplitude(0), result.getAmplitude(0));
+        assertTrue(result.getAmplitude(1).isZero());
+    }
+
+    @Test
+    public void testCNOTGate() {
+        // Setup 2-qubit register: |10⟩ (control = 1, target = 0)
+        ComplexQuantumRegister twoQubitInput = new ComplexQuantumRegister(4);
+        ComplexQuantumNumber state = new ComplexQuantumNumber();
+        state.addComponent(a, one);
+        twoQubitInput.setAmplitude(2, state); // |10⟩ → index 2
+
+        // CNOT Gate (4x4)
+        Complex[][] cnot = {
+            {one, zero, zero, zero},
+            {zero, one, zero, zero},
+            {zero, zero, zero, one},
+            {zero, zero, one, zero}
+        };
+
+        ComplexQuantumGate gate = new ComplexQuantumGate(cnot);
+        ComplexQuantumRegister result = gate.apply(twoQubitInput);
+
+        // CNOT on |10⟩ → |11⟩ → index 3
+        assertTrue(result.getAmplitude(2).isZero());
+        assertEquals(one, result.getAmplitude(3).getCoefficient(a));
+    }
+
+    private void assertComplexEquals(Complex expected, Complex actual, double delta) {
+        assertEquals(expected.getReal(), actual.getReal(), delta, "Real parts differ");
+        assertEquals(expected.getImaginary(), actual.getImaginary(), delta, "Imaginary parts differ");
+    }
+
 }
