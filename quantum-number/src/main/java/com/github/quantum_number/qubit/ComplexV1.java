@@ -16,14 +16,14 @@
  */
 package com.github.quantum_number.qubit;
 
-public final class Complex {
+public final class ComplexV1 {
     private final double re;
     private final double im;
 
-    public static final Complex ZERO = new Complex(0, 0);
-    public static final Complex ONE = new Complex(1, 0);
+    public static final ComplexV1 ZERO = new ComplexV1(0, 0);
+    public static final ComplexV1 ONE = new ComplexV1(1, 0);
 
-    public Complex(double re, double im) {
+    public ComplexV1(double re, double im) {
         this.re = re;
         this.im = im;
     }
@@ -36,48 +36,48 @@ public final class Complex {
         return im;
     }
 
-    public Complex add(Complex other) {
-        return new Complex(re + other.re, im + other.im);
+    public ComplexV1 add(ComplexV1 other) {
+        return new ComplexV1(re + other.re, im + other.im);
     }
 
-    public Complex subtract(Complex other) {
-        return new Complex(re - other.re, im - other.im);
+    public ComplexV1 subtract(ComplexV1 other) {
+        return new ComplexV1(re - other.re, im - other.im);
     }
 
-    public Complex multiply(Complex other) {
-        return new Complex(re * other.re - im * other.im, re * other.im + im * other.re);
+    public ComplexV1 multiply(ComplexV1 other) {
+        return new ComplexV1(re * other.re - im * other.im, re * other.im + im * other.re);
     }
 
-    public Complex multiply(double scalar) {
-        return new Complex(re * scalar, im * scalar);
+    public ComplexV1 multiply(double scalar) {
+        return new ComplexV1(re * scalar, im * scalar);
     }
 
-    public Complex divide(Complex other) {
+    public ComplexV1 divide(ComplexV1 other) {
         double denom = other.re * other.re + other.im * other.im;
-        return new Complex(
+        return new ComplexV1(
             (re * other.re + im * other.im) / denom,
             (im * other.re - re * other.im) / denom
         );
     }
 
-    public Complex conjugate() {
-        return new Complex(re, -im);
+    public ComplexV1 conjugate() {
+        return new ComplexV1(re, -im);
     }
 
     public double magnitude() {
         return Math.sqrt(re * re + im * im);
     }
 
-    public Complex normalize() {
+    public ComplexV1 normalize() {
         double mag = magnitude();
         if (mag == 0) return ZERO;
-        return new Complex(re / mag, im / mag);
+        return new ComplexV1(re / mag, im / mag);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Complex)) return false;
-        Complex c = (Complex) obj;
+        if (!(obj instanceof ComplexV1)) return false;
+        ComplexV1 c = (ComplexV1) obj;
         final double EPS = 1e-10;
         return Math.abs(re - c.re) < EPS && Math.abs(im - c.im) < EPS;
     }

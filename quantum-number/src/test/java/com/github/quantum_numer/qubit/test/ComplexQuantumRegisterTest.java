@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.commons.math3.complex.Complex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.quantum_number.qubit.Complex;
 import com.github.quantum_number.qubit.ComplexQuantumNumber;
 import com.github.quantum_number.qubit.ComplexQuantumRegister;
 import com.github.quantum_number.qubit.QuantumNumberComponent;

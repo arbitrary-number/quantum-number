@@ -36,6 +36,12 @@ public class ComplexQuantumNumber {
         this.components = new HashMap<>(other.components);
     }
 
+    public ComplexQuantumNumber(Map<QuantumNumberComponent, Complex> components) {
+        this();
+        components.forEach(this::addComponent);
+    }
+
+
     /**
      * Add or update a component with the given coefficient.
      * If the coefficient is zero, remove the component.
@@ -102,18 +108,46 @@ public class ComplexQuantumNumber {
     /**
      * Add another ComplexQuantumNumber to this one (component-wise).
      */
-    public void add(ComplexQuantumNumber other) {
-        for (Map.Entry<QuantumNumberComponent, Complex> entry : other.components.entrySet()) {
-            QuantumNumberComponent basis = entry.getKey();
-            Complex coeff = entry.getValue();
-            Complex existing = components.getOrDefault(basis, Complex.ZERO);
-            Complex sum = existing.add(coeff);
-            if (sum.equals(Complex.ZERO)) {
-                components.remove(basis);
-            } else {
-                components.put(basis, sum);
-            }
+    public ComplexQuantumNumber add(ComplexQuantumNumber other) {
+        ComplexQuantumNumber result = new ComplexQuantumNumber();
+
+        // Add all components from this
+        for (Map.Entry<QuantumNumberComponent, Complex> entry : this.components.entrySet()) {
+            result.addComponent(entry.getKey(), entry.getValue());
         }
+        // Add all components from other
+        for (Map.Entry<QuantumNumberComponent, Complex> entry : other.components.entrySet()) {
+            Complex existing = result.getCoefficient(entry.getKey());
+            result.addComponent(entry.getKey(), existing.add(entry.getValue()));
+        }
+        return result;
+    }
+
+    // Multiply all coefficients by scalar
+    public ComplexQuantumNumber multiply(Complex scalar) {
+        ComplexQuantumNumber result = new ComplexQuantumNumber();
+        for (Map.Entry<QuantumNumberComponent, Complex> entry : components.entrySet()) {
+            result.addComponent(entry.getKey(), entry.getValue().multiply(scalar));
+        }
+        return result;
+    }
+
+    // Compute sum of squared magnitudes of coefficients
+    public double normSquared() {
+        double sum = 0.0;
+        for (Complex c : components.values()) {
+            sum += c.abs() * c.abs();
+        }
+        return sum;
+    }
+
+    // Return a new ComplexQuantumNumber normalized to unit norm
+    public ComplexQuantumNumber normalize() {
+        double norm = Math.sqrt(normSquared());
+        if (norm == 0) {
+            throw new ArithmeticException("Cannot normalize zero quantum number");
+        }
+        return this.multiply(new Complex(1.0 / norm, 0));
     }
 
     @Override
