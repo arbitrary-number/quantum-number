@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class QuantumRegister {
+public class QuantumRegisterV1 {
     private final List<QuantumNumber> qubits;
     private final Random rng = new Random();
 
-    public QuantumRegister(int size) {
+    public QuantumRegisterV1(int size) {
         if (size <= 0) throw new IllegalArgumentException("Register size must be > 0");
         this.qubits = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {

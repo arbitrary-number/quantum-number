@@ -24,13 +24,13 @@ import com.github.quantum_number.qubit.QuantumGates;
  *
  */
 import com.github.quantum_number.qubit.QuantumNumber;
-import com.github.quantum_number.qubit.QuantumRegister;
+import com.github.quantum_number.qubit.QuantumRegisterV1;
 
 public class QuantumGatesTest {
 
     @Test
     public void testIdentityGatePreservesQubit() {
-        QuantumRegister reg = new QuantumRegister(1);
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1);
         QuantumNumber original = reg.getQubit(0);
 
         reg.applyGate(0, QuantumGates.identity());
@@ -41,7 +41,7 @@ public class QuantumGatesTest {
 
     @Test
     public void testPauliXFlipsState() {
-        QuantumRegister reg = new QuantumRegister(1); // default |0⟩
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1); // default |0⟩
         reg.applyGate(0, QuantumGates.pauliX());
         reg.normalizeAll();
         int result = reg.measureQubit(0);
@@ -50,7 +50,7 @@ public class QuantumGatesTest {
 
     @Test
     public void testPauliZDoesNotChangeMeasurement() {
-        QuantumRegister reg = new QuantumRegister(1); // default |0⟩
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1); // default |0⟩
         reg.applyGate(0, QuantumGates.pauliZ());
         reg.normalizeAll();
         int result = reg.measureQubit(0);
@@ -59,7 +59,7 @@ public class QuantumGatesTest {
 
     @Test
     public void testHadamardCreatesSuperposition() {
-        QuantumRegister reg = new QuantumRegister(1);
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1);
         reg.applyGate(0, QuantumGates.hadamard());
         reg.normalizeAll();
 
@@ -69,7 +69,7 @@ public class QuantumGatesTest {
 
     @Test
     public void testPhaseGateDoesNotChangeProbability() {
-        QuantumRegister reg = new QuantumRegister(1);
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1);
         reg.applyGate(0, QuantumGates.phase());
         reg.normalizeAll();
 
@@ -79,7 +79,7 @@ public class QuantumGatesTest {
 
     @Test
     public void testTGateAppliesPhaseToQubit() {
-        QuantumRegister reg = new QuantumRegister(1);
+        QuantumRegisterV1 reg = new QuantumRegisterV1(1);
         reg.applyGate(0, QuantumGates.tGate());
         reg.normalizeAll();
 

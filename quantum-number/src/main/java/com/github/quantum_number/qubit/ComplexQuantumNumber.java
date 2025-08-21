@@ -1,102 +1,145 @@
+/*
+ * Copyright (c) Arbitrary Number Project Team. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.github.quantum_number.qubit;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import org.apache.commons.math3.complex.Complex;
 
-/**
- * Represents an additive superposition of QuantumNumbers,
- * weighted by complex coefficients.
- */
 public class ComplexQuantumNumber {
-    // Map basis QuantumNumber -> complex coefficient
-    private final Map<QuantumNumber, Complex> components;
+
+    // Map basis component -> complex coefficient
+    private final Map<QuantumNumberComponent, Complex> components;
 
     public ComplexQuantumNumber() {
         this.components = new HashMap<>();
     }
 
-    public ComplexQuantumNumber(Map<QuantumNumber, Complex> components) {
-        this.components = new HashMap<>(components);
+    // Copy constructor
+    public ComplexQuantumNumber(ComplexQuantumNumber other) {
+        this.components = new HashMap<>(other.components);
     }
 
     /**
-     * Add a component: coefficient * qn
-     * Adds to existing coefficient if present.
+     * Add or update a component with the given coefficient.
+     * If the coefficient is zero, remove the component.
      */
-    public void addComponent(QuantumNumber qn, Complex coefficient) {
-        if (coefficient.equals(Complex.ZERO)) return;
-        components.merge(qn, coefficient, Complex::add);
-        // Remove zero coefficients to keep map clean
-        if (components.get(qn).equals(Complex.ZERO)) {
-            components.remove(qn);
+    public void addComponent(QuantumNumberComponent basis, Complex coefficient) {
+        Objects.requireNonNull(basis, "QuantumNumberComponent cannot be null");
+        Objects.requireNonNull(coefficient, "Coefficient cannot be null");
+        if (coefficient.equals(Complex.ZERO)) {
+            components.remove(basis);
+        } else {
+            components.put(basis, coefficient);
         }
     }
 
     /**
-     * Return the complex coefficient for the given QuantumNumber basis,
-     * or zero if not present.
+     * Check if this ComplexQuantumNumber has the given basis component.
      */
-    public Complex getCoefficient(QuantumNumber qn) {
-        return components.getOrDefault(qn, Complex.ZERO);
+    public boolean hasComponent(QuantumNumberComponent basis) {
+        return components.containsKey(basis);
     }
 
     /**
-     * Scalar multiplication of this ComplexQuantumNumber by a complex scalar.
+     * Get the coefficient associated with the basis component.
+     * Returns Complex.ZERO if not present.
      */
-    public ComplexQuantumNumber multiply(Complex scalar) {
-        Map<QuantumNumber, Complex> result = new HashMap<>();
-        for (var entry : components.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().multiply(scalar));
+    public Complex getCoefficient(QuantumNumberComponent basis) {
+        return components.getOrDefault(basis, Complex.ZERO);
+    }
+
+    /**
+     * Returns an unmodifiable view of the components map.
+     */
+    public Map<QuantumNumberComponent, Complex> getComponents() {
+        return Collections.unmodifiableMap(components);
+    }
+
+    /**
+     * Computes the sum of the squared magnitudes of all components.
+     */
+    public double magnitudeSquared() {
+        return components.values().stream()
+                .mapToDouble(c -> c.abs() * c.abs())
+                .sum();
+    }
+
+    /**
+     * Scale all coefficients by the given scalar.
+     */
+    public void scale(double scalar) {
+        if (scalar == 0.0) {
+            components.clear();
+        } else {
+            components.replaceAll((basis, coeff) -> coeff.multiply(scalar));
         }
-        return new ComplexQuantumNumber(result);
     }
 
     /**
-     * Add two ComplexQuantumNumbers together.
+     * Returns true if there are no components (zero vector).
      */
-    public ComplexQuantumNumber add(ComplexQuantumNumber other) {
-        Map<QuantumNumber, Complex> result = new HashMap<>(this.components);
-        for (var entry : other.components.entrySet()) {
-            result.merge(entry.getKey(), entry.getValue(), Complex::add);
+    public boolean isZero() {
+        return components.isEmpty();
+    }
+
+    /**
+     * Add another ComplexQuantumNumber to this one (component-wise).
+     */
+    public void add(ComplexQuantumNumber other) {
+        for (Map.Entry<QuantumNumberComponent, Complex> entry : other.components.entrySet()) {
+            QuantumNumberComponent basis = entry.getKey();
+            Complex coeff = entry.getValue();
+            Complex existing = components.getOrDefault(basis, Complex.ZERO);
+            Complex sum = existing.add(coeff);
+            if (sum.equals(Complex.ZERO)) {
+                components.remove(basis);
+            } else {
+                components.put(basis, sum);
+            }
         }
-        // Clean zero coefficients
-        result.entrySet().removeIf(e -> e.getValue().equals(Complex.ZERO));
-        return new ComplexQuantumNumber(result);
     }
 
-    /**
-     * Compute the squared norm (sum of squared magnitudes of coefficients).
-     */
-    public double normSquared() {
-        double sum = 0.0;
-        for (Complex coeff : components.values()) {
-            double mag = coeff.magnitude();
-            sum += mag * mag;
-        }
-        return sum;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ComplexQuantumNumber)) return false;
+        ComplexQuantumNumber that = (ComplexQuantumNumber) o;
+        return Objects.equals(components, that.components);
     }
 
-    /**
-     * Normalize this ComplexQuantumNumber (in place).
-     */
-    public ComplexQuantumNumber normalize() {
-        double norm = Math.sqrt(normSquared());
-        if (norm == 0) return this;
-        return multiply(new Complex(1.0 / norm, 0));
+    @Override
+    public int hashCode() {
+        return Objects.hash(components);
     }
 
     @Override
     public String toString() {
         if (components.isEmpty()) return "0";
         StringBuilder sb = new StringBuilder();
-        for (var entry : components.entrySet()) {
-            sb.append(entry.getValue().toString())
-              .append(" * ")
-              .append(entry.getKey().toString())
+        for (Map.Entry<QuantumNumberComponent, Complex> entry : components.entrySet()) {
+            sb.append(entry.getValue())
+              .append("*")
+              .append(entry.getKey())
               .append(" + ");
         }
-        sb.setLength(sb.length() - 3); // Remove last " + "
-        return sb.toString();
+        // Remove trailing " + "
+        return sb.substring(0, sb.length() - 3);
     }
-
-    // Equals and hashCode can be added as needed
 }

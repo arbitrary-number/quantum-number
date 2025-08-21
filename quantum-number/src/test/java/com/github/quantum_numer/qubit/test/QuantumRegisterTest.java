@@ -28,15 +28,15 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.github.quantum_number.qubit.QuantumNumber;
-import com.github.quantum_number.qubit.QuantumRegister;
+import com.github.quantum_number.qubit.QuantumRegisterV1;
 
 public class QuantumRegisterTest {
 
-    private QuantumRegister reg;
+    private QuantumRegisterV1 reg;
 
     @BeforeEach
     public void setup() {
-        reg = new QuantumRegister(3);
+        reg = new QuantumRegisterV1(3);
     }
 
     @Test
@@ -110,6 +110,6 @@ public class QuantumRegisterTest {
 
     @Test
     public void testInvalidRegisterSizeThrows() {
-        assertThrows(IllegalArgumentException.class, () -> new QuantumRegister(0));
+        assertThrows(IllegalArgumentException.class, () -> new QuantumRegisterV1(0));
     }
 }
