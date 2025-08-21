@@ -47,7 +47,16 @@ public class ComplexQuantumRegister {
     public ComplexQuantumRegister(int dimension) {
         this.dimension = dimension;
         this.amplitudes = new ComplexQuantumNumber[dimension];
-        // Initialize amplitudes here...
+        for (int i = 0; i < dimension; i++) {
+            this.amplitudes[i] = new ComplexQuantumNumber();
+        }
+    }
+
+    public static ComplexQuantumRegister withZeroState(int qubitCount) {
+        int dim = 1 << qubitCount;
+        ComplexQuantumRegister reg = new ComplexQuantumRegister(dim);
+        reg.getAmplitude(0).addComponent(QuantumNumberComponent.a, Complex.ONE);
+        return reg;
     }
 
     // Add this method:

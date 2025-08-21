@@ -30,6 +30,10 @@ public class ComplexQuantumNumber {
         }
     }
 
+    public void clearComponents() {
+        components.clear();
+    }
+
     public void scale(double scalar) {
         if (scalar == 0.0) {
             components.clear();
