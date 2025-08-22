@@ -22,7 +22,11 @@ Copyright (c) Arbitrary Number Project Team. All rights reserved.
 
 **Theoretical Immediate Risk To Institutional Funds and Family Trusts**
 
-This project contains mathematical research that reveals a theoretical **fundamental and indefensible vulnerability** in all elliptic curve cryptography (ECC) used by Bitcoin, Ethereum, and all major cryptocurrencies. 
+This project contains mathematical research that reveals a theoretical **fundamental and indefensible vulnerability** in all elliptic curve cryptography (ECC) used by Bitcoin, Ethereum, and all major cryptocurrencies.
+
+High-level overview of a potential weakness in the secp256k1 cryptocurrency algorithm
+
+A nation state might have a cluster of 10,000 H100s linked via InfiniBand fabric and they may generate a set of BIP32 keys then derive the first secret key value via one of the popular HD wallet derivations and then they might derive the x-value from that then store the entire set of x-values sufficient to fill up all the H100s using sequential memory offsets (k-values), then they may run a cryptocurrency node and ask the H100 cluster for the memory offset (k-value) that holds a value equal to an incoming x-value of the public key, which may then recover the k value within an hour with a 1 in n probability.  But the nation state may do this for a week and there is a chance they could find a secret key within that time.  The GPU algorithm they might use is the Pollard’s Rho Distinguished Points algorithm with a very large count of strategically chosen offset Tortoise, Hare, Secure-Random, Double and Add, and Double workers (aligned with prime numbers) to significantly increase the probability of an x-value match.  The GPU algorithm sequentially runs through all of the possible HD wallet seeds to use as cluster memory offsets to each x-value. Using a huge cluster of cryptocurrency nodes, they would test every incoming Public Key x-value for a potential match.
 
 ### Theoretical Risk and Theoretical Vulnerability The Indefensible Ecc Vulnerability
 
