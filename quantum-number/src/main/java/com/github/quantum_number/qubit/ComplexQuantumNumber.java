@@ -73,6 +73,10 @@ public class ComplexQuantumNumber {
         return components.getOrDefault(basis, Complex.ZERO);
     }
 
+	public Complex getComponent(QuantumNumberComponent comp) {
+		return getCoefficient(comp);
+	}
+
     public Map<QuantumNumberComponent, Complex> getComponents() {
         return Collections.unmodifiableMap(components);
     }

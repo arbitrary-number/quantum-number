@@ -457,4 +457,70 @@ public class ComplexQuantumRegister {
 
         return reduced;
 	}
+
+	public static ComplexQuantumRegister measureQubits(ComplexQuantumRegister originalReg, int[] qubitsToMeasure) {
+	    int nQubits = (int)(Math.log(originalReg.size()) / Math.log(2));
+	    int measuredBitsCount = qubitsToMeasure.length;
+	    int dim = originalReg.size();
+
+	    double[] probabilities = new double[1 << measuredBitsCount];
+
+	    // Step 1: Calculate probabilities for each measurement outcome
+	    for (int i = 0; i < dim; i++) {
+	        int outcome = 0;
+	        for (int b = 0; b < measuredBitsCount; b++) {
+	            int qubit = qubitsToMeasure[b];
+	            int bitVal = (i >> (nQubits - 1 - qubit)) & 1;
+	            outcome |= (bitVal << (measuredBitsCount - 1 - b));
+	        }
+	        ComplexQuantumNumber amp = originalReg.getAmplitude(i);
+	        double ampSquared = amp.normSquared();
+	        probabilities[outcome] += ampSquared;
+	    }
+
+	    // Step 2: Randomly select measurement outcome based on probabilities
+	    double r = Math.random();
+	    double cumProb = 0;
+	    int measuredOutcome = 0;
+	    for (int i = 0; i < probabilities.length; i++) {
+	        cumProb += probabilities[i];
+	        if (r <= cumProb) {
+	            measuredOutcome = i;
+	            break;
+	        }
+	    }
+
+	    // Step 3: Create a new collapsed register consistent with measurement
+	    ComplexQuantumRegister collapsed = ComplexQuantumRegister.ofDimension(dim);
+	    double normFactor = 0;
+
+	    for (int i = 0; i < dim; i++) {
+	        int outcome = 0;
+	        for (int b = 0; b < measuredBitsCount; b++) {
+	            int qubit = qubitsToMeasure[b];
+	            int bitVal = (i >> (nQubits - 1 - qubit)) & 1;
+	            outcome |= (bitVal << (measuredBitsCount - 1 - b));
+	        }
+
+	        if (outcome == measuredOutcome) {
+	            ComplexQuantumNumber amp = originalReg.getAmplitude(i);
+	            normFactor += amp.normSquared();
+	            collapsed.setAmplitude(i, amp);
+	        } else {
+	            collapsed.setAmplitude(i, new ComplexQuantumNumber());
+	        }
+	    }
+
+	    // Step 4: Normalize the collapsed register
+	    double invSqrt = 1.0 / Math.sqrt(normFactor);
+	    for (int i = 0; i < dim; i++) {
+	        ComplexQuantumNumber amp = collapsed.getAmplitude(i);
+	        collapsed.setAmplitude(i, amp.multiply(new Complex(invSqrt, 0d)));
+	    }
+
+	    // Step 5: You can optionally return measurement outcome along with register
+	    // But here just return the collapsed register
+	    return collapsed;
+	}
+
 }

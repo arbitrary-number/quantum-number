@@ -380,6 +380,15 @@ public class ComplexQuantumGate {
             return new ComplexQuantumGate(fredkin);
         }
 
+        public static ComplexQuantumGate singleQubitGateOnNQubits(ComplexQuantumGate gate, int nQubits, int targetQubit) {
+            // Build identity gates for qubits before and after target
+            ComplexQuantumGate left = identityOfQubits(targetQubit);
+            ComplexQuantumGate right = identityOfQubits(nQubits - targetQubit - 1);
+
+            // Tensor product: left ⊗ gate ⊗ right
+            return tensorProduct(tensorProduct(left, gate), right);
+        }
+
 		public Complex[][] getMatrix() {
 			return matrix;
 		}
