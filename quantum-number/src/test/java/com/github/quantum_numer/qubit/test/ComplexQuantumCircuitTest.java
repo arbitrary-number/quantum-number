@@ -40,7 +40,7 @@ public class ComplexQuantumCircuitTest {
         identityGate = new ComplexQuantumGate(identity);
         xGate = new ComplexQuantumGate(x);
 
-        input = new ComplexQuantumRegister(2);
+        input = ComplexQuantumRegister.ofDimension(2);
         // Initialize |0⟩ state: amplitude[0] = |a⟩ with coeff 1
         input.getAmplitude(0).addComponent(QuantumNumberComponent.a, Complex.ONE);
         for (int i = 1; i < input.size(); i++) {

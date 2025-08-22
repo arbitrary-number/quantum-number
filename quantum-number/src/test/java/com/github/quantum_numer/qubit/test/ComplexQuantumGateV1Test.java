@@ -21,7 +21,7 @@ public class ComplexQuantumGateV1Test {
         a = QuantumNumberComponent.a;
 
         // |ψ⟩ = [1, 0]
-        input = new ComplexQuantumRegister(2);
+        input = ComplexQuantumRegister.ofDimension(2);
         ComplexQuantumNumber state0 = new ComplexQuantumNumber();
         state0.addComponent(a, one);
 
@@ -98,7 +98,7 @@ public class ComplexQuantumGateV1Test {
 
         ComplexQuantumGate gate = new ComplexQuantumGate(matrix);
 
-        ComplexQuantumRegister smallRegister = new ComplexQuantumRegister(1);
+        ComplexQuantumRegister smallRegister = ComplexQuantumRegister.ofDimension(1);
 
         assertThrows(IllegalArgumentException.class, () -> gate.apply(smallRegister));
     }
@@ -156,7 +156,7 @@ public class ComplexQuantumGateV1Test {
     @Test
     public void testCNOTGate() {
         // Setup 2-qubit register: |10⟩ (control = 1, target = 0)
-        ComplexQuantumRegister twoQubitInput = new ComplexQuantumRegister(4);
+        ComplexQuantumRegister twoQubitInput = ComplexQuantumRegister.ofQubits(2);
         ComplexQuantumNumber state = new ComplexQuantumNumber();
         state.addComponent(a, one);
         twoQubitInput.setAmplitude(2, state); // |10⟩ → index 2
@@ -188,7 +188,7 @@ public class ComplexQuantumGateV1Test {
         Complex zero = Complex.ZERO;
 
         // 3-qubit register → size 8
-        ComplexQuantumRegister threeQubitInput = new ComplexQuantumRegister(8);
+        ComplexQuantumRegister threeQubitInput = ComplexQuantumRegister.ofQubits(3);
 
         // Set |110⟩ state (index 6) with coefficient 1 on basis component 'a'
         ComplexQuantumNumber state110 = new ComplexQuantumNumber();
@@ -266,7 +266,7 @@ public class ComplexQuantumGateV1Test {
     @Test
     public void testApplyGateOnZeroVector() {
         Complex zero = Complex.ZERO;
-        ComplexQuantumRegister zeroRegister = new ComplexQuantumRegister(2);
+        ComplexQuantumRegister zeroRegister = ComplexQuantumRegister.ofDimension(2);
         // Overwrite amplitudes to zero vector
         zeroRegister.setAmplitude(0, new ComplexQuantumNumber());
         zeroRegister.setAmplitude(1, new ComplexQuantumNumber());
@@ -297,7 +297,7 @@ public class ComplexQuantumGateV1Test {
     @Test
     public void testSwapGate() {
         // 2-qubit register: |01⟩ (index 1)
-        ComplexQuantumRegister input2 = new ComplexQuantumRegister(4);
+        ComplexQuantumRegister input2 = ComplexQuantumRegister.ofQubits(2);
         ComplexQuantumNumber state = new ComplexQuantumNumber();
         state.addComponent(a, one);
         input2.setAmplitude(1, state);
@@ -313,7 +313,7 @@ public class ComplexQuantumGateV1Test {
     @Test
     public void testControlledZGate() {
         // 2-qubit register |11⟩ (index 3)
-        ComplexQuantumRegister input2 = new ComplexQuantumRegister(4);
+        ComplexQuantumRegister input2 = ComplexQuantumRegister.ofQubits(2);
         ComplexQuantumNumber state = new ComplexQuantumNumber();
         state.addComponent(a, one);
         input2.setAmplitude(3, state);
@@ -346,7 +346,7 @@ public class ComplexQuantumGateV1Test {
         assertTrue(result.getAmplitude(1).isZero());
 
         // Now test on |1> state
-        ComplexQuantumRegister inputOne = new ComplexQuantumRegister(2);
+        ComplexQuantumRegister inputOne = ComplexQuantumRegister.ofDimension(2);
         ComplexQuantumNumber stateOne = new ComplexQuantumNumber();
         stateOne.addComponent(a, one);
         inputOne.setAmplitude(1, stateOne);
@@ -363,7 +363,7 @@ public class ComplexQuantumGateV1Test {
     @Test
     public void testFredkinGate() {
         // 3-qubit register, index 5 corresponds to |101>
-        ComplexQuantumRegister input3 = new ComplexQuantumRegister(8);
+        ComplexQuantumRegister input3 = ComplexQuantumRegister.ofQubits(3);
         ComplexQuantumNumber state = new ComplexQuantumNumber();
         state.addComponent(a, one);
         input3.setAmplitude(5, state);
@@ -386,7 +386,7 @@ public class ComplexQuantumGateV1Test {
 
         ComplexQuantumGate gate = new ComplexQuantumGate(xGate);
 
-        ComplexQuantumRegister largeRegister = new ComplexQuantumRegister(4); // size 4 (2 qubits)
+        ComplexQuantumRegister largeRegister = ComplexQuantumRegister.ofQubits(2); // size 4 (2 qubits)
 
         // Applying a 2x2 gate to 4-dimensional register should throw IllegalArgumentException
         assertThrows(IllegalArgumentException.class, () -> gate.apply(largeRegister));

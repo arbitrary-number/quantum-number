@@ -20,7 +20,7 @@ public class ComplexQuantumRegisterTest {
 
     @BeforeEach
     public void setup() {
-        register = new ComplexQuantumRegister();
+        register = ComplexQuantumRegister.ofQubits(2);
     }
 
 
@@ -30,14 +30,14 @@ public class ComplexQuantumRegisterTest {
     @Test
     public void testRegisterTensorProductProducesExpectedAmplitudes2() {
         // Prepare register r1 = [1, 0]
-        ComplexQuantumRegister r1 = new ComplexQuantumRegister(2);
+        ComplexQuantumRegister r1 = ComplexQuantumRegister.ofQubits(2);
         ComplexQuantumNumber amp0 = new ComplexQuantumNumber();
         amp0.addComponent(a, Complex.ONE); // |0⟩
         r1.setAmplitude(0, amp0);
         r1.setAmplitude(1, new ComplexQuantumNumber()); // |1⟩ = 0
 
         // Prepare register r2 = [0, i]
-        ComplexQuantumRegister r2 = new ComplexQuantumRegister(2);
+        ComplexQuantumRegister r2 = ComplexQuantumRegister.ofQubits(2);
         ComplexQuantumNumber amp1 = new ComplexQuantumNumber();
         amp1.addComponent(a, new Complex(0, 1)); // i * |1⟩
         r2.setAmplitude(0, new ComplexQuantumNumber()); // |0⟩ = 0
@@ -68,14 +68,14 @@ public class ComplexQuantumRegisterTest {
     @Test
     public void testRegisterTensorProductProducesExpectedAmplitudes() {
         // Prepare register r1 = [1, 0] (1 qubit)
-        ComplexQuantumRegister r1 = new ComplexQuantumRegister(1);
+        ComplexQuantumRegister r1 = ComplexQuantumRegister.ofQubits(1);
         ComplexQuantumNumber amp0 = new ComplexQuantumNumber();
         amp0.addComponent(a, Complex.ONE); // coefficient 1 for |0⟩
         r1.setAmplitude(0, amp0);
         r1.setAmplitude(1, new ComplexQuantumNumber()); // zero amplitude for |1⟩
 
         // Prepare register r2 = [0, i] (1 qubit)
-        ComplexQuantumRegister r2 = new ComplexQuantumRegister(1);
+        ComplexQuantumRegister r2 = ComplexQuantumRegister.ofQubits(1);
         ComplexQuantumNumber amp1 = new ComplexQuantumNumber();
         amp1.addComponent(a, new Complex(0, 1)); // coefficient i for |1⟩
         r2.setAmplitude(0, new ComplexQuantumNumber()); // zero amplitude for |0⟩
