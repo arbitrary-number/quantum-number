@@ -46,4 +46,8 @@ public class QuantumNumberComponent {
 	public String name() {
 		return label;
 	}
+
+	public static QuantumNumberComponent[] values() {
+		return new QuantumNumberComponent[] {a,b,c,d,e,f,g};
+	}
 }

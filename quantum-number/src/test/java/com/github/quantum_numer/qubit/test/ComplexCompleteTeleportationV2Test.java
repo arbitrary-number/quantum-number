@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.commons.math3.complex.Complex;
 import org.junit.jupiter.api.Test;
 
-import com.github.quantum_number.qubit.ComplexQuantumCircuit;
 import com.github.quantum_number.qubit.ComplexQuantumGate;
+import com.github.quantum_number.qubit.ComplexQuantumMeasurement;
 import com.github.quantum_number.qubit.ComplexQuantumNumber;
 import com.github.quantum_number.qubit.ComplexQuantumRegister;
-import com.github.quantum_number.qubit.QuantumGateUtils;
 import com.github.quantum_number.qubit.QuantumNumberComponent;
+import com.github.quantum_number.qubit.measurement.ComplexMeasurementResult;
 
-public class ComplexCompleteTeleportation {
+public class ComplexCompleteTeleportationV2Test {
 
 //	@Test
 //	public void testCompleteQuantumTeleportation() {
@@ -125,8 +125,10 @@ public class ComplexCompleteTeleportation {
 	    ComplexQuantumGate H0 = singleQubitGateOnNQubits(hadamard, nQubits, 0);
 	    input = H0.apply(input);
 
-	    // Step 3: Simulate measurement on qubits 0 and 1
-	    int measuredBits = measureQubits(input, new int[] {0,1});
+	    // Step 3: Measurement on qubits 0 and 1
+	    ComplexMeasurementResult measurementResult = ComplexQuantumMeasurement.
+	    		measureQubitsComplex(input, new int[] {0,1});
+		int measuredBits = measurementResult.getMeasurementOutcome();
 	    // For testing, print measurement result
 	    System.out.println("Measurement on qubits 0 and 1: " + Integer.toBinaryString(measuredBits));
 
@@ -148,6 +150,27 @@ public class ComplexCompleteTeleportation {
 	    System.out.println("Final state on qubit 2: " + finalQubit2State);
 
 	    // Assert or check fidelity here (not implemented)
+
+	 // Step 3: Measurement on qubits 0 and 1
+	    ComplexQuantumRegister originalInput = measurementResult.getCollapsedRegister();
+
+	    System.out.println("Measurement on qubits 0 and 1: " + Integer.toBinaryString(measuredBits));
+
+	    if ((measuredBits & 1) == 1) { // bit 0 (qubit 1)
+	    	originalInput = X2.apply(originalInput);
+	    }
+	    if ((measuredBits & 2) == 2) { // bit 1 (qubit 0)
+	    	originalInput = Z2.apply(originalInput);
+	    }
+
+	    // Step 5: Verify final qubit 2 matches initial state |+>
+	    double expectedAmplitude = 1.0 / Math.sqrt(2);
+	    finalQubit2State = extractQubitState(originalInput, 2);
+
+	    double eps = 1e-10;
+	    assertEquals(expectedAmplitude, finalQubit2State.getComponent(QuantumNumberComponent.a).abs(), eps);
+	    assertEquals(expectedAmplitude, finalQubit2State.getComponent(QuantumNumberComponent.b).abs(), eps);
+
 	}
 
 	// Helper: Embed a single-qubit gate on n qubits targeting qubit targetQubit
@@ -188,77 +211,6 @@ public class ComplexCompleteTeleportation {
         return new ComplexQuantumGate(matrix);
     }
 
-	// Helper method to simulate measurement of specific qubits, collapsing the state and returning classical bits
-	private int measureQubits(ComplexQuantumRegister reg, int[] qubitsToMeasure) {
-	    // Compute probabilities for each measurement outcome on these qubits
-	    // Collapsing state accordingly
-	    // For simplicity, assuming 2 qubits measured, outcomes 0..3
-
-	    int nQubits = (int)(Math.log(reg.size()) / Math.log(2));
-	    int measuredBitsCount = qubitsToMeasure.length;
-	    int dim = reg.size();
-
-	    double[] probabilities = new double[1 << measuredBitsCount];
-
-	    // Sum probabilities for each measurement outcome
-	    for (int i = 0; i < dim; i++) {
-	        int outcome = 0;
-	        for (int b = 0; b < measuredBitsCount; b++) {
-	            int qubit = qubitsToMeasure[b];
-	            int bitVal = (i >> (nQubits - 1 - qubit)) & 1;
-	            outcome |= (bitVal << (measuredBitsCount - 1 - b));
-	        }
-	        ComplexQuantumNumber amp = reg.getAmplitude(i);
-	        double ampSquared = amp.normSquared();
-	        probabilities[outcome] += ampSquared;
-	    }
-
-	    // Randomly choose outcome based on probabilities
-	    double r = Math.random();
-	    double cumProb = 0;
-	    int measuredOutcome = 0;
-	    for (int i = 0; i < probabilities.length; i++) {
-	        cumProb += probabilities[i];
-	        if (r <= cumProb) {
-	            measuredOutcome = i;
-	            break;
-	        }
-	    }
-
-	    // Collapse state to measured outcome
-	    ComplexQuantumRegister collapsed = ComplexQuantumRegister.ofDimension(dim);
-	    double normFactor = 0;
-	    for (int i = 0; i < dim; i++) {
-	        int outcome = 0;
-	        for (int b = 0; b < measuredBitsCount; b++) {
-	            int qubit = qubitsToMeasure[b];
-	            int bitVal = (i >> (nQubits - 1 - qubit)) & 1;
-	            outcome |= (bitVal << (measuredBitsCount - 1 - b));
-	        }
-	        if (outcome == measuredOutcome) {
-	            ComplexQuantumNumber amp = reg.getAmplitude(i);
-	            normFactor += amp.normSquared();
-	            collapsed.setAmplitude(i, amp);
-	        } else {
-	            collapsed.setAmplitude(i, new ComplexQuantumNumber());
-	        }
-	    }
-
-	    // Normalize
-	    double invSqrt = 1.0 / Math.sqrt(normFactor);
-	    for (int i = 0; i < dim; i++) {
-	        ComplexQuantumNumber amp = collapsed.getAmplitude(i);
-	        collapsed.setAmplitude(i, amp.multiply(new Complex(invSqrt, 0d)));
-	    }
-
-	    // Update the register passed by reference (if possible)
-	    // Or just return the collapsed one for further use
-	    // Here we just overwrite input (not possible since input is local), so you might want to return collapsed
-	    // For this example, assume we return collapsed and assign back in the test method.
-
-	    // For simplicity, in this example, just ignore and return measuredOutcome.
-	    return measuredOutcome;
-	}
 
 	// Helper to extract reduced qubit state for qubitIndex (simple extraction ignoring full density matrix)
 	private ComplexQuantumNumber extractQubitState(ComplexQuantumRegister reg, int qubitIndex) {

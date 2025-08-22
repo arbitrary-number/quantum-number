@@ -12,7 +12,12 @@ public class ComplexMeasurementResult {
         this.measurementOutcome = measurementOutcome;
     }
 
-    /**
+    public ComplexMeasurementResult(int measuredOutcome, ComplexQuantumRegister collapsed) {
+        this.collapsedRegister = collapsed;
+        this.measurementOutcome = measuredOutcome;
+	}
+
+	/**
      * Returns the quantum register after measurement collapse.
      */
     public ComplexQuantumRegister getCollapsedRegister() {

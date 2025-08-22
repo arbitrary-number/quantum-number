@@ -389,8 +389,128 @@ public class ComplexQuantumGate {
             return tensorProduct(tensorProduct(left, gate), right);
         }
 
+        public static ComplexQuantumGate controlledXOnNQubits(int nQubits, int control, int target) {
+            int dim = 1 << nQubits;
+            Complex[][] matrix = new Complex[dim][dim];
+            for (int i = 0; i < dim; i++) {
+                for (int j = 0; j < dim; j++) {
+                    matrix[i][j] = Complex.ZERO;
+                }
+            }
+
+            for (int i = 0; i < dim; i++) {
+                int controlBit = (i >> (nQubits - 1 - control)) & 1;
+                int targetBit = (i >> (nQubits - 1 - target)) & 1;
+                int flippedTargetBit = targetBit ^ controlBit;
+                int j = i;
+                if (targetBit != flippedTargetBit) {
+                    j = i ^ (1 << (nQubits - 1 - target));
+                }
+                matrix[j][i] = Complex.ONE;
+            }
+
+            return new ComplexQuantumGate(matrix);
+        }
+
+    	// Helper to extract reduced qubit state for qubitIndex (simple extraction ignoring full density matrix)
+        public static ComplexQuantumNumber extractQubitState(ComplexQuantumRegister reg, int qubitIndex) {
+    	    int nQubits = (int)(Math.log(reg.size()) / Math.log(2));
+    	    int dim = reg.size();
+
+    	    // The state of one qubit in superposition can be extracted by summing amplitudes where other qubits fixed
+    	    // For simplicity, sum amplitudes for qubitIndex = 0 and 1 separately
+
+    	    ComplexQuantumNumber zeroAmp = new ComplexQuantumNumber();
+    	    ComplexQuantumNumber oneAmp = new ComplexQuantumNumber();
+
+    	    for (int i = 0; i < dim; i++) {
+    	        int bit = (i >> (nQubits - 1 - qubitIndex)) & 1;
+    	        ComplexQuantumNumber amp = reg.getAmplitude(i);
+    	        if (bit == 0) {
+    	            zeroAmp = zeroAmp.add(amp);
+    	        } else {
+    	            oneAmp = oneAmp.add(amp);
+    	        }
+    	    }
+
+    	    // Return superposition alpha|0> + beta|1> as ComplexQuantumNumber with components a and b
+    	    ComplexQuantumNumber state = new ComplexQuantumNumber();
+    	    state.addComponent(QuantumNumberComponent.a, zeroAmp.getComponent(QuantumNumberComponent.a));
+    	    state.addComponent(QuantumNumberComponent.b, oneAmp.getComponent(QuantumNumberComponent.a));
+
+    	    return state;
+    	}
+
+        public static ComplexQuantumGate singleQubitGateOnNQubitsV2(ComplexQuantumGate gate, int totalQubits, int targetQubit) {
+            ComplexQuantumGate result = ComplexQuantumGate.identityOfQubits(1);
+            for (int i = 0; i < totalQubits; i++) {
+                if (i == targetQubit) {
+                    result = ComplexQuantumGate.tensorProduct(result, gate);
+                } else {
+                    result = ComplexQuantumGate.tensorProduct(result, ComplexQuantumGate.identityOfQubits(1));
+                }
+            }
+            return result;
+        }
+
 		public Complex[][] getMatrix() {
 			return matrix;
 		}
+
+		public static ComplexQuantumGate controlledPhaseGateOnNQubits(int nQubits, int controlQubit, int targetQubit, double theta) {
+		    int dim = 1 << nQubits;
+		    Complex[][] matrix = new Complex[dim][dim];
+		    Complex phase = new Complex(Math.cos(theta), Math.sin(theta));
+
+		    // Initialize as identity matrix
+		    for (int i = 0; i < dim; i++) {
+		        for (int j = 0; j < dim; j++) {
+		            matrix[i][j] = (i == j) ? Complex.ONE : Complex.ZERO;
+		        }
+		    }
+
+		    // Apply phase only if control and target bits are 1
+		    for (int i = 0; i < dim; i++) {
+		        int controlBit = (i >> (nQubits - 1 - controlQubit)) & 1;
+		        int targetBit = (i >> (nQubits - 1 - targetQubit)) & 1;
+		        if (controlBit == 1 && targetBit == 1) {
+		            matrix[i][i] = phase;
+		        }
+		    }
+
+		    return new ComplexQuantumGate(matrix);
+		}
+
+		public static ComplexQuantumGate rotationX(double theta) {
+		    Complex cos = new Complex(Math.cos(theta / 2), 0);
+		    Complex iSin = new Complex(0, -Math.sin(theta / 2));
+
+		    Complex[][] matrix = {
+		        {cos, iSin},
+		        {iSin, cos}
+		    };
+		    return new ComplexQuantumGate(matrix);
+		}
+
+		public static ComplexQuantumGate rotationY(double theta) {
+		    Complex cos = new Complex(Math.cos(theta / 2), 0);
+		    Complex sin = new Complex(Math.sin(theta / 2), 0);
+
+		    Complex[][] matrix = {
+		        {cos, sin.negate()},
+		        {sin, cos}
+		    };
+		    return new ComplexQuantumGate(matrix);
+		}
+
+		private Complex[][] deepCopyMatrix(Complex[][] input) {
+		    int dim = input.length;
+		    Complex[][] copy = new Complex[dim][dim];
+		    for (int i = 0; i < dim; i++) {
+		        System.arraycopy(input[i], 0, copy[i], 0, dim);
+		    }
+		    return copy;
+		}
+
 
 }

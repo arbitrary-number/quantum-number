@@ -30,6 +30,25 @@ public class ComplexQuantumNumber {
         }
     }
 
+	public static ComplexQuantumNumber fromComplex(Complex complexNumber) {
+        ComplexQuantumNumber number = new ComplexQuantumNumber();
+        number.addComponent(QuantumNumberComponent.a, complexNumber);
+		return number;
+	}
+
+	public static ComplexQuantumNumber fromDouble(double amplitude) {
+		Complex complex = new Complex(amplitude, 0d);
+         return ComplexQuantumNumber.fromComplex(complex);
+	}
+
+	public static ComplexQuantumNumber zero() {
+		return ComplexQuantumNumber.fromComplex(Complex.ZERO);
+	}
+
+	public static ComplexQuantumNumber one() {
+		return ComplexQuantumNumber.fromComplex(Complex.ONE);
+	}
+
     public void clearComponents() {
         components.clear();
     }
@@ -89,6 +108,22 @@ public class ComplexQuantumNumber {
                 .mapToDouble(c -> c.abs() * c.abs())
                 .sum();
     }
+
+
+	public double absSquared() {
+		return normSquared();
+	}
+
+	public ComplexQuantumNumber copy() {
+	    ComplexQuantumNumber clone = new ComplexQuantumNumber();
+	    // Assuming you have a way to get all components and add them
+	    // For example, copy components individually:
+	    for (QuantumNumberComponent comp : QuantumNumberComponent.values()) {
+	        clone.addComponent(comp, this.getComponent(comp));
+	    }
+	    return clone;
+	}
+
 
     /**
      * Multiply all coefficients by the given scalar (Complex).
@@ -283,5 +318,4 @@ public class ComplexQuantumNumber {
             this.addComponent(comp, coeff);
         }
     }
-
 }

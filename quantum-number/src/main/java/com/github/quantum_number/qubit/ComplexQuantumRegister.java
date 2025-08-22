@@ -18,6 +18,8 @@ package com.github.quantum_number.qubit;
 
 import org.apache.commons.math3.complex.Complex;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -80,6 +82,18 @@ public class ComplexQuantumRegister {
         }
     }
 
+    public ComplexQuantumRegister copy() {
+        int size = this.size();
+        ComplexQuantumRegister copy = ComplexQuantumRegister.ofDimension(size);
+        for (int i = 0; i < size; i++) {
+            // Assuming ComplexQuantumNumber has a copy() method, otherwise implement it similarly
+            ComplexQuantumNumber ampCopy = this.getAmplitude(i).copy();
+            copy.setAmplitude(i, ampCopy);
+        }
+        return copy;
+    }
+
+
     /** Create register given number of qubits */
     public static ComplexQuantumRegister ofQubits(int numQubits) {
         if (numQubits < 0) throw new IllegalArgumentException("Number of qubits cannot be negative");
@@ -92,6 +106,13 @@ public class ComplexQuantumRegister {
         if (dimension <= 0) throw new IllegalArgumentException("Dimension must be positive");
         // dimension should be a power of two for qubit registers, but no enforcement here
         return new ComplexQuantumRegister(dimension);
+    }
+
+    public static void clearRegister(ComplexQuantumRegister register) {
+        int size = register.size();
+        for (int i = 0; i < size; i++) {
+            register.setAmplitude(i, ComplexQuantumNumber.zero());
+        }
     }
 
     /** Return number of qubits, assumes size is power of two */
@@ -479,7 +500,13 @@ public class ComplexQuantumRegister {
 	    }
 
 	    // Step 2: Randomly select measurement outcome based on probabilities
-	    double r = Math.random();
+	    //double r = Math.random();
+	    double r;
+		try {
+			r = SecureRandom.getInstanceStrong().nextDouble();
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(e);
+		}  //.random();
 	    double cumProb = 0;
 	    int measuredOutcome = 0;
 	    for (int i = 0; i < probabilities.length; i++) {
@@ -521,6 +548,33 @@ public class ComplexQuantumRegister {
 	    // Step 5: You can optionally return measurement outcome along with register
 	    // But here just return the collapsed register
 	    return collapsed;
+	}
+
+	public static ComplexQuantumRegister reverseQubitOrder(ComplexQuantumRegister reg) {
+	    int size = reg.size();
+	    int nQubits = (int)(Math.log(size) / Math.log(2));
+
+	    ComplexQuantumRegister reversed = ComplexQuantumRegister.ofDimension(size);
+
+	    for (int i = 0; i < size; i++) {
+	        int reversedIndex = reverseBits(i, nQubits);
+	        reversed.setAmplitude(reversedIndex, reg.getAmplitude(i));
+	    }
+
+	    return reversed;
+	}
+
+	/**
+	 * Helper method to reverse the lowest nBits bits of an integer.
+	 */
+	private static int reverseBits(int value, int nBits) {
+	    int reversed = 0;
+	    for (int i = 0; i < nBits; i++) {
+	        reversed <<= 1;
+	        reversed |= (value & 1);
+	        value >>= 1;
+	    }
+	    return reversed;
 	}
 
 }
