@@ -7,7 +7,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ComplexQuantumGateTest {
+public class ComplexQuantumGateV1Test {
 
     private QuantumNumberComponent a;
     private Complex one = new Complex(1, 0);

@@ -36,6 +36,51 @@ public class ComplexQuantumNumberTest {
         assertEquals(one, cqn.getCoefficient(QuantumNumberComponent.a));
     }
 
+    private static final QuantumNumberComponent a = QuantumNumberComponent.a;
+
+
+    @Test
+    public void testComplexQuantumNumberTensorProduct() {
+        // Setup first ComplexQuantumNumber with one component 'a' and coefficient 1+0i
+        ComplexQuantumNumber amp1 = new ComplexQuantumNumber();
+        amp1.addComponent(a, Complex.ONE);
+
+        // Setup second ComplexQuantumNumber with one component 'a' and coefficient 0 + 1i
+        ComplexQuantumNumber amp2 = new ComplexQuantumNumber();
+        amp2.addComponent(a, new Complex(0, 1));
+
+        // Compute tensor product
+        ComplexQuantumNumber result = ComplexQuantumNumber.tensorProduct(amp1, amp2);
+
+        // Expect combined component 'aa' with coefficient 0 + 1i
+        QuantumNumberComponent expectedComponent = QuantumNumberComponent.combine(a, a);
+        Complex expectedCoeff = new Complex(0, 1);
+
+        // Check that the result has exactly one component (the combined one)
+        assertEquals(1, result.getComponents().size(), "Result should have exactly one component");
+
+        // Check that the combined component is present
+        assertTrue(result.getComponents().containsKey(expectedComponent), "Result should contain combined component 'aa'");
+
+        // Check that the coefficient matches expected
+        Complex actualCoeff = result.getCoefficient(expectedComponent);
+        assertEquals(expectedCoeff.getReal(), actualCoeff.getReal(), 1e-12, "Real part of coefficient mismatch");
+        assertEquals(expectedCoeff.getImaginary(), actualCoeff.getImaginary(), 1e-12, "Imaginary part of coefficient mismatch");
+    }
+
+    @Test
+    public void testAddComponentStoresCorrectly() {
+        ComplexQuantumNumber number = new ComplexQuantumNumber();
+        Complex value = new Complex(0.5, -0.5);
+        number.addComponent(QuantumNumberComponent.a, value);
+
+        Complex result = number.getCoefficient(QuantumNumberComponent.a);
+        assertEquals(0.5, result.getReal(), 1e-10);
+        assertEquals(-0.5, result.getImaginary(), 1e-10);
+    }
+
+
+
     @Test
     public void testAddComplexQuantumNumbers() {
         ComplexQuantumNumber cqn1 = new ComplexQuantumNumber(Map.of(QuantumNumberComponent.a, one));

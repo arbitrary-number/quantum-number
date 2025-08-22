@@ -24,9 +24,9 @@ This document outlines a novel approach to simulating qubits on classical x64 pr
 ## 1. Quantition Number Representation of Qubits
 
 - **Qubit state:** |ψ⟩ = α|0⟩ + β|1⟩, where α, β ∈ ℂ and |α|² + |β|² = 1.
-- **Encoding:** Each complex amplitude α, β is mapped to components of a Quantun Number:
+- **Encoding:** Each complex amplitude α, β is mapped to components of a Quantum Number:
 
-Q = ((±a ± gi) / ((±b ± hi) / (±c ± ii))) ÷ (((±d ± ji) / (±e ± ki)) / (±f ± li))
+Q = ((±a ± gi) / ((±b ± hi) / (±c ± ii))) ÷ ((±d ± ji) / ((±e ± ki) / (±f ± li)))
 
 yaml
 Copy code

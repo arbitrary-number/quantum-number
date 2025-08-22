@@ -40,7 +40,7 @@ public class ComplexQuantumTeleportationTest {
 	    };
 
 	    // Prepare initial state |ψ⟩ to teleport on qubit 0, e.g. |+> = H|0>
-	    ComplexQuantumRegister input = new ComplexQuantumRegister(1 << nQubits);
+	    ComplexQuantumRegister input = ComplexQuantumRegister.ofQubits(nQubits);
 	    // For simplicity, start with |000> state (index 0)
 	    ComplexQuantumNumber zeroState = new ComplexQuantumNumber();
 	    zeroState.addComponent(a, one);

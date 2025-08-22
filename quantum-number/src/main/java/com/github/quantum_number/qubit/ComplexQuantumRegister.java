@@ -19,6 +19,7 @@ package com.github.quantum_number.qubit;
 import org.apache.commons.math3.complex.Complex;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Represents a quantum register as a vector of ComplexQuantumNumber amplitudes.
@@ -26,31 +27,95 @@ import java.util.Arrays;
  */
 public class ComplexQuantumRegister {
 
-    private final int dimension;
+    //dimension = num qbits
+    //private final int dimension;
     private final ComplexQuantumNumber[] amplitudes;
+    //private Map<Integer, QuantumNumberComponent> indexToComponent; // index -> combined component
+    //private Map<QuantumNumberComponent, Integer> componentToIndex; // combined component -> index
+	private int size;
 
     /**
-     * Initializes the register with 4 amplitudes.
-     * Default state is |0⟩ with amplitude 1 on basis component 'a' for amplitude index 0.
+     * Initializes the register as a 2-qubit system (4 amplitudes).
+     * Default state is |00⟩ with amplitude 1 on basis component 'a'.
      */
-    public ComplexQuantumRegister() {
-        amplitudes = new ComplexQuantumNumber[4];
-        for (int i = 0; i < amplitudes.length; i++) {
+//    public ComplexQuantumRegister() {
+//        this.dimension = 2;              // 2 qubits
+//        this.size = 1 << dimension;      // size = 2^2 = 4
+//        this.amplitudes = new ComplexQuantumNumber[size];
+//
+//        for (int i = 0; i < size; i++) {
+//            amplitudes[i] = new ComplexQuantumNumber();
+//        }
+//
+//        // Start in |00⟩ state, which maps to basis component 'a'
+//        amplitudes[0].addComponent(QuantumNumberComponent.a, Complex.ONE);
+//    }
+
+
+//    public ComplexQuantumRegister(int dimension) {
+//        this.dimension = dimension;
+//        this.size = 1 << dimension; // 2^numQubits
+//        this.amplitudes = new ComplexQuantumNumber[size];
+//        for (int i = 0; i < size; i++) {
+//            amplitudes[i] = new ComplexQuantumNumber();
+//        }
+//    }
+
+//    public ComplexQuantumRegister(int numQubits) {
+//        this.dimension = numQubits;
+//        this.size = intPow(2, numQubits);
+//        //new Integer(2).new Integer(numQubits)1 << numQubits; // 2^qubits
+//        this.amplitudes = new ComplexQuantumNumber[size];
+//        for (int i = 0; i < size; i++) {
+//            amplitudes[i] = new ComplexQuantumNumber();
+//        }
+//    }
+
+    // Private constructor to force usage of factory methods
+    private ComplexQuantumRegister(int size) {
+        this.size = size;
+        this.amplitudes = new ComplexQuantumNumber[size];
+        for (int i = 0; i < size; i++) {
             amplitudes[i] = new ComplexQuantumNumber();
         }
-        // Set amplitude[0] to basis |a⟩ with coefficient 1
-        amplitudes[0].addComponent(QuantumNumberComponent.a, Complex.ONE);
-        this.dimension = 1;
+    }
+
+    /** Create register given number of qubits */
+    public static ComplexQuantumRegister ofQubits(int numQubits) {
+        if (numQubits < 0) throw new IllegalArgumentException("Number of qubits cannot be negative");
+        int size = 1 << numQubits;  // 2^numQubits
+        return new ComplexQuantumRegister(size);
+    }
+
+    /** Create register given explicit dimension */
+    public static ComplexQuantumRegister ofDimension(int dimension) {
+        if (dimension <= 0) throw new IllegalArgumentException("Dimension must be positive");
+        // dimension should be a power of two for qubit registers, but no enforcement here
+        return new ComplexQuantumRegister(dimension);
+    }
+
+    /** Return number of qubits, assumes size is power of two */
+    public int getNumQubits() {
+        return (int)(Math.log(size) / Math.log(2));
     }
 
 
-    public ComplexQuantumRegister(int dimension) {
-        this.dimension = dimension;
-        this.amplitudes = new ComplexQuantumNumber[dimension];
-        for (int i = 0; i < dimension; i++) {
-            this.amplitudes[i] = new ComplexQuantumNumber();
+	public int getDimension() {
+		return size;
+	}
+
+//    public int getNumQubitsFromDimension() {
+//		return dimension;
+//	}
+
+    public static int intPow(int base, int exponent) {
+        int result = 1;
+        for (int i = 0; i < exponent; i++) {
+            result *= base;
         }
+        return result;
     }
+
 
     public static ComplexQuantumRegister withZeroState(int qubitCount) {
         int dim = 1 << qubitCount;
@@ -59,32 +124,101 @@ public class ComplexQuantumRegister {
         return reg;
     }
 
+    // Tensor product of two registers
+//    public static ComplexQuantumRegister tensorProduct(ComplexQuantumRegister r1, ComplexQuantumRegister r2) {
+//        int totalQubits = r1.numQubits + r2.numQubits;
+//        ComplexQuantumRegister result = new ComplexQuantumRegister(totalQubits);
+//
+//        for (int i = 0; i < r1.size; i++) {
+//            QuantumNumberComponent comp1 = r1.getComponentForIndex(i);
+//            ComplexQuantumNumber amp1 = r1.getAmplitude(i);
+//
+//            for (int j = 0; j < r2.size; j++) {
+//                QuantumNumberComponent comp2 = r2.getComponentForIndex(j);
+//                ComplexQuantumNumber amp2 = r2.getAmplitude(j);
+//
+//                // Combine components (tensor product of basis states)
+//                QuantumNumberComponent combinedComp = QuantumNumberComponent.combine(comp1, comp2);
+//
+//                // Get index of combined component in result register
+//                int combinedIndex = result.getIndexForComponent(combinedComp);
+//
+//                // Tensor product of amplitudes
+//                ComplexQuantumNumber combinedAmp = ComplexQuantumNumber.tensorProduct(amp1, amp2);
+//
+//                // Set combined amplitude in result register
+//                result.setAmplitude(combinedIndex, combinedAmp);
+//            }
+//        }
+//        return result;
+//    }
+
+//    public static ComplexQuantumRegister tensorProduct(ComplexQuantumRegister r1, ComplexQuantumRegister r2) {
+//        int size1 = r1.getDimension();
+//        int size2 = r2.getDimension();
+//        ComplexQuantumRegister result = new ComplexQuantumRegister(size1 + size2);
+//
+//        for (int i = 0; i < size1; i++) {
+//            for (int j = 0; j < size2; j++) {
+//                ComplexQuantumNumber amp1 = r1.getAmplitude(i);
+//                ComplexQuantumNumber amp2 = r2.getAmplitude(j);
+//
+//                ComplexQuantumNumber combined = ComplexQuantumNumber.tensorProduct(amp1, amp2); // ✅ Use tensorProduct here
+//                result.setAmplitude(i * size2 + j, combined);
+//            }
+//        }
+//        return result;
+//    }
+
     public static ComplexQuantumRegister tensorProduct(ComplexQuantumRegister r1, ComplexQuantumRegister r2) {
+        int totalQubits = r1.getNumQubits() + r2.getNumQubits();
+        ComplexQuantumRegister result = ComplexQuantumRegister.ofQubits(totalQubits);
+
         int size1 = r1.size();
         int size2 = r2.size();
 
-        ComplexQuantumRegister result = new ComplexQuantumRegister(size1 * size2);
-
         for (int i = 0; i < size1; i++) {
             ComplexQuantumNumber amp1 = r1.getAmplitude(i);
-
             for (int j = 0; j < size2; j++) {
                 ComplexQuantumNumber amp2 = r2.getAmplitude(j);
-
-                ComplexQuantumNumber combined = ComplexQuantumNumber.tensorProduct(amp1, amp2);
-
+                ComplexQuantumNumber combined = amp1.multiply(amp2);
                 result.setAmplitude(i * size2 + j, combined);
             }
         }
-
         return result;
     }
 
 
-    // Add this method:
-    public int getDimension() {
-        return this.dimension;
-    }
+
+//    public static ComplexQuantumRegister tensorProduct(ComplexQuantumRegister r1, ComplexQuantumRegister r2) {
+//        int size1 = r1.size();
+//        int size2 = r2.size();
+//
+//        ComplexQuantumRegister result = new ComplexQuantumRegister(size1 * size2);
+//
+//        for (int i = 0; i < size1; i++) {
+//            ComplexQuantumNumber amp1 = r1.getAmplitude(i);
+//
+//            for (int j = 0; j < size2; j++) {
+//                ComplexQuantumNumber amp2 = r2.getAmplitude(j);
+//
+//                ComplexQuantumNumber combined = ComplexQuantumNumber.tensorProduct(amp1, amp2);
+//
+//                result.setAmplitude(i * size2 + j, combined);
+//            }
+//        }
+//
+//        return result;
+//    }
+
+
+
+
+
+	// Add this method:
+//    public int getDimension() {
+//        return this.dimension;
+//    }
 
     /**
      * Gets the amplitude at the specified index.
@@ -135,6 +269,45 @@ public class ComplexQuantumRegister {
         }
     }
 
+    public static ComplexQuantumRegister collapseState(ComplexQuantumRegister state, int[] qubits, int measuredBits) {
+        int dimension = state.size();
+        ComplexQuantumRegister collapsed = new ComplexQuantumRegister(dimension);
+
+        double norm = 0.0;
+        for (int basisIndex = 0; basisIndex < dimension; basisIndex++) {
+            boolean match = true;
+            for (int i = 0; i < qubits.length; i++) {
+                int bitValue = (basisIndex >> qubits[i]) & 1;
+                int measuredBitValue = (measuredBits >> i) & 1;
+                if (bitValue != measuredBitValue) {
+                    match = false;
+                    break;
+                }
+            }
+
+            if (match) {
+                ComplexQuantumNumber amp = state.getAmplitude(basisIndex);
+                collapsed.setAmplitude(basisIndex, amp);
+                norm += amp.magnitudeSquared();
+            } else {
+                collapsed.setAmplitude(basisIndex, new ComplexQuantumNumber());
+            }
+        }
+
+        if (norm == 0) {
+            throw new IllegalStateException("Collapse norm is zero, invalid measurement or state");
+        }
+
+        double normFactor = 1.0 / Math.sqrt(norm);
+        for (int i = 0; i < dimension; i++) {
+            ComplexQuantumNumber amp = collapsed.getAmplitude(i);
+            ComplexQuantumNumber normalized = amp.multiply(new Complex(normFactor, 0));
+            collapsed.setAmplitude(i, normalized);
+        }
+
+        return collapsed;
+    }
+
     /**
      * Returns the number of amplitudes (register size).
      */
@@ -150,4 +323,138 @@ public class ComplexQuantumRegister {
         }
         return sb.toString();
     }
+
+	public static ComplexQuantumRegister applyCorrections(ComplexQuantumRegister collapsedState, int measuredBits,
+			int targetQubit) {
+        ComplexQuantumRegister corrected = collapsedState;
+
+        // If measured bit 1 (second measured qubit) is 1 → apply X gate on target qubit
+        if (((measuredBits >> 1) & 1) == 1) {
+            corrected = applyGateOnOnlyOneQubit(corrected, ComplexQuantumGate.pauliX(), targetQubit);
+        }
+
+        // If measured bit 0 (first measured qubit) is 1 → apply Z gate on target qubit
+        if (((measuredBits >> 0) & 1) == 1) {
+            corrected = applyGateOnOnlyOneQubit(corrected, ComplexQuantumGate.pauliZ(), targetQubit);
+        }
+
+        return corrected;
+    }
+
+	public static ComplexQuantumRegister applyGateMatrix(
+		    ComplexQuantumRegister input,
+		    ComplexQuantumGate gate
+		) {
+		    int size = input.size();
+		    ComplexQuantumRegister output = new ComplexQuantumRegister(size);
+
+		    Complex[][] matrix = gate.getMatrix();
+		    if (matrix.length != size || matrix[0].length != size) {
+		        throw new IllegalArgumentException("Gate matrix size must match register size");
+		    }
+
+		    for (int i = 0; i < size; i++) {
+		        ComplexQuantumNumber result = new ComplexQuantumNumber();
+		        for (int j = 0; j < size; j++) {
+		            ComplexQuantumNumber amp = input.getAmplitude(j);
+		            Complex factor = matrix[i][j];
+		            ComplexQuantumNumber term = amp.multiply(factor);
+		            result.addComponents(term);
+		        }
+		        output.setAmplitude(i, result);
+		    }
+
+		    return output;
+		}
+
+
+    public static ComplexQuantumRegister applyGateOnOnlyOneQubit(
+            ComplexQuantumRegister input,
+            ComplexQuantumGate gate,
+            int targetQubit
+        ) {
+        int numQubits = (int) (Math.log(input.size()) / Math.log(2));
+        if (targetQubit < 0 || targetQubit >= numQubits) {
+            throw new IllegalArgumentException("Invalid target qubit index");
+        }
+
+        // The dimension of the full register
+        int dim = input.size();
+
+        ComplexQuantumRegister output = new ComplexQuantumRegister(dim);
+
+        for (int basisIndex = 0; basisIndex < dim; basisIndex++) {
+            ComplexQuantumNumber amplitude = input.getAmplitude(basisIndex);
+            System.out.println("Processing basis index: " + basisIndex + " with amplitude: " + amplitude);
+
+            for (int gateRow = 0; gateRow < 2; gateRow++) {
+                int bit = (basisIndex >> targetQubit) & 1;
+                System.out.println("  Gate row: " + gateRow + ", target bit: " + bit);
+
+                Complex gateElement = gate.getMatrix()[gateRow][bit];
+                ComplexQuantumNumber multiplied = amplitude.multiply(gateElement);
+
+                int outputIndex;
+                if (bit == gateRow) {
+                    outputIndex = basisIndex;
+                    System.out.println("    Bit matches gate row. Output index = " + outputIndex);
+                } else {
+                    outputIndex = basisIndex ^ (1 << targetQubit);
+                    System.out.println("    Bit does not match. Flipping target qubit.");
+                    System.out.println("    Output index = " + outputIndex);
+                }
+
+                System.out.println("    Gate element: " + gateElement);
+                System.out.println("    Multiplied result: " + multiplied);
+                output.getAmplitude(outputIndex).addComponents(multiplied);
+                System.out.println("    Added to output index " + outputIndex + ": " + output.getAmplitude(outputIndex));
+            }
+        }
+
+
+//        for (int basisIndex = 0; basisIndex < dim; basisIndex++) {
+//            ComplexQuantumNumber amplitude = input.getAmplitude(basisIndex);
+//
+//            // For each element of the gate matrix (2x2)
+//            for (int gateRow = 0; gateRow < 2; gateRow++) {
+//                // Calculate which basis state this gateRow corresponds to for the target qubit
+//                int bit = (basisIndex >> targetQubit) & 1;
+//
+//                if (bit == gateRow) {
+//                    // If bits match, just copy amplitude * gate element
+//                    int outputIndex = basisIndex;
+//                    Complex gateElement = gate.getMatrix()[gateRow][bit];
+//                    ComplexQuantumNumber multiplied = amplitude.multiply(gateElement);
+//                    output.getAmplitude(outputIndex).addComponents(multiplied);
+//                } else {
+//                    // Flip the bit at targetQubit position to get new output index
+//                    int outputIndex = basisIndex ^ (1 << targetQubit);
+//                    Complex gateElement = gate.getMatrix()[gateRow][bit];
+//                    ComplexQuantumNumber multiplied = amplitude.multiply(gateElement);
+//                    output.getAmplitude(outputIndex).addComponents(multiplied);
+//                }
+//            }
+//        }
+
+        return output;
+    }
+
+	public static ComplexQuantumRegister reduceToSingleQubit(ComplexQuantumRegister correctedState,
+			int qubitIndex, int totalQubits) {
+        int size = 1 << totalQubits;   // 2^n total states
+        int newSize = 2;               // single qubit -> 2 states
+
+        ComplexQuantumRegister reduced = new ComplexQuantumRegister(newSize);
+
+        for (int i = 0; i < size; i++) {
+            int bit = (i >> qubitIndex) & 1;  // extract the qubitIndex-th bit from i
+            ComplexQuantumNumber amplitude = correctedState.getAmplitude(i);
+
+            // Add amplitude to the reduced register's bit-th position
+            ComplexQuantumNumber current = reduced.getAmplitude(bit);
+            current.addComponents(amplitude); // assuming addComponents merges components correctly
+        }
+
+        return reduced;
+	}
 }

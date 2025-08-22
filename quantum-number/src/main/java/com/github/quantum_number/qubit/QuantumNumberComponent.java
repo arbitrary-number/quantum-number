@@ -42,4 +42,8 @@ public class QuantumNumberComponent {
     public int hashCode() {
         return Objects.hash(label);
     }
+
+	public String name() {
+		return label;
+	}
 }

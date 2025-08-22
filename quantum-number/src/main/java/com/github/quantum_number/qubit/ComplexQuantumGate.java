@@ -1,10 +1,17 @@
 package com.github.quantum_number.qubit;
 
+import java.util.Arrays;
+
 import org.apache.commons.math3.complex.Complex;
 
 public class ComplexQuantumGate {
 
-    private final Complex[][] matrix;  // Gate represented as NxN matrix of Complex scalars
+    @Override
+	public String toString() {
+		return "ComplexQuantumGate [matrix=" + Arrays.toString(matrix) + ", dimension=" + dimension + "]";
+	}
+
+	private final Complex[][] matrix;  // Gate represented as NxN matrix of Complex scalars
     private final int dimension;
 
     public ComplexQuantumGate(Complex[][] matrix) {
@@ -26,42 +33,150 @@ public class ComplexQuantumGate {
         return dimension;
     }
 
+    public static Complex[][] kroneckerProduct(Complex[][] A, Complex[][] B) {
+        int aRows = A.length;
+        int aCols = A[0].length;
+        int bRows = B.length;
+        int bCols = B[0].length;
+
+        Complex[][] result = new Complex[aRows * bRows][aCols * bCols];
+
+        for (int i = 0; i < aRows; i++) {
+            for (int j = 0; j < aCols; j++) {
+                for (int k = 0; k < bRows; k++) {
+                    for (int l = 0; l < bCols; l++) {
+                        // result block at [i*bRows + k][j*bCols + l]
+                        result[i * bRows + k][j * bCols + l] = A[i][j].multiply(B[k][l]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+
+    public static ComplexQuantumGate tensorProduct(ComplexQuantumGate g1, ComplexQuantumGate g2) {
+        //int newQubits = g1.getNumQubits() + g2.getNumQubits();
+
+        // Perform Kronecker product of matrices:
+        Complex[][] newMatrix = kroneckerProduct(g1.getMatrix(), g2.getMatrix());
+
+        return new ComplexQuantumGate(newMatrix);
+    }
+
     /**
      * Apply the gate to a ComplexQuantumRegister and return a new register as result.
      */
-    public ComplexQuantumRegister apply(ComplexQuantumRegister input) {
-        if (input.getDimension() != dimension) {
-            throw new IllegalArgumentException("Input register dimension mismatch");
-        }
+//    public ComplexQuantumRegister apply(ComplexQuantumRegister input) {
+//        if (input.getDimension() != dimension) {
+//            throw new IllegalArgumentException("Input register dimension mismatch");
+//        }
+//
+//        ComplexQuantumRegister output = ComplexQuantumRegister.ofDimension(dimension);
+//
+//        // Apply matrix multiplication: output = matrix * input
+//        for (int row = 0; row < dimension; row++) {
+//            ComplexQuantumNumber resultVector = new ComplexQuantumNumber();
+//
+//            for (int col = 0; col < dimension; col++) {
+//                // matrix[row][col] is Complex scalar
+//                Complex scalar = matrix[row][col];
+//
+//                // input.getAmplitude(col) returns ComplexQuantumNumber (the vector amplitude at index col)
+//                ComplexQuantumNumber inputVector = input.getAmplitude(col);
+//
+//                // Multiply input vector by scalar
+//                ComplexQuantumNumber scaledVector = inputVector.multiply(scalar);
+//
+//                // Sum into resultVector
+//                resultVector = resultVector.add(scaledVector);
+//            }
+//
+//            output.setAmplitude(row, resultVector);
+//        }
+//
+//        return output;
+//    }
 
-        ComplexQuantumRegister output = new ComplexQuantumRegister(dimension);
 
-        // Apply matrix multiplication: output = matrix * input
-        for (int row = 0; row < dimension; row++) {
-            ComplexQuantumNumber resultVector = new ComplexQuantumNumber();
+	public ComplexQuantumRegister apply(ComplexQuantumRegister current) {
+		return ComplexQuantumGate.apply(this, current);
+	}
 
-            for (int col = 0; col < dimension; col++) {
-                // matrix[row][col] is Complex scalar
-                Complex scalar = matrix[row][col];
+    public static ComplexQuantumRegister apply(ComplexQuantumGate gate, ComplexQuantumRegister reg) {
+        int size = reg.size(); // e.g. 4 for 2 qubits
+        ComplexQuantumRegister output =
+        		ComplexQuantumRegister.ofDimension(size);
 
-                // input.getAmplitude(col) returns ComplexQuantumNumber (the vector amplitude at index col)
-                ComplexQuantumNumber inputVector = input.getAmplitude(col);
+        for (int i = 0; i < size; i++) {
+            ComplexQuantumNumber newAmplitude = new ComplexQuantumNumber();
 
-                // Multiply input vector by scalar
-                ComplexQuantumNumber scaledVector = inputVector.multiply(scalar);
-
-                // Sum into resultVector
-                resultVector = resultVector.add(scaledVector);
+            for (int j = 0; j < size; j++) {
+                Complex gateElement = gate.getMatrix()[i][j];
+                ComplexQuantumNumber ampJ = reg.getAmplitude(j);
+                ComplexQuantumNumber term = ampJ.multiply(gateElement);
+                newAmplitude.addComponents(term);
             }
 
-            output.setAmplitude(row, resultVector);
+            output.setAmplitude(i, newAmplitude);
         }
 
         return output;
     }
+//
+//    public static ComplexQuantumGate tensorProduct(ComplexQuantumGate g1, ComplexQuantumGate g2) {
+//        int dim1 = g1.getDimension();
+//        int dim2 = g2.getDimension();
+//        int newDim = dim1 * dim2;
+//
+//        Complex[][] result = new Complex[newDim][newDim];
+//
+//        for (int i = 0; i < dim1; i++) {
+//            for (int j = 0; j < dim1; j++) {
+//                Complex scalar = g1.matrix[i][j];
+//                for (int k = 0; k < dim2; k++) {
+//                    for (int l = 0; l < dim2; l++) {
+//                        result[i * dim2 + k][j * dim2 + l] = scalar.multiply(g2.matrix[k][l]);
+//                    }
+//                }
+//            }
+//        }
+//        return new ComplexQuantumGate(result);
+//    }
 
+    public int getNumQubits() {
+        int dim = this.dimension; // or similar method returning matrix size (rows)
+        return (int)(Math.log(dim) / Math.log(2));
+    }
 
+    public static int intPow(int base, int exponent) {
+        int result = 1;
+        for (int i = 0; i < exponent; i++) {
+            result *= base;
+        }
+        return result;
+    }
 
+    public static ComplexQuantumGate identityOfDimension(int dim) {
+        Complex[][] id = new Complex[dim][dim];
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                id[i][j] = (i == j) ? Complex.ONE : Complex.ZERO;
+            }
+        }
+        return new ComplexQuantumGate(id);
+    }
+
+    public static ComplexQuantumGate identityOfQubits(int numQubits) {
+        int dim = 1 << numQubits; // 2^numQubits
+        Complex[][] id = new Complex[dim][dim];
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                id[i][j] = (i == j) ? Complex.ONE : Complex.ZERO;
+            }
+        }
+        return new ComplexQuantumGate(id);
+    }
 
 
         // Existing constructor and methods ...

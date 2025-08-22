@@ -90,16 +90,50 @@ public class ComplexQuantumNumber {
      * Multiply all coefficients by the given scalar (Complex).
      * Returns a new ComplexQuantumNumber.
      */
+//    public ComplexQuantumNumber multiply(Complex scalar) {
+//        if (scalar.equals(Complex.ZERO)) {
+//            return new ComplexQuantumNumber(); // zero vector
+//        }
+//        ComplexQuantumNumber result = new ComplexQuantumNumber();
+//        components.forEach((basis, coeff) -> {
+//            result.addComponent(basis, coeff.multiply(scalar));
+//        });
+//        return result;
+//    }
     public ComplexQuantumNumber multiply(Complex scalar) {
         if (scalar.equals(Complex.ZERO)) {
             return new ComplexQuantumNumber(); // zero vector
         }
         ComplexQuantumNumber result = new ComplexQuantumNumber();
-        components.forEach((basis, coeff) -> {
+        for (Map.Entry<QuantumNumberComponent, Complex> entry :
+        		components.entrySet()) {
+            QuantumNumberComponent basis = entry.getKey();
+            Complex coeff = entry.getValue();
             result.addComponent(basis, coeff.multiply(scalar));
-        });
+        }
         return result;
     }
+
+ // In ComplexQuantumNumber class
+    public ComplexQuantumNumber multiply(ComplexQuantumNumber other) {
+        ComplexQuantumNumber result = new ComplexQuantumNumber();
+        for (QuantumNumberComponent comp1 : this.getComponents().keySet()) {
+            Complex coeff1 = this.getCoefficient(comp1);
+            for (QuantumNumberComponent comp2 : other.getComponents().keySet()) {
+                Complex coeff2 = other.getCoefficient(comp2);
+                // Combine components if needed or just add them;
+                // assuming you only have one component 'a' for now:
+                if (comp1.equals(comp2)) {
+                    result.addComponent(comp1, coeff1.multiply(coeff2));
+                } else {
+                    // If different components exist, handle accordingly
+                    // For simplicity, ignoring or throwing error here
+                }
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Add another ComplexQuantumNumber to this one (component-wise).
@@ -164,19 +198,68 @@ public class ComplexQuantumNumber {
         }
         return sb.toString();
     }
+//
+//    public static ComplexQuantumNumber tensorProduct(ComplexQuantumNumber amp1, ComplexQuantumNumber amp2) {
+//        ComplexQuantumNumber result = new ComplexQuantumNumber();
+//
+//        for (QuantumNumberComponent comp1 : amp1.getComponents().keySet()) {
+//            Complex coeff1 = amp1.getCoefficient(comp1);
+//
+//            for (QuantumNumberComponent comp2 : amp2.getComponents().keySet()) {
+//                Complex coeff2 = amp2.getCoefficient(comp2);
+//
+//                QuantumNumberComponent combinedComponent = QuantumNumberComponent.combine(comp1, comp2);
+//                Complex combinedCoeff = coeff1.multiply(coeff2);
+//
+//                result.addComponent(combinedComponent, combinedCoeff);
+//            }
+//        }
+//
+//        return result;
+//    }
+
+//    public static ComplexQuantumNumber tensorProduct(ComplexQuantumNumber amp1, ComplexQuantumNumber amp2) {
+//        ComplexQuantumNumber result = new ComplexQuantumNumber();
+//
+//        for (QuantumNumberComponent comp1 : amp1.getComponents().keySet()) {
+//            Complex coeff1 = amp1.getCoefficient(comp1);
+//
+//            for (QuantumNumberComponent comp2 : amp2.getComponents().keySet()) {
+//                Complex coeff2 = amp2.getCoefficient(comp2);
+//
+//                // Combine the quantum number components
+//                QuantumNumberComponent combinedComponent = QuantumNumberComponent.combine(comp1, comp2);
+//
+//                // Multiply coefficients (complex numbers)
+//                Complex combinedCoeff = coeff1.multiply(coeff2);
+//
+//                // Add combined component and coefficient to result
+//                result.addComponent(combinedComponent, combinedCoeff);
+//            }
+//        }
+//
+//        return result;
+//    }
+
 
     public static ComplexQuantumNumber tensorProduct(ComplexQuantumNumber amp1, ComplexQuantumNumber amp2) {
         ComplexQuantumNumber result = new ComplexQuantumNumber();
 
-        for (QuantumNumberComponent comp1 : amp1.getComponents().keySet()) {
-            Complex coeff1 = amp1.getCoefficient(comp1);
+        for (Map.Entry<QuantumNumberComponent, Complex> entry1 : amp1.getComponents().entrySet()) {
+            QuantumNumberComponent comp1 = entry1.getKey();
+            Complex coeff1 = entry1.getValue();
 
-            for (QuantumNumberComponent comp2 : amp2.getComponents().keySet()) {
-                Complex coeff2 = amp2.getCoefficient(comp2);
+            for (Map.Entry<QuantumNumberComponent, Complex> entry2 : amp2.getComponents().entrySet()) {
+                QuantumNumberComponent comp2 = entry2.getKey();
+                Complex coeff2 = entry2.getValue();
 
                 QuantumNumberComponent combinedComponent = QuantumNumberComponent.combine(comp1, comp2);
-                Complex combinedCoeff = coeff1.multiply(coeff2);
+                if (combinedComponent == null) {
+                    // Handle error or skip if components can't be combined
+                    continue;
+                }
 
+                Complex combinedCoeff = coeff1.multiply(coeff2);
                 result.addComponent(combinedComponent, combinedCoeff);
             }
         }
@@ -196,4 +279,5 @@ public class ComplexQuantumNumber {
             this.addComponent(comp, coeff);
         }
     }
+
 }
