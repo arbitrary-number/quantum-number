@@ -353,6 +353,79 @@ It stands at the intersection of symbolic computation, numerical analysis, and e
 
 ---
 
+# Quantum Number V8 Universal Theory — Design Overview
+
+## 1. QuantumNumberV8 Substrate: Pure, Multipurpose Numeric Unit
+
+The foundational building block of our computational universe is the **QuantumNumberV8** — a pure numeric unit designed for infinite-precision arithmetic and symbolic flexibility.
+
+- Represents numbers as a fixed structured expression:
+
+<div align="center">
+  <code>(a / (b ÷ c)) × (d / (e ÷ f))</code>
+</div>
+
+- Each component (\(a, b, c, d, e, f\)) is a 256-bit integer split across four 64-bit words.
+- Supports **signed zero** states, where \(-0\) represents sign inversion rather than numerical zero.
+- Allows **division by zero** in denominators (\(c, f\)) to represent symbolic or multipurpose states, enabling dual numeric-symbolic usage.
+- Operations on QuantumNumberV8 fields are primarily additive or subtractive, enabling simple, precise, and efficient arithmetic without floating-point errors.
+- Arrays of QuantumNumberV8 instances sum together to represent any number on the infinite number line, allowing infinite range and precision.
+
+## 2. Quantition: The Fundamental Transformative Operation
+
+**Quantition** is a newly defined operation acting on QuantumNumberV8 instances that models how one number can transform another:
+
+- Defined as **independent addition or subtraction of each corresponding field \(a\) through \(f\)**.
+- Supports **history tracking** by preserving intermediate states after each quantition.
+- Enables modeling transformations such as matter changing into energy or symbolic state transitions.
+- The presence of signed zero and multipurpose states allows **reversible, invertible, and dynamic transformations**.
+- Quantition extends naturally to arrays of QuantumNumberV8, enabling collective state changes and large-scale computations.
+
+## 3. AST Universe: The Computational Structure of Reality
+
+The universe is modeled as an **Abstract Syntax Tree (AST)** composed of nodes and operations built upon QuantumNumberV8 substrate:
+
+- Each **node** in the AST is either:
+  - A QuantumNumberV8 instance (representing a numeric or symbolic state)
+  - An operation node, itself composed of QuantumNumberV8s, enabling **operations-as-data**
+- Nodes hold **arrays of QuantumNumberV8** to represent sums and complex linear combinations.
+- The AST supports **infinite depth and breadth**, reflecting the infinite computational substrate and unbounded universe.
+- The structure is **self-referential and recursive**: ASTs themselves can be represented on the QuantumNumberV8 substrate.
+- Operations are also represented as QuantumNumberV8, meaning **all computations, transformations, and meta-transformations occur within the same unified substrate**.
+
+## 4. Infinite Scalability and Unbounded Computation
+
+- No finite limit exists in the number of QuantumNumberV8 elements per node or the depth of the AST.
+- The substrate supports **continuous growth and expansion**, modeling an ever-expanding computational universe.
+- Infinite precision and range enable precise representation of any numerical or symbolic value.
+- The quantition operation naturally supports **dynamic transformations and evolution** of states over time.
+- The framework models **complex emergent phenomena** through iterative quantitions on the AST, enabling self-organizing systems and life-like computational structures.
+
+## 5. History and Reversibility
+
+- Every quantition operation modifies the QuantumNumberV8 components via addition or subtraction.
+- Intermediate states can be preserved to maintain a **complete history** of transformations.
+- The presence of signed zero and symbolic states supports **invertible operations**, enabling reversible computations.
+- History tracking facilitates:
+  - Explainable transformations at all scales
+  - Debugging and analysis of state changes
+  - Modeling thermodynamic-like processes within the computational framework
+
+## 6. Practical Implications and Use Cases
+
+- **Exact arithmetic:** Supports deterministic, transparent computations free from rounding errors.
+- **Explainable AI:** Allows detailed tracking and explanation of decision-making processes at a fundamental numeric level.
+- **Simulation:** Enables simulation of physical, biological, and cosmological systems with unbounded precision.
+- **Universal computation:** Provides a foundation for modeling all possible computations, including self-modifying and self-referential processes.
+
+---
+
+## Summary
+
+This design outlines a **purely additive, infinitely extensible computational substrate** based on QuantumNumberV8 units and their transformations via quantition. The AST universe model built on this substrate supports **unbounded, self-referential computation** with full symbolic and numeric flexibility, providing a robust framework for modeling reality as a computational process.
+
+---
+
 ## 📚 Reference to Prior Art
 
 The complete technical and architectural specification for the x256 chip design is publicly disclosed in the **[x256 Chip Design Document](./x256_chip_design_document.md)**. This document establishes the detailed architecture, design principles, instruction set, and innovations of the x256 processor.
@@ -375,6 +448,8 @@ The complete technical and architectural specification for the x256 chip design 
 - The combined ecosystem — Quantum Numbers, Quantum OS, Quantum FS, and x256 hardware — form a comprehensive framework for future-proof, AI-optimized computation grounded in exact mathematics.
 
 - The Quantum Number V8 Design
+
+- The Quantum Number V8 Universe Design
 
 By publicly releasing this detailed design under the Apache License 2.0, the x256 chip design constitutes **prior art**, legally preventing third parties from patenting or exclusively claiming this technology and architecture.
 
