@@ -1,58 +1,62 @@
-.386
-.model flat, stdcall
+OPTION 64
+.MODEL flat, stdcall
 option casemap:none
 
-; Include the structure definition
 QuantumNumberV8 STRUCT
     signs     QWORD ?
     metadata1 QWORD ?
     metadata2 QWORD ?
     metadata3 QWORD ?
 
-    a1 QWORD ? ; a component
+    a1 QWORD ?
     a2 QWORD ?
     a3 QWORD ?
     a4 QWORD ?
 
-    b1 QWORD ? ; b component
+    b1 QWORD ?
     b2 QWORD ?
     b3 QWORD ?
     b4 QWORD ?
 
-    c1 QWORD ? ; c component
+    c1 QWORD ?
     c2 QWORD ?
     c3 QWORD ?
     c4 QWORD ?
 
-    d1 QWORD ? ; d component
+    d1 QWORD ?
     d2 QWORD ?
     d3 QWORD ?
     d4 QWORD ?
 
-    e1 QWORD ? ; e component
+    e1 QWORD ?
     e2 QWORD ?
     e3 QWORD ?
     e4 QWORD ?
 
-    f1 QWORD ? ; f component
+    f1 QWORD ?
     f2 QWORD ?
     f3 QWORD ?
     f4 QWORD ?
 QuantumNumberV8 ENDS
 
-; Define a tree node: value + left/right pointers
 NumberNode STRUCT
     value     QuantumNumberV8 <>
     leftPtr   QWORD ?
     rightPtr  QWORD ?
-    upPtr  QWORD ?
-    downPtr  QWORD ?
-    inPtr  QWORD ?
-    outPtr  QWORD ?
+    upPtr     QWORD ?
+    downPtr   QWORD ?
+    inPtr     QWORD ?
+    outPtr    QWORD ?
 NumberNode ENDS
 
+LEFT_PTR_OFFSET   EQU NumberNode.leftPtr - NumberNode
+RIGHT_PTR_OFFSET  EQU NumberNode.rightPtr - NumberNode
+UP_PTR_OFFSET     EQU NumberNode.upPtr - NumberNode
+DOWN_PTR_OFFSET   EQU NumberNode.downPtr - NumberNode
+IN_PTR_OFFSET     EQU NumberNode.inPtr - NumberNode
+OUT_PTR_OFFSET    EQU NumberNode.outPtr - NumberNode
+
 .DATA
-; Example node, 3D left/right, up/down, in/out tree structure
 nodeRoot NumberNode <>
 nodeLeft NumberNode <>
 nodeRight NumberNode <>
@@ -62,27 +66,32 @@ nodeIn NumberNode <>
 nodeOut NumberNode <>
 
 .CODE
+PUBLIC main
 main PROC
-    ; Example: set up pointers
+    ; Set nodeRoot.leftPtr = &nodeLeft
     lea rax, nodeLeft
-    mov [OFFSET nodeRoot + NumberNode.leftPtr], rax
+    mov [nodeRoot + LEFT_PTR_OFFSET], rax
 
+    ; Set nodeRoot.rightPtr = &nodeRight
     lea rax, nodeRight
-    mov [OFFSET nodeRoot + NumberNode.rightPtr], rax
+    mov [nodeRoot + RIGHT_PTR_OFFSET], rax
 
+    ; Set nodeRoot.upPtr = &nodeUp
     lea rax, nodeUp
-    mov [OFFSET nodeRoot + NumberNode.upPtr], rax
+    mov [nodeRoot + UP_PTR_OFFSET], rax
 
+    ; Set nodeRoot.downPtr = &nodeDown
     lea rax, nodeDown
-    mov [OFFSET nodeRoot + NumberNode.downPtr], rax
+    mov [nodeRoot + DOWN_PTR_OFFSET], rax
 
+    ; Set nodeRoot.inPtr = &nodeIn
     lea rax, nodeIn
-    mov [OFFSET nodeRoot + NumberNode.inPtr], rax
+    mov [nodeRoot + IN_PTR_OFFSET], rax
 
+    ; Set nodeRoot.outPtr = &nodeOut
     lea rax, nodeOut
-    mov [OFFSET nodeRoot + NumberNode.outPtr], rax
+    mov [nodeRoot + OUT_PTR_OFFSET], rax
 
-    ; Exit
     ret
 main ENDP
 
