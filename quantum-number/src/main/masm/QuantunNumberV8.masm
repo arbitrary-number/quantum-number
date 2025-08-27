@@ -1,0 +1,89 @@
+.386
+.model flat, stdcall
+option casemap:none
+
+; Include the structure definition
+QuantumNumberV8 STRUCT
+    signs     QWORD ?
+    metadata1 QWORD ?
+    metadata2 QWORD ?
+    metadata3 QWORD ?
+
+    a1 QWORD ? ; a component
+    a2 QWORD ?
+    a3 QWORD ?
+    a4 QWORD ?
+
+    b1 QWORD ? ; b component
+    b2 QWORD ?
+    b3 QWORD ?
+    b4 QWORD ?
+
+    c1 QWORD ? ; c component
+    c2 QWORD ?
+    c3 QWORD ?
+    c4 QWORD ?
+
+    d1 QWORD ? ; d component
+    d2 QWORD ?
+    d3 QWORD ?
+    d4 QWORD ?
+
+    e1 QWORD ? ; e component
+    e2 QWORD ?
+    e3 QWORD ?
+    e4 QWORD ?
+
+    f1 QWORD ? ; f component
+    f2 QWORD ?
+    f3 QWORD ?
+    f4 QWORD ?
+QuantumNumberV8 ENDS
+
+; Define a tree node: value + left/right pointers
+NumberNode STRUCT
+    value     QuantumNumberV8 <>
+    leftPtr   QWORD ?
+    rightPtr  QWORD ?
+    upPtr  QWORD ?
+    downPtr  QWORD ?
+    inPtr  QWORD ?
+    outPtr  QWORD ?
+NumberNode ENDS
+
+.DATA
+; Example node, 3D left/right, up/down, in/out tree structure
+nodeRoot NumberNode <>
+nodeLeft NumberNode <>
+nodeRight NumberNode <>
+nodeUp NumberNode <>
+nodeDown NumberNode <>
+nodeIn NumberNode <>
+nodeOut NumberNode <>
+
+.CODE
+main PROC
+    ; Example: set up pointers
+    lea rax, nodeLeft
+    mov [OFFSET nodeRoot + NumberNode.leftPtr], rax
+
+    lea rax, nodeRight
+    mov [OFFSET nodeRoot + NumberNode.rightPtr], rax
+
+    lea rax, nodeUp
+    mov [OFFSET nodeRoot + NumberNode.upPtr], rax
+
+    lea rax, nodeDown
+    mov [OFFSET nodeRoot + NumberNode.downPtr], rax
+
+    lea rax, nodeIn
+    mov [OFFSET nodeRoot + NumberNode.inPtr], rax
+
+    lea rax, nodeOut
+    mov [OFFSET nodeRoot + NumberNode.outPtr], rax
+
+    ; Exit
+    ret
+main ENDP
+
+END
