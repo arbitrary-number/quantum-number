@@ -469,22 +469,31 @@ bitwiseMultiply PROC
     ; Uses: Pure bitwise operations for maximum speed
     push rbx
     push rsi
+    push rdi
 
     xor rax, rax    ; Result = 0
     mov rbx, rcx    ; Save multiplicand
     mov rsi, rdx    ; Save multiplier
+    mov rdi, 64     ; 64-bit counter
 
 bitwise_mult_loop:
     test rsi, 1     ; Check if LSB of multiplier is 1
     jz bitwise_mult_shift
 
-    add rax, rbx    ; Add multiplicand to result
+    ; Add current multiplicand value to result
+    add rax, rbx
 
 bitwise_mult_shift:
-    shl rbx, 1      ; Shift multiplicand left
-    shr rsi, 1      ; Shift multiplier right
+    ; Shift multiplier right for next bit
+    shr rsi, 1
+    ; Shift multiplicand left for next power of 2
+    shl rbx, 1
+
+    ; Continue until all bits processed
+    dec rdi
     jnz bitwise_mult_loop
 
+    pop rdi
     pop rsi
     pop rbx
     ret
@@ -546,24 +555,31 @@ quantumMultiply PROC
     push rbp
     mov rbp, rsp
     push rbx
+    push rsi
+    push rdi
+
+    mov rsi, rcx    ; Save pointer to quantum number 1
+    mov rdi, rdx    ; Save pointer to quantum number 2
 
     ; Display operation
+    push rcx        ; Save RCX (pointer to quantum number 1)
     lea rcx, [msgMultiply]
     call printString
-    mov rcx, QWORD PTR [rcx + 32]    ; First number
+    mov rcx, QWORD PTR [rsi + 32]    ; First number
     call printQWORD
     lea rcx, [msgMultiply]
     call printString
-    mov rcx, QWORD PTR [rdx + 32]    ; Second number
+    mov rcx, QWORD PTR [rdi + 32]    ; Second number
     call printQWORD
     lea rcx, [msgNewline]
     call printString
+    pop rcx         ; Restore RCX
 
     ; ULTRA-FAST BITWISE MULTIPLICATION
-    mov rcx, QWORD PTR [rcx + 32]    ; Multiplicand
-    mov rdx, QWORD PTR [rdx + 32]    ; Multiplier
+    mov rcx, QWORD PTR [rsi + 32]    ; Multiplicand
+    mov rdx, QWORD PTR [rdi + 32]    ; Multiplier
     call bitwiseMultiply
-    mov QWORD PTR [rcx + 32], rax
+    mov QWORD PTR [rsi + 32], rax
 
     ; Check for overflow using bitwise operations
     mov rbx, rax
@@ -572,26 +588,32 @@ quantumMultiply PROC
     jz quantum_mult_done
 
 handle_mult_overflow:
+    push rcx        ; Save RCX
     lea rcx, [msgOverflow]
     call printString
+    pop rcx         ; Restore RCX
 
     ; Allocate new node for microscopic values (right pointer)
     lea rax, [nodeRight]                   ; Use nodeRight for microscopic overflow
-    mov QWORD PTR [rcx + RIGHT_PTR_OFFSET], rax  ; Set rightPtr to overflow node
+    mov QWORD PTR [rsi + RIGHT_PTR_OFFSET], rax  ; Set rightPtr to overflow node
 
     ; Set microscopic overflow value (fractional precision)
     mov rax, 1                             ; Microscopic magnitude
     mov QWORD PTR [nodeRight + 32], rax    ; Store in a1 field
 
     ; Display microscopic overflow handling
+    push rcx        ; Save RCX
     lea rcx, [msgRightPtr]
     call printString
     mov rcx, QWORD PTR [nodeRight + 32]
     call printQWORD
     lea rcx, [msgNewline]
     call printString
+    pop rcx         ; Restore RCX
 
 quantum_mult_done:
+    pop rdi
+    pop rsi
     pop rbx
     mov rsp, rbp
     pop rbp
@@ -2152,14 +2174,40 @@ physicsChemistryDemo PROC
     lea rcx, [msgNewline]
     call printString
 
-    ; Demonstrate physics operations
+    ; Demonstrate physics operations - Schrodinger equation simulation
     lea rcx, [msgSchrodingerEquation]
     call printString
     lea rcx, [msgNewline]
     call printString
 
-    ; Demonstrate chemistry operations
+    ; Demonstrate chemistry operations - molecular orbital theory
     lea rcx, [msgMolecularOrbital]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Demonstrate quantum chemistry calculations using polynomial operations
+    ; Initialize molecular orbital coefficients: 1 + 2x + 3x² (representing atomic orbitals)
+    mov QWORD PTR [nodeRoot + 32], 1    ; s-orbital coefficient
+    mov QWORD PTR [nodeRoot + 40], 2    ; p-orbital coefficient
+    mov QWORD PTR [nodeRoot + 48], 3    ; d-orbital coefficient
+
+    ; Display molecular orbital calculation
+    lea rcx, [msgMolecularOrbitalCalc]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 40]
+    call printQWORD
+    lea rcx, [msgVariableX]
+    call printString
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 48]
+    call printQWORD
+    lea rcx, [msgVariableX2]
     call printString
     lea rcx, [msgNewline]
     call printString
@@ -2377,8 +2425,9 @@ msgPolynomial2         db "Polynomial 2: ", 0
 
 ; Physics and Chemistry Messages
 msgPhysicsChemistryHeader db "=== PHYSICS AND CHEMISTRY OPERATIONS ===", 0
-msgSchrodingerEquation    db "SCHRODINGER EQUATION: -ℏ²/2m ∇²ψ + Vψ = Eψ", 0
+msgSchrodingerEquation    db "SCHRODINGER EQUATION: -h²/2m d²ψ/dx² + Vψ = Eψ", 0
 msgMolecularOrbital      db "MOLECULAR ORBITAL THEORY: ψ = Σ c_i φ_i", 0
+msgMolecularOrbitalCalc  db "MOLECULAR ORBITAL CALCULATION: ", 0
 
 ; Calculus Messages
 msgCalculusHeader       db "=== SYMBOLIC CALCULUS FOR ADVANCED AI ===", 0
