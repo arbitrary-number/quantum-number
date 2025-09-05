@@ -1,0 +1,39 @@
+; Hello World in MASM64
+; This program prints "Hello, World!" to the console
+
+OPTION 64
+.MODEL flat, stdcall
+option casemap:none
+
+; Windows API constants and externs
+STD_OUTPUT_HANDLE EQU -11
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN ExitProcess : PROC
+
+.DATA
+hello_msg db "Hello, World!", 0
+
+.CODE
+PUBLIC main
+main PROC
+    ; Get handle to stdout
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rbx, rax  ; Save handle in rbx
+
+    ; Write the message
+    mov rcx, rbx  ; hConsoleOutput
+    lea rdx, hello_msg  ; lpBuffer
+    mov r8, LENGTHOF hello_msg - 1  ; nNumberOfCharsToWrite (exclude null)
+    lea r9, [rsp + 32]  ; lpNumberOfCharsWritten (dummy)
+    call WriteConsoleA
+
+    ; Exit the process
+    xor rcx, rcx
+    call ExitProcess
+
+main ENDP
+
+END
