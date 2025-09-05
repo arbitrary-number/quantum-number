@@ -19,6 +19,7 @@ msgOp       db "Operation: ", 0
 msgResult   db "Result: ", 0
 msgPlus     db " + ", 0
 msgEquals   db " = ", 0
+msgLeftPtr  db "LEFT POINTER (Higher Values): ", 0
 msgNewline  db 0Dh, 0Ah, 0
 msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
 
@@ -225,9 +226,7 @@ quantumAdd PROC
     ; Check for overflow and handle left/right pointers
     jc handle_overflow_left
 
-    ; Display operation result
-    lea rcx, [msgResult]
-    call printString
+    ; Display operation result (no "Result: " prefix since we show the equation)
     mov rcx, QWORD PTR [rsi + 32]
     call printQWORD
     lea rcx, [msgNewline]
@@ -236,10 +235,25 @@ quantumAdd PROC
     jmp quantum_add_done
 
 handle_overflow_left:
-    ; Overflow detected - would set left pointer for higher values
+    ; Overflow detected - set left pointer for higher values
     lea rcx, [msgOverflow]
     call printString
-    ; TODO: Implement left pointer overflow handling
+
+    ; Allocate new node for higher values (left pointer)
+    lea rax, [nodeLeft]                    ; Use nodeLeft for overflow
+    mov QWORD PTR [rsi + LEFT_PTR_OFFSET], rax  ; Set leftPtr to overflow node
+
+    ; Set overflow value in left node
+    mov rax, 1                             ; Overflow magnitude
+    mov QWORD PTR [nodeLeft + 32], rax     ; Store in a1 field
+
+    ; Display overflow handling
+    lea rcx, [msgLeftPtr]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
 
 quantum_add_done:
     pop rdi
@@ -289,13 +303,13 @@ main PROC
     ; Initialize first quantum number in nodeRoot
     mov rax, 1                    ; Set signs to 1
     mov QWORD PTR [nodeRoot + 0], rax   ; signs field
-    mov rax, 42                   ; Set a1 value
+    mov rax, 0FFFFFFFFFFFFFFFFh   ; Set a1 to max QWORD (will overflow)
     mov QWORD PTR [nodeRoot + 32], rax  ; a1 field
 
     ; Initialize second quantum number in nodeLeft
     mov rax, 1                    ; Set signs to 1
     mov QWORD PTR [nodeLeft + 0], rax   ; signs field
-    mov rax, 58                   ; Set a1 value
+    mov rax, 1                    ; Set a1 to 1 (will cause overflow when added)
     mov QWORD PTR [nodeLeft + 32], rax  ; a1 field
 
     ; Display initial quantum numbers
