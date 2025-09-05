@@ -320,8 +320,8 @@ initFraction2 PROC
     ret
 initFraction2 ENDP
 
-; Traditional addition of quantum numbers
-traditionalAdd PROC
+; CORRECTED: Proper fraction addition (same denominator case)
+fractionAdd PROC
     push rbp
     mov rbp, rsp
     push rbx
@@ -332,112 +332,83 @@ traditionalAdd PROC
     mov rdi, rdx    ; fraction2
     mov rbx, r8     ; result
 
-    ; Add all corresponding fields
-    mov rax, QWORD PTR [rsi + 32]    ; a1
-    add rax, QWORD PTR [rdi + 32]
-    mov QWORD PTR [rbx + 32], rax
+    ; CRITICAL: Check if denominators are the same (b4 components)
+    mov rax, QWORD PTR [rsi + 88]    ; fraction1.b4
+    mov rdx, QWORD PTR [rdi + 88]    ; fraction2.b4
+    cmp rax, rdx
+    jne denominators_different
 
-    mov rax, QWORD PTR [rsi + 40]    ; a2
-    add rax, QWORD PTR [rdi + 40]
-    mov QWORD PTR [rbx + 40], rax
+    ; SAME DENOMINATOR: Add numerators only, keep denominator unchanged
+    mov rax, QWORD PTR [rsi + 56]    ; fraction1.a4 (numerator)
+    add rax, QWORD PTR [rdi + 56]    ; fraction2.a4 (numerator)
+    mov QWORD PTR [rbx + 56], rax   ; result.a4 = sum of numerators
 
-    mov rax, QWORD PTR [rsi + 48]    ; a3
-    add rax, QWORD PTR [rdi + 48]
-    mov QWORD PTR [rbx + 48], rax
+    ; Copy denominator (unchanged)
+    mov rax, QWORD PTR [rsi + 88]    ; fraction1.b4
+    mov QWORD PTR [rbx + 88], rax   ; result.b4 = same denominator
 
-    mov rax, QWORD PTR [rsi + 56]    ; a4
-    add rax, QWORD PTR [rdi + 56]
-    mov QWORD PTR [rbx + 56], rax
-
-    ; Continue with b1-b4
-    mov rax, QWORD PTR [rsi + 64]    ; b1
-    add rax, QWORD PTR [rdi + 64]
-    mov QWORD PTR [rbx + 64], rax
-
-    mov rax, QWORD PTR [rsi + 72]    ; b2
-    add rax, QWORD PTR [rdi + 72]
-    mov QWORD PTR [rbx + 72], rax
-
-    mov rax, QWORD PTR [rsi + 80]    ; b3
-    add rax, QWORD PTR [rdi + 80]
-    mov QWORD PTR [rbx + 80], rax
-
-    mov rax, QWORD PTR [rsi + 88]    ; b4
-    add rax, QWORD PTR [rdi + 88]
-    mov QWORD PTR [rbx + 88], rax
-
-    ; Continue with c1-f4
+    ; Preserve quantum state: Copy c, d, e, f components
+    ; For basic addition, we copy from first fraction
     mov rax, QWORD PTR [rsi + 96]    ; c1
-    add rax, QWORD PTR [rdi + 96]
     mov QWORD PTR [rbx + 96], rax
-
     mov rax, QWORD PTR [rsi + 104]   ; c2
-    add rax, QWORD PTR [rdi + 104]
     mov QWORD PTR [rbx + 104], rax
-
     mov rax, QWORD PTR [rsi + 112]   ; c3
-    add rax, QWORD PTR [rdi + 112]
     mov QWORD PTR [rbx + 112], rax
-
     mov rax, QWORD PTR [rsi + 120]   ; c4
-    add rax, QWORD PTR [rdi + 120]
     mov QWORD PTR [rbx + 120], rax
 
     mov rax, QWORD PTR [rsi + 128]   ; d1
-    add rax, QWORD PTR [rdi + 128]
     mov QWORD PTR [rbx + 128], rax
-
     mov rax, QWORD PTR [rsi + 136]   ; d2
-    add rax, QWORD PTR [rdi + 136]
     mov QWORD PTR [rbx + 136], rax
-
     mov rax, QWORD PTR [rsi + 144]   ; d3
-    add rax, QWORD PTR [rdi + 144]
     mov QWORD PTR [rbx + 144], rax
-
     mov rax, QWORD PTR [rsi + 152]   ; d4
-    add rax, QWORD PTR [rdi + 152]
     mov QWORD PTR [rbx + 152], rax
 
     mov rax, QWORD PTR [rsi + 160]   ; e1
-    add rax, QWORD PTR [rdi + 160]
     mov QWORD PTR [rbx + 160], rax
-
     mov rax, QWORD PTR [rsi + 168]   ; e2
-    add rax, QWORD PTR [rdi + 168]
     mov QWORD PTR [rbx + 168], rax
-
     mov rax, QWORD PTR [rsi + 176]   ; e3
-    add rax, QWORD PTR [rdi + 176]
     mov QWORD PTR [rbx + 176], rax
-
     mov rax, QWORD PTR [rsi + 184]   ; e4
-    add rax, QWORD PTR [rdi + 184]
     mov QWORD PTR [rbx + 184], rax
 
     mov rax, QWORD PTR [rsi + 192]   ; f1
-    add rax, QWORD PTR [rdi + 192]
     mov QWORD PTR [rbx + 192], rax
-
     mov rax, QWORD PTR [rsi + 200]   ; f2
-    add rax, QWORD PTR [rdi + 200]
     mov QWORD PTR [rbx + 200], rax
-
     mov rax, QWORD PTR [rsi + 208]   ; f3
-    add rax, QWORD PTR [rdi + 208]
     mov QWORD PTR [rbx + 208], rax
-
     mov rax, QWORD PTR [rsi + 216]   ; f4
-    add rax, QWORD PTR [rdi + 216]
     mov QWORD PTR [rbx + 216], rax
 
+    ; Set other components to zero (a1-a3, b1-b3 for this simple case)
+    mov QWORD PTR [rbx + 32], 0      ; a1
+    mov QWORD PTR [rbx + 40], 0      ; a2
+    mov QWORD PTR [rbx + 48], 0      ; a3
+    mov QWORD PTR [rbx + 64], 0      ; b1
+    mov QWORD PTR [rbx + 72], 0      ; b2
+    mov QWORD PTR [rbx + 80], 0      ; b3
+
+    jmp addition_complete
+
+denominators_different:
+    ; For now, handle as error (different denominators require LCM)
+    ; Set result to zero to indicate error
+    mov QWORD PTR [rbx + 56], 0      ; a4 = 0 (error)
+    mov QWORD PTR [rbx + 88], 0      ; b4 = 0 (error)
+
+addition_complete:
     pop rdi
     pop rsi
     pop rbx
     mov rsp, rbp
     pop rbp
     ret
-traditionalAdd ENDP
+fractionAdd ENDP
 
 ; Analyze each a1-f4 term in detail
 analyzeTerms PROC
@@ -680,7 +651,7 @@ main PROC
     lea rcx, [fraction1]
     lea rdx, [fraction2]
     lea r8, [result]
-    call traditionalAdd
+    call fractionAdd
 
     ; Display algorithm analysis
     lea rcx, [msgAlgorithm]
