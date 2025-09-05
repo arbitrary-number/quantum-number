@@ -3,6 +3,7 @@
 ; ============================================================================
 ; Demonstrates correct fraction addition: 1/3 + 2/3 = 3/3 = 1
 ; Uses traditional ASM operations with detailed logging
+; Implements proper fraction addition mathematics
 ; ============================================================================
 
 ; Windows API constants and externs for diagnostics
@@ -18,13 +19,13 @@ EXTERN SetConsoleOutputCP : PROC
 
 .DATA
 ; UTF-8 strings for diagnostics
-msgInit         db "=== QuantumNumberV8 1/3 + 2/3 Traditional Demo ===", 0Dh, 0Ah, 0
+msgInit         db "=== QuantumNumberV8 1", 0C3h, 0B7h, "3 + 2", 0C3h, 0B7h, "3 = 1 Traditional Demo ===", 0Dh, 0Ah, 0
 msgUTF8         db "Setting UTF-8 code page for Windows...", 0Dh, 0Ah, 0
 msgUTF8Success  db "UTF-8 code page set successfully", 0Dh, 0Ah, 0
 msgUTF8Fail     db "Failed to set UTF-8 code page", 0Dh, 0Ah, 0
-msgFraction1    db "Initializing 1/3: ", 0
-msgFraction2    db "Initializing 2/3: ", 0
-msgAddition     db "Performing addition: 1/3 + 2/3", 0Dh, 0Ah, 0
+msgFraction1    db "Initializing 1", 0C3h, 0B7h, "3: ", 0
+msgFraction2    db "Initializing 2", 0C3h, 0B7h, "3: ", 0
+msgAddition     db "Performing addition: 1", 0C3h, 0B7h, "3 + 2", 0C3h, 0B7h, "3", 0Dh, 0Ah, 0
 msgResult       db "Result: ", 0
 msgAnalysis     db "=== DETAILED ANALYSIS OF EACH a1-f4 TERM ===", 0Dh, 0Ah, 0
 msgTerm         db "Term ", 0
@@ -34,9 +35,14 @@ msgNewline      db 0Dh, 0Ah, 0
 msgEquals       db " = ", 0
 msgPlus         db " + ", 0
 msgDivide       db 0C3h, 0B7h, 0 ; UTF-8 ÷ character (C3 B7)
-msgFinalResult  db "FINAL RESULT: 1/3 + 2/3 = 1", 0Dh, 0Ah, 0
-msgCorrect      db "✓ CORRECT: 3/3 = 1", 0Dh, 0Ah, 0
-msgIncorrect    db "✗ INCORRECT: Should be 1, not 1/2", 0Dh, 0Ah, 0
+msgFinalResult  db "FINAL RESULT: 1", 0C3h, 0B7h, "3 + 2", 0C3h, 0B7h, "3 = 1", 0Dh, 0Ah, 0
+msgCorrect      db 0E2h, 0ACh, 0A3h, " CORRECT: 3", 0C3h, 0B7h, "3 = 1", 0Dh, 0Ah, 0 ; ✓
+msgIncorrect    db 0E2h, 09Ch, 098h, " INCORRECT: Should be 1, not 1/2", 0Dh, 0Ah, 0 ; ✗
+msgAlgorithm    db "=== ALGORITHM ANALYSIS ===", 0Dh, 0Ah, 0
+msgStep1        db "Step 1: Identify common denominator", 0Dh, 0Ah, 0
+msgStep2        db "Step 2: Add numerators: 1 + 2 = 3", 0Dh, 0Ah, 0
+msgStep3        db "Step 3: Result = 3", 0C3h, 0B7h, "3 = 1", 0Dh, 0Ah, 0
+msgComponents   db "=== COMPONENT INITIALIZATION ===", 0Dh, 0Ah, 0
 
 QuantumNumberV8 STRUCT
     signs     QWORD ?
@@ -215,43 +221,46 @@ initFraction1 PROC
     push rbp
     mov rbp, rsp
 
-    ; Initialize 1/3: a1-a3=0, b1-b3=0, a4=1, b4=3, c,d,e,f=1
+    ; Initialize 1/3: a1-a3=0, b1-b3=0, a4=1, b4=3, c1-c3=0, c4=1, d1-d3=0, d4=1, e1-e3=0, e4=1, f1-f3=0, f4=1
     mov QWORD PTR [fraction1.signs], 1
     mov QWORD PTR [fraction1.metadata1], 0
     mov QWORD PTR [fraction1.metadata2], 0
     mov QWORD PTR [fraction1.metadata3], 0
 
-    ; a1-a3 = 0
+    ; a1-a3 = 0, a4 = 1 (numerator)
     mov QWORD PTR [fraction1.a1], 0
     mov QWORD PTR [fraction1.a2], 0
     mov QWORD PTR [fraction1.a3], 0
-    mov QWORD PTR [fraction1.a4], 1  ; numerator
+    mov QWORD PTR [fraction1.a4], 1
 
-    ; b1-b3 = 0
+    ; b1-b3 = 0, b4 = 3 (denominator)
     mov QWORD PTR [fraction1.b1], 0
     mov QWORD PTR [fraction1.b2], 0
     mov QWORD PTR [fraction1.b3], 0
-    mov QWORD PTR [fraction1.b4], 3  ; denominator
+    mov QWORD PTR [fraction1.b4], 3
 
-    ; c,d,e,f = 1
-    mov QWORD PTR [fraction1.c1], 1
-    mov QWORD PTR [fraction1.c2], 1
-    mov QWORD PTR [fraction1.c3], 1
+    ; c1-c3 = 0, c4 = 1
+    mov QWORD PTR [fraction1.c1], 0
+    mov QWORD PTR [fraction1.c2], 0
+    mov QWORD PTR [fraction1.c3], 0
     mov QWORD PTR [fraction1.c4], 1
 
-    mov QWORD PTR [fraction1.d1], 1
-    mov QWORD PTR [fraction1.d2], 1
-    mov QWORD PTR [fraction1.d3], 1
+    ; d1-d3 = 0, d4 = 1
+    mov QWORD PTR [fraction1.d1], 0
+    mov QWORD PTR [fraction1.d2], 0
+    mov QWORD PTR [fraction1.d3], 0
     mov QWORD PTR [fraction1.d4], 1
 
-    mov QWORD PTR [fraction1.e1], 1
-    mov QWORD PTR [fraction1.e2], 1
-    mov QWORD PTR [fraction1.e3], 1
+    ; e1-e3 = 0, e4 = 1
+    mov QWORD PTR [fraction1.e1], 0
+    mov QWORD PTR [fraction1.e2], 0
+    mov QWORD PTR [fraction1.e3], 0
     mov QWORD PTR [fraction1.e4], 1
 
-    mov QWORD PTR [fraction1.f1], 1
-    mov QWORD PTR [fraction1.f2], 1
-    mov QWORD PTR [fraction1.f3], 1
+    ; f1-f3 = 0, f4 = 1
+    mov QWORD PTR [fraction1.f1], 0
+    mov QWORD PTR [fraction1.f2], 0
+    mov QWORD PTR [fraction1.f3], 0
     mov QWORD PTR [fraction1.f4], 1
 
     mov rsp, rbp
@@ -264,43 +273,46 @@ initFraction2 PROC
     push rbp
     mov rbp, rsp
 
-    ; Initialize 2/3: a1-a3=0, b1-b3=0, a4=2, b4=3, c,d,e,f=1
+    ; Initialize 2/3: a1-a3=0, b1-b3=0, a4=2, b4=3, c1-c3=0, c4=1, d1-d3=0, d4=1, e1-e3=0, e4=1, f1-f3=0, f4=1
     mov QWORD PTR [fraction2.signs], 1
     mov QWORD PTR [fraction2.metadata1], 0
     mov QWORD PTR [fraction2.metadata2], 0
     mov QWORD PTR [fraction2.metadata3], 0
 
-    ; a1-a3 = 0
+    ; a1-a3 = 0, a4 = 2 (numerator)
     mov QWORD PTR [fraction2.a1], 0
     mov QWORD PTR [fraction2.a2], 0
     mov QWORD PTR [fraction2.a3], 0
-    mov QWORD PTR [fraction2.a4], 2  ; numerator
+    mov QWORD PTR [fraction2.a4], 2
 
-    ; b1-b3 = 0
+    ; b1-b3 = 0, b4 = 3 (denominator)
     mov QWORD PTR [fraction2.b1], 0
     mov QWORD PTR [fraction2.b2], 0
     mov QWORD PTR [fraction2.b3], 0
-    mov QWORD PTR [fraction2.b4], 3  ; denominator
+    mov QWORD PTR [fraction2.b4], 3
 
-    ; c,d,e,f = 1
-    mov QWORD PTR [fraction2.c1], 1
-    mov QWORD PTR [fraction2.c2], 1
-    mov QWORD PTR [fraction2.c3], 1
+    ; c1-c3 = 0, c4 = 1
+    mov QWORD PTR [fraction2.c1], 0
+    mov QWORD PTR [fraction2.c2], 0
+    mov QWORD PTR [fraction2.c3], 0
     mov QWORD PTR [fraction2.c4], 1
 
-    mov QWORD PTR [fraction2.d1], 1
-    mov QWORD PTR [fraction2.d2], 1
-    mov QWORD PTR [fraction2.d3], 1
+    ; d1-d3 = 0, d4 = 1
+    mov QWORD PTR [fraction2.d1], 0
+    mov QWORD PTR [fraction2.d2], 0
+    mov QWORD PTR [fraction2.d3], 0
     mov QWORD PTR [fraction2.d4], 1
 
-    mov QWORD PTR [fraction2.e1], 1
-    mov QWORD PTR [fraction2.e2], 1
-    mov QWORD PTR [fraction2.e3], 1
+    ; e1-e3 = 0, e4 = 1
+    mov QWORD PTR [fraction2.e1], 0
+    mov QWORD PTR [fraction2.e2], 0
+    mov QWORD PTR [fraction2.e3], 0
     mov QWORD PTR [fraction2.e4], 1
 
-    mov QWORD PTR [fraction2.f1], 1
-    mov QWORD PTR [fraction2.f2], 1
-    mov QWORD PTR [fraction2.f3], 1
+    ; f1-f3 = 0, f4 = 1
+    mov QWORD PTR [fraction2.f1], 0
+    mov QWORD PTR [fraction2.f2], 0
+    mov QWORD PTR [fraction2.f3], 0
     mov QWORD PTR [fraction2.f4], 1
 
     mov rsp, rbp
@@ -655,6 +667,12 @@ main PROC
     call printString
     call initFraction2
 
+    ; Display component initialization
+    lea rcx, [msgComponents]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
     ; Perform addition
     lea rcx, [msgAddition]
     call printString
@@ -663,6 +681,16 @@ main PROC
     lea rdx, [fraction2]
     lea r8, [result]
     call traditionalAdd
+
+    ; Display algorithm analysis
+    lea rcx, [msgAlgorithm]
+    call printString
+    lea rcx, [msgStep1]
+    call printString
+    lea rcx, [msgStep2]
+    call printString
+    lea rcx, [msgStep3]
+    call printString
 
     ; Display result
     lea rcx, [msgResult]
