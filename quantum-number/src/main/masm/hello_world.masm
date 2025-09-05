@@ -1,9 +1,7 @@
 ; Hello World in MASM64
 ; This program prints "Hello, World!" to the console for testing.
 
-OPTION ARCH:X64
-
-; Windows API constants and externs
+; Windows API constants and externs.
 STD_OUTPUT_HANDLE EQU -11
 
 EXTERN GetStdHandle : PROC
