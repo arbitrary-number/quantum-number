@@ -1,5 +1,25 @@
 
 
+; Windows API constants and externs for diagnostics
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+
+.DATA
+; UTF-8 strings for diagnostics
+msgInit     db "=== QuantumNumberV8 Diagnostics ===", 0Dh, 0Ah, 0
+msgSigns    db "Signs: ", 0
+msgValue    db "Value: ", 0
+msgOp       db "Operation: ", 0
+msgResult   db "Result: ", 0
+msgNewline  db 0Dh, 0Ah, 0
+msgOverflow  db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
+
 QuantumNumberV8 STRUCT
     signs     QWORD ?
     metadata1 QWORD ?
@@ -64,10 +84,196 @@ nodeIn NumberNode <>
 nodeOut NumberNode <>
 
 .CODE
+
+; Helper function to print string to stdout
+printString PROC
+    ; Input: RCX = string pointer
+    ; Output: None
+    push rbp
+    mov rbp, rsp
+    sub rsp, 32     ; Shadow space
+
+    ; Get stdout handle
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rbx, rax
+
+    ; Calculate string length
+    mov rsi, rcx    ; String pointer
+    xor rdx, rdx    ; Length counter
+strlen_loop:
+    mov al, [rsi]
+    test al, al
+    jz strlen_done
+    inc rdx
+    inc rsi
+    jmp strlen_loop
+strlen_done:
+
+    ; Write to console
+    mov rcx, rbx              ; hConsoleOutput
+    mov r8, rdx               ; nNumberOfCharsToWrite
+    lea r9, [rsp + 24]        ; lpNumberOfCharsWritten
+    call WriteConsoleA
+
+    mov rsp, rbp
+    pop rbp
+    ret
+printString ENDP
+
+; Helper function to print QWORD in hex
+printQWORD PROC
+    ; Input: RCX = QWORD value
+    ; Output: None
+    push rbp
+    mov rbp, rsp
+    sub rsp, 64
+
+    ; Simple hex output (placeholder for now)
+    mov rax, rcx
+    ; TODO: Implement proper hex conversion
+    lea rcx, [msgValue]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+printQWORD ENDP
+
+; Quantum addition with overflow handling
+quantumAdd PROC
+    ; Input: RCX = ptr to quantum number 1, RDX = ptr to quantum number 2
+    ; Output: Updates quantum number 1 with result
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Add corresponding fields with overflow detection
+    mov rsi, rcx    ; Quantum number 1
+    mov rdi, rdx    ; Quantum number 2
+
+    ; Add a1 fields
+    mov rax, QWORD PTR [rsi + 32]    ; a1 of first number
+    mov rbx, QWORD PTR [rdi + 32]    ; a1 of second number
+    add rax, rbx
+    mov QWORD PTR [rsi + 32], rax
+
+    ; Check for overflow and handle left/right pointers
+    jc handle_overflow_left
+
+    ; Display operation result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    jmp quantum_add_done
+
+handle_overflow_left:
+    ; Overflow detected - would set left pointer for higher values
+    lea rcx, [msgOverflow]
+    call printString
+    ; TODO: Implement left pointer overflow handling
+
+quantum_add_done:
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumAdd ENDP
+
+; Quantum multiplication with fractional precision
+quantumMultiply PROC
+    ; Input: RCX = ptr to quantum number 1, RDX = ptr to quantum number 2
+    ; Output: Updates quantum number 1 with result
+    push rbp
+    mov rbp, rsp
+
+    ; TODO: Implement quantum multiplication with fractional terms
+    ; For now, just basic multiplication
+    mov rax, QWORD PTR [rcx + 32]    ; a1 of first
+    mov rbx, QWORD PTR [rdx + 32]    ; a1 of second
+    mul rbx                         ; RAX = RAX * RBX
+    mov QWORD PTR [rcx + 32], rax
+
+    ; Check for overflow
+    jc handle_mult_overflow
+
+    jmp quantum_mult_done
+
+handle_mult_overflow:
+    lea rcx, [msgOverflow]
+    call printString
+    ; TODO: Implement right pointer for microscopic values
+
+quantum_mult_done:
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumMultiply ENDP
+
 PUBLIC main
 main PROC
-    ; Simple test - just return successfully
-    ; The complex pointer setup was causing memory access issues
+    ; Initialize diagnostic output
+    lea rcx, [msgInit]
+    call printString
+
+    ; Initialize first quantum number in nodeRoot
+    mov rax, 1                    ; Set signs to 1
+    mov QWORD PTR [nodeRoot + 0], rax   ; signs field
+    mov rax, 42                   ; Set a1 value
+    mov QWORD PTR [nodeRoot + 32], rax  ; a1 field
+
+    ; Initialize second quantum number in nodeLeft
+    mov rax, 1                    ; Set signs to 1
+    mov QWORD PTR [nodeLeft + 0], rax   ; signs field
+    mov rax, 58                   ; Set a1 value
+    mov QWORD PTR [nodeLeft + 32], rax  ; a1 field
+
+    ; Display initial quantum numbers
+    lea rcx, [msgSigns]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 0]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Perform quantum addition: nodeRoot + nodeLeft
+    lea rcx, [msgOp]
+    call printString
+    ; TODO: Print UTF-8 equation like "42 + 58 = ?"
+
+    lea rcx, [nodeRoot]           ; First quantum number
+    lea rdx, [nodeLeft]           ; Second quantum number
+    call quantumAdd
+
+    ; Perform quantum multiplication test
+    lea rcx, [nodeRoot]           ; First quantum number
+    lea rdx, [nodeLeft]           ; Second quantum number
+    call quantumMultiply
+
+    ; Test overflow conditions with exact mathematical verification
+    mov rax, 0FFFFFFFFFFFFFFFFh         ; Max QWORD
+    add rax, 1                          ; This will overflow
+    jc overflow_detected
+    jmp no_overflow
+
+overflow_detected:
+    lea rcx, [msgOverflow]
+    call printString
+    ; TODO: Implement left pointer overflow to higher values
+    ; TODO: Implement right pointer overflow to microscopic values
+
+no_overflow:
+    ; Verification: Check mathematical consistency
+    ; TODO: Add verification routines
+
     xor rax, rax  ; Return 0 (success)
     ret
 main ENDP
