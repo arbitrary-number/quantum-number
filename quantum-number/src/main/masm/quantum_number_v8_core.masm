@@ -247,10 +247,10 @@ initQuantumNumber PROC
     ; rcx = pointer to quantum number
     ; rdx = initial value
 
-    ; Clear structure
+    ; Clear structure (QuantumNumber = 16 QWORDS = 128 bytes)
     mov r8, rcx
     xor rax, rax
-    mov ecx, sizeof QuantumNumber / 8
+    mov ecx, 16  ; 16 QWORDS in QuantumNumber structure
     rep stosq
 
     ; Set initial value
