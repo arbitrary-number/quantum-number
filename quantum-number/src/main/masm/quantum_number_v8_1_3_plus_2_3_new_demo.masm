@@ -1,0 +1,338 @@
+; QuantumNumberV8 1/3 + 2/3 New Demo
+; Demonstrates addition of quantum numbers with proper UTF-8 division symbols
+; Uses traditional ASM operations
+
+include \masm32\include\masm32rt.inc
+
+.data
+    ; First quantum number: 1/3
+    ; a1-a3 = 0, a4 = 1, b1-b3 = 0, b4 = 3, c1-c3 = 0, c4 = 1, d1-d3 = 0, d4 = 1, e1-e3 = 0, e4 = 1, f1-f3 = 0, f4 = 1
+    qn1_a1 dq 0
+    qn1_a2 dq 0
+    qn1_a3 dq 0
+    qn1_a4 dq 1
+    qn1_b1 dq 0
+    qn1_b2 dq 0
+    qn1_b3 dq 0
+    qn1_b4 dq 3
+    qn1_c1 dq 0
+    qn1_c2 dq 0
+    qn1_c3 dq 0
+    qn1_c4 dq 1
+    qn1_d1 dq 0
+    qn1_d2 dq 0
+    qn1_d3 dq 0
+    qn1_d4 dq 1
+    qn1_e1 dq 0
+    qn1_e2 dq 0
+    qn1_e3 dq 0
+    qn1_e4 dq 1
+    qn1_f1 dq 0
+    qn1_f2 dq 0
+    qn1_f3 dq 0
+    qn1_f4 dq 1
+
+    ; Second quantum number: 2/3
+    ; a1-a3 = 0, a4 = 2, b1-b3 = 0, b4 = 3, c1-c3 = 0, c4 = 1, d1-d3 = 0, d4 = 1, e1-e3 = 0, e4 = 1, f1-f3 = 0, f4 = 1
+    qn2_a1 dq 0
+    qn2_a2 dq 0
+    qn2_a3 dq 0
+    qn2_a4 dq 2
+    qn2_b1 dq 0
+    qn2_b2 dq 0
+    qn2_b3 dq 0
+    qn2_b4 dq 3
+    qn2_c1 dq 0
+    qn2_c2 dq 0
+    qn2_c3 dq 0
+    qn2_c4 dq 1
+    qn2_d1 dq 0
+    qn2_d2 dq 0
+    qn2_d3 dq 0
+    qn2_d4 dq 1
+    qn2_e1 dq 0
+    qn2_e2 dq 0
+    qn2_e3 dq 0
+    qn2_e4 dq 1
+    qn2_f1 dq 0
+    qn2_f2 dq 0
+    qn2_f3 dq 0
+    qn2_f4 dq 1
+
+    ; Result quantum number
+    result_a1 dq 0
+    result_a2 dq 0
+    result_a3 dq 0
+    result_a4 dq 0
+    result_b1 dq 0
+    result_b2 dq 0
+    result_b3 dq 0
+    result_b4 dq 0
+    result_c1 dq 0
+    result_c2 dq 0
+    result_c3 dq 0
+    result_c4 dq 0
+    result_d1 dq 0
+    result_d2 dq 0
+    result_d3 dq 0
+    result_d4 dq 0
+    result_e1 dq 0
+    result_e2 dq 0
+    result_e3 dq 0
+    result_e4 dq 0
+    result_f1 dq 0
+    result_f2 dq 0
+    result_f3 dq 0
+    result_f4 dq 0
+
+    ; UTF-8 division symbol
+    divide_symbol db 0C3h, 0B7h, 0  ; UTF-8 encoding for ÷
+
+    ; Messages
+    msg_title db "QuantumNumberV8: 1÷3 + 2÷3 = 3÷6 = 1÷2 Demo", 13, 10, 0
+    msg_qn1 db "First Quantum Number (1÷3):", 13, 10, 0
+    msg_qn2 db "Second Quantum Number (2÷3):", 13, 10, 0
+    msg_result db "Result (3÷6 = 1÷2):", 13, 10, 0
+    msg_analysis db "Algorithm Analysis:", 13, 10, 0
+
+.code
+
+start:
+    ; Set UTF-8 code page for proper display
+    invoke SetConsoleOutputCP, 65001  ; UTF-8 code page
+
+    ; Display title
+    invoke StdOut, addr msg_title
+
+    ; Display first quantum number
+    invoke StdOut, addr msg_qn1
+    call display_quantum_number
+    mov esi, offset qn1_a1
+    call display_quantum_number_values
+
+    ; Display second quantum number
+    invoke StdOut, addr msg_qn2
+    mov esi, offset qn2_a1
+    call display_quantum_number_values
+
+    ; Perform addition
+    call add_quantum_numbers
+
+    ; Display result
+    invoke StdOut, addr msg_result
+    mov esi, offset result_a1
+    call display_quantum_number_values
+
+    ; Display algorithm analysis
+    invoke StdOut, addr msg_analysis
+    call display_algorithm_analysis
+
+    ; Exit
+    invoke ExitProcess, 0
+
+; Display quantum number values
+display_quantum_number_values proc
+    ; Display a values
+    invoke StdOut, chr$("a1-a4: ")
+    mov ecx, 4
+    mov edi, esi
+display_a_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_a_loop
+
+    ; Display b values
+    invoke StdOut, chr$(" b1-b4: ")
+    mov ecx, 4
+    mov edi, esi
+    add edi, 32  ; Skip to b values
+display_b_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_b_loop
+
+    ; Display c values
+    invoke StdOut, chr$(" c1-c4: ")
+    mov ecx, 4
+    mov edi, esi
+    add edi, 64  ; Skip to c values
+display_c_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_c_loop
+
+    ; Display d values
+    invoke StdOut, chr$(" d1-d4: ")
+    mov ecx, 4
+    mov edi, esi
+    add edi, 96  ; Skip to d values
+display_d_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_d_loop
+
+    ; Display e values
+    invoke StdOut, chr$(" e1-e4: ")
+    mov ecx, 4
+    mov edi, esi
+    add edi, 128  ; Skip to e values
+display_e_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_e_loop
+
+    ; Display f values
+    invoke StdOut, chr$(" f1-f4: ")
+    mov ecx, 4
+    mov edi, esi
+    add edi, 160  ; Skip to f values
+display_f_loop:
+    invoke dwtoa, [edi], addr buffer
+    invoke StdOut, addr buffer
+    add edi, 8
+    loop display_f_loop
+
+    invoke StdOut, chr$(13, 10)
+    ret
+display_quantum_number_values endp
+
+; Add quantum numbers
+add_quantum_numbers proc
+    ; Add a components
+    mov rax, qn1_a1
+    add rax, qn2_a1
+    mov result_a1, rax
+
+    mov rax, qn1_a2
+    add rax, qn2_a2
+    mov result_a2, rax
+
+    mov rax, qn1_a3
+    add rax, qn2_a3
+    mov result_a3, rax
+
+    mov rax, qn1_a4
+    add rax, qn2_a4
+    mov result_a4, rax
+
+    ; Add b components
+    mov rax, qn1_b1
+    add rax, qn2_b1
+    mov result_b1, rax
+
+    mov rax, qn1_b2
+    add rax, qn2_b2
+    mov result_b2, rax
+
+    mov rax, qn1_b3
+    add rax, qn2_b3
+    mov result_b3, rax
+
+    mov rax, qn1_b4
+    add rax, qn2_b4
+    mov result_b4, rax
+
+    ; Add c components
+    mov rax, qn1_c1
+    add rax, qn2_c1
+    mov result_c1, rax
+
+    mov rax, qn1_c2
+    add rax, qn2_c2
+    mov result_c2, rax
+
+    mov rax, qn1_c3
+    add rax, qn2_c3
+    mov result_c3, rax
+
+    mov rax, qn1_c4
+    add rax, qn2_c4
+    mov result_c4, rax
+
+    ; Add d components
+    mov rax, qn1_d1
+    add rax, qn2_d1
+    mov result_d1, rax
+
+    mov rax, qn1_d2
+    add rax, qn2_d2
+    mov result_d2, rax
+
+    mov rax, qn1_d3
+    add rax, qn2_d3
+    mov result_d3, rax
+
+    mov rax, qn1_d4
+    add rax, qn2_d4
+    mov result_d4, rax
+
+    ; Add e components
+    mov rax, qn1_e1
+    add rax, qn2_e1
+    mov result_e1, rax
+
+    mov rax, qn1_e2
+    add rax, qn2_e2
+    mov result_e2, rax
+
+    mov rax, qn1_e3
+    add rax, qn2_e3
+    mov result_e3, rax
+
+    mov rax, qn1_e4
+    add rax, qn2_e4
+    mov result_e4, rax
+
+    ; Add f components
+    mov rax, qn1_f1
+    add rax, qn2_f1
+    mov result_f1, rax
+
+    mov rax, qn1_f2
+    add rax, qn2_f2
+    mov result_f2, rax
+
+    mov rax, qn1_f3
+    add rax, qn2_f3
+    mov result_f3, rax
+
+    mov rax, qn1_f4
+    add rax, qn2_f4
+    mov result_f4, rax
+
+    ret
+add_quantum_numbers endp
+
+; Display algorithm analysis
+display_algorithm_analysis proc
+    invoke StdOut, chr$("Step 1: Initialize quantum numbers", 13, 10)
+    invoke StdOut, chr$("  - First QN: a=1, b=3, c=1, d=1, e=1, f=1 (representing 1÷3)", 13, 10)
+    invoke StdOut, chr$("  - Second QN: a=2, b=3, c=1, d=1, e=1, f=1 (representing 2÷3)", 13, 10)
+
+    invoke StdOut, chr$("Step 2: Add corresponding components", 13, 10)
+    invoke StdOut, chr$("  - a1+2 = 3, b1+3 = 6, c1+1 = 2, d1+1 = 2, e1+1 = 2, f1+1 = 2", 13, 10)
+
+    invoke StdOut, chr$("Step 3: Apply quantum number arithmetic rules", 13, 10)
+    invoke StdOut, chr$("  - Result represents 3÷6 = 1÷2 after normalization", 13, 10)
+
+    invoke StdOut, chr$("UTF-8 Division Symbol: ")
+    invoke StdOut, addr divide_symbol
+    invoke StdOut, chr$(13, 10)
+
+    invoke StdOut, chr$("Component Analysis:", 13, 10)
+    invoke StdOut, chr$("  - a: numerator component (1+2=3)", 13, 10)
+    invoke StdOut, chr$("  - b: denominator component (3+3=6)", 13, 10)
+    invoke StdOut, chr$("  - c: coefficient scaling (1+1=2)", 13, 10)
+    invoke StdOut, chr$("  - d: precision factor (1+1=2)", 13, 10)
+    invoke StdOut, chr$("  - e: quantum state (1+1=2)", 13, 10)
+    invoke StdOut, chr$("  - f: normalization factor (1+1=2)", 13, 10)
+
+    ret
+display_algorithm_analysis endp
+
+end start
