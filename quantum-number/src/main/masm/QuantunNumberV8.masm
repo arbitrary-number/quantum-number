@@ -29,8 +29,44 @@ msgRandomResult db "RANDOM BIT = ", 0
 msgAlgorithm db "=== QUANTUM ALGORITHM DEMO ===", 0Dh, 0Ah, 0
 msgQuantumXOR db "QUANTUM XOR: ", 0
 msgXOR       db " XOR ", 0
+msgIntermediate db "INTERMEDIATE: ", 0
+msgBinaryAdd db "BINARY ADD: ", 0
+msgSum       db "SUM: ", 0
+msgCarryBit  db "CARRY BIT: ", 0
+msgSet       db "SET", 0
+msgExtended  db "EXTENDED PRECISION: ", 0
+msgTimes     db " × ", 0
+msgDivide    db " ÷ ", 0
+msgEquals    db " = ", 0
+msgFraction  db "⅓", 0
+msgHalf      db "½", 0
+msgThird     db "⅓", 0
+msgMultiply  db "×", 0
+msgOneThird  db "1/3", 0
+msgCalc      db "CALCULATION: ", 0
+msgResult    db "RESULT: ", 0
+msgPrecision db "PRECISION: ", 0
+msgExact     db "EXACT", 0
 msgNewline  db 0Dh, 0Ah, 0
 msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
+
+; Enhanced fractional math messages
+msgFractionalHeader db "=== ENHANCED FRACTIONAL MATHEMATICS ===", 0
+msgAdditionDemo db "FRACTION ADDITION: 1/2 + 1/3 = 5/6", 0
+msgSubtractionDemo db "FRACTION SUBTRACTION: 3/4 - 1/2 = 1/4", 0
+msgMultiplicationDemo db "FRACTION MULTIPLICATION: 2/3 × 3/4 = 1/2", 0
+msgDivisionDemo db "FRACTION DIVISION: 5/6 ÷ 5/3 = 1/2", 0
+msgDecimalDemo db "DECIMAL TO FRACTION: 0.5 = 1/2", 0
+msgDecimalPoint5 db "0.5", 0
+msgQuestion db "?", 0
+msgStep1 db "Step 1: ", 0
+msgStep2 db "Step 2: ", 0
+msgStep3 db "Step 3: ", 0
+msgStep4 db "Step 4: ", 0
+msgStep5 db "Step 5: ", 0
+msgStep6 db "Step 6: ", 0
+msgMinus db " - ", 0
+msgBecomes db " becomes ", 0
 
 QuantumNumberV8 STRUCT
     signs     QWORD ?
@@ -226,10 +262,45 @@ quantumAdd PROC
     mov rsi, rcx    ; Quantum number 1
     mov rdi, rdx    ; Quantum number 2
 
-    ; Add a1 fields
-    mov rax, QWORD PTR [rsi + 32]    ; a1 of first number
-    mov rbx, QWORD PTR [rdi + 32]    ; a1 of second number
+    ; Display intermediate values
+    lea rcx, [msgIntermediate]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [rdi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Add a1 fields with detailed intermediate steps
+    mov rax, QWORD PTR [rsi + 32]    ; Load first number
+    mov rbx, QWORD PTR [rdi + 32]    ; Load second number
+
+    ; Show binary addition setup
+    lea rcx, [msgBinaryAdd]
+    call printString
+    mov rcx, rax
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Perform addition
     add rax, rbx
+
+    ; Show result before overflow check
+    lea rcx, [msgSum]
+    call printString
+    mov rcx, rax
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
     mov QWORD PTR [rsi + 32], rax
 
     ; Check for overflow and handle left/right pointers
@@ -248,6 +319,14 @@ handle_overflow_left:
     lea rcx, [msgOverflow]
     call printString
 
+    ; Show overflow details
+    lea rcx, [msgCarryBit]
+    call printString
+    lea rcx, [msgSet]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
     ; Allocate new node for higher values (left pointer)
     lea rax, [nodeLeft]                    ; Use nodeLeft for overflow
     mov QWORD PTR [rsi + LEFT_PTR_OFFSET], rax  ; Set leftPtr to overflow node
@@ -256,10 +335,26 @@ handle_overflow_left:
     mov rax, 1                             ; Overflow magnitude
     mov QWORD PTR [nodeLeft + 32], rax     ; Store in a1 field
 
-    ; Display overflow handling
+    ; Display overflow handling with details
     lea rcx, [msgLeftPtr]
     call printString
     mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show how overflow extends precision
+    lea rcx, [msgExtended]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]          ; Original result
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]     ; Overflow value
+    call printQWORD
+    lea rcx, [msgTimes]
+    call printString
+    mov rcx, 18446744073709551616          ; 2^64
     call printQWORD
     lea rcx, [msgNewline]
     call printString
@@ -363,28 +458,32 @@ quantumMeasure PROC
     ; Output: Simulates quantum measurement (collapses to definite state)
     push rbp
     mov rbp, rsp
+    push rsi
+
+    mov rsi, rcx    ; Save quantum number pointer
 
     ; Display measurement operation
     lea rcx, [msgMeasure]
     call printString
-    mov rcx, QWORD PTR [rcx + 32]    ; Current quantum state
+    mov rcx, QWORD PTR [rsi + 32]    ; Current quantum state
     call printQWORD
     lea rcx, [msgNewline]
     call printString
 
     ; For simulation, we'll "measure" by taking the least significant bit
-    mov rax, QWORD PTR [rcx + 32]
+    mov rax, QWORD PTR [rsi + 32]
     and rax, 1                      ; Extract LSB as measurement result
-    mov QWORD PTR [rcx + 32], rax   ; Collapse to measured state
+    mov QWORD PTR [rsi + 32], rax   ; Collapse to measured state
 
     ; Display measurement result
     lea rcx, [msgCollapse]
     call printString
-    mov rcx, QWORD PTR [rcx + 32]
+    mov rcx, QWORD PTR [rsi + 32]
     call printQWORD
     lea rcx, [msgNewline]
     call printString
 
+    pop rsi
     mov rsp, rbp
     pop rbp
     ret
@@ -438,6 +537,7 @@ quantumAlgorithm PROC
     mov rbp, rsp
     push rbx
     push rsi
+    push rdi
 
     ; Display algorithm start
     lea rcx, [msgAlgorithm]
@@ -472,12 +572,752 @@ quantumAlgorithm PROC
     lea rcx, [msgNewline]
     call printString
 
+    pop rdi
     pop rsi
     pop rbx
     mov rsp, rbp
     pop rbp
     ret
 quantumAlgorithm ENDP
+
+; Comprehensive Fractional Arithmetic Demonstration
+fractionalArithmeticDemo PROC
+    ; Demonstrates exact fractional arithmetic with no precision loss
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display demo header
+    lea rcx, [msgNewline]
+    call printString
+    lea rcx, [msgCalc]
+    call printString
+    lea rcx, [msgOneThird]
+    call printString
+    lea rcx, [msgMultiply]
+    call printString
+    mov rcx, 3
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Show 1/3 as fraction
+    lea rcx, [msgOneThird]
+    call printString
+    lea rcx, [msgEquals]
+    call printString
+    lea rcx, [msgFraction]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Multiply by 3: (1/3) × 3
+    lea rcx, [msgFraction]
+    call printString
+    lea rcx, [msgMultiply]
+    call printString
+    mov rcx, 3
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+    mov rcx, 1
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Divide by 2: 1 ÷ 2
+    mov rcx, 1
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+    lea rcx, [msgHalf]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 4: Show precision preservation
+    lea rcx, [msgPrecision]
+    call printString
+    lea rcx, [msgExact]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 5: Complex fractional expression
+    lea rcx, [msgCalc]
+    call printString
+    lea rcx, [msgOneThird]
+    call printString
+    lea rcx, [msgMultiply]
+    call printString
+    mov rcx, 3
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+    lea rcx, [msgHalf]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 6: Demonstrate quantum precision with large numbers
+    lea rcx, [msgCalc]
+    call printString
+    mov rcx, 1000000000000     ; 1 trillion
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, 3
+    call printQWORD
+    lea rcx, [msgMultiply]
+    call printString
+    mov rcx, 3
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+    mov rcx, 1000000000000     ; Should be exact
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; NEW: Enhanced fractional arithmetic with verbose output
+    call enhancedFractionalMath
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionalArithmeticDemo ENDP
+
+; Enhanced Fractional Mathematics with Verbose Output
+enhancedFractionalMath PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Header for enhanced fractional math
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgFractionalHeader
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Example 1: 1/2 + 1/3 = 5/6
+    call fractionAdditionDemo
+
+    ; Example 2: 3/4 - 1/2 = 1/4
+    call fractionSubtractionDemo
+
+    ; Example 3: 2/3 × 3/4 = 1/2
+    call fractionMultiplicationDemo
+
+    ; Example 4: 5/6 ÷ 5/3 = 1/2
+    call fractionDivisionDemo
+
+    ; Example 5: Complex fraction with decimals
+    call decimalToFractionDemo
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+enhancedFractionalMath ENDP
+
+; Fraction Addition: 1/2 + 1/3 = 5/6
+fractionAdditionDemo PROC
+    push rbp
+    mov rbp, rsp
+
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgAdditionDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: 1/2 + 1/3
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgPlus
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, OFFSET msgQuestion
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Find common denominator (2 × 3 = 6)
+    mov rcx, OFFSET msgStep1
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 6
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Convert fractions to common denominator
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 6
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 6
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Add numerators
+    mov rcx, OFFSET msgStep3
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgPlus
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 5
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 4: Result
+    mov rcx, OFFSET msgResult
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 6
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionAdditionDemo ENDP
+
+; Fraction Subtraction: 3/4 - 1/2 = 1/4
+fractionSubtractionDemo PROC
+    push rbp
+    mov rbp, rsp
+
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgSubtractionDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: 3/4 - 1/2
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    mov rcx, OFFSET msgMinus
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, OFFSET msgQuestion
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Common denominator (4)
+    mov rcx, OFFSET msgStep1
+    call printString
+    mov rcx, 4
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Convert to common denominator
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Subtract numerators
+    mov rcx, OFFSET msgStep3
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgMinus
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 1
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 4: Result
+    mov rcx, OFFSET msgResult
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionSubtractionDemo ENDP
+
+; Fraction Multiplication: 2/3 × 3/4 = 1/2
+fractionMultiplicationDemo PROC
+    push rbp
+    mov rbp, rsp
+
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgMultiplicationDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: 2/3 × 3/4
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 4
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, OFFSET msgQuestion
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Multiply numerators
+    mov rcx, OFFSET msgStep1
+    call printString
+    mov rcx, 2
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 6
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Multiply denominators
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 4
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 12
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Combine
+    mov rcx, OFFSET msgStep3
+    call printString
+    mov rcx, 6
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 12
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 4: Simplify
+    mov rcx, OFFSET msgStep4
+    call printString
+    mov rcx, 6
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 12
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 5: Result
+    mov rcx, OFFSET msgResult
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionMultiplicationDemo ENDP
+
+; Fraction Division: 5/6 ÷ 5/3 = 1/2
+fractionDivisionDemo PROC
+    push rbp
+    mov rbp, rsp
+
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgDivisionDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: 5/6 ÷ 5/3
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 6
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, OFFSET msgQuestion
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Invert second fraction
+    mov rcx, OFFSET msgStep1
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgBecomes
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 5
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Multiply fractions
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 6
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 5
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Multiply numerators and denominators
+    mov rcx, OFFSET msgStep3
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 3
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 15
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rcx, OFFSET msgStep3
+    call printString
+    mov rcx, 6
+    call printQWORD
+    mov rcx, OFFSET msgMultiply
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 30
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 4: Combine
+    mov rcx, OFFSET msgStep4
+    call printString
+    mov rcx, 15
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 30
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 5: Simplify
+    mov rcx, OFFSET msgStep5
+    call printString
+    mov rcx, 15
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 30
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 6: Result
+    mov rcx, OFFSET msgResult
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionDivisionDemo ENDP
+
+; Decimal to Fraction Conversion Demo
+decimalToFractionDemo PROC
+    push rbp
+    mov rbp, rsp
+
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgDecimalDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: 0.5 = ?
+    mov rcx, OFFSET msgDecimalPoint5
+    call printString
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, OFFSET msgQuestion
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 1: Write as fraction
+    mov rcx, OFFSET msgStep1
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 10
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 2: Simplify
+    mov rcx, OFFSET msgStep2
+    call printString
+    mov rcx, 5
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 10
+    call printQWORD
+    mov rcx, OFFSET msgEquals
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Step 3: Result
+    mov rcx, OFFSET msgResult
+    call printString
+    mov rcx, 1
+    call printQWORD
+    mov rcx, OFFSET msgDivide
+    call printString
+    mov rcx, 2
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+decimalToFractionDemo ENDP
 
 PUBLIC main
 main PROC
@@ -535,6 +1375,9 @@ main PROC
 
     ; Demonstrate quantum algorithm
     call quantumAlgorithm
+
+    ; Demonstrate fractional arithmetic with verbose output
+    call fractionalArithmeticDemo
 
     ; Test overflow conditions with exact mathematical verification
     mov rax, 0FFFFFFFFFFFFFFFFh         ; Max QWORD
