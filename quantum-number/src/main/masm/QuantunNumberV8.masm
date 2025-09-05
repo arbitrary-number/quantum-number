@@ -55,13 +55,13 @@ IN_PTR_OFFSET     EQU NumberNode.inPtr - NumberNode
 OUT_PTR_OFFSET    EQU NumberNode.outPtr - NumberNode
 
 .DATA
-nodeRoot NumberNode <0>
-nodeLeft NumberNode <0>
-nodeRight NumberNode <0>
-nodeUp NumberNode <0>
-nodeDown NumberNode <0>
-nodeIn NumberNode <0>
-nodeOut NumberNode <0>
+nodeRoot NumberNode <>
+nodeLeft NumberNode <>
+nodeRight NumberNode <>
+nodeUp NumberNode <>
+nodeDown NumberNode <>
+nodeIn NumberNode <>
+nodeOut NumberNode <>
 
 .CODE
 PUBLIC main
