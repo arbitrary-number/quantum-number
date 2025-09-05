@@ -65,6 +65,13 @@ jobs:
         ml64 /c quantum_number_v8_1_3_plus_2_3_demo.masm
         link quantum_number_v8_1_3_plus_2_3_demo.obj QuantumNumberV8.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_1_3_plus_2_3_demo.exe
 
+        # Build extended demo programs
+        ml64 /c quantum_number_v8_1_3_plus_2_3_extended_demo.masm
+        link quantum_number_v8_1_3_plus_2_3_extended_demo.obj QuantumNumberV8.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_1_3_plus_2_3_extended_demo.exe
+
+        ml64 /c quantum_number_v8_1_3_plus_2_3_extended_bitwise_demo.masm
+        link quantum_number_v8_1_3_plus_2_3_extended_bitwise_demo.obj QuantumNumberV8.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_1_3_plus_2_3_extended_bitwise_demo.exe
+
     - name: Upload executables
       uses: actions/upload-artifact@v4
       with:
@@ -76,3 +83,5 @@ jobs:
           quantum-number/src/main/masm/quantum_number_v8_demo.exe
           quantum-number/src/main/masm/quantum_number_v8_ai_demo.exe
           quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_demo.exe
+          quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_extended_demo.exe
+          quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_extended_bitwise_demo.exe

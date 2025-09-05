@@ -1,0 +1,316 @@
+; ============================================================================
+; QUANTUM NUMBER V8 1/3 + 2/3 EXTENDED DEMO - TRADITIONAL ASM
+; ============================================================================
+; Demonstrates exact fraction arithmetic: 1/3 + 2/3 = 1
+; Uses extended field configuration: a1-a3=0, b1-b3=0, a4=1, b4=3, c-f=1
+; Traditional ASM implementation with UTF-8 logging
+; ============================================================================
+
+; Windows API declarations
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+EXTERN SetConsoleCP : PROC
+EXTERN SetConsoleOutputCP : PROC
+
+; Include the core QuantumNumberV8 implementation
+INCLUDE QuantumNumberV8.masm
+
+; ============================================================================
+; DEMO DATA SECTION
+; ============================================================================
+
+.DATA
+
+; Demo messages
+msgDemoTitle       db "=== QUANTUM NUMBER V8 1/3 + 2/3 EXTENDED DEMO (TRADITIONAL ASM) ===", 0Dh, 0Ah, 0
+msgCalculation     db "CALCULATION: 1/3 + 2/3", 0Dh, 0Ah, 0
+msgStep1           db "Step 1: Initialize 1/3 (Extended Configuration)", 0Dh, 0Ah, 0
+msgStep2           db "Step 2: Initialize 2/3 (Extended Configuration)", 0Dh, 0Ah, 0
+msgStep3           db "Step 3: Add fractions using Traditional ASM", 0Dh, 0Ah, 0
+msgResult          db "FINAL RESULT: ", 0
+msgExpected        db "EXPECTED: 1 (exact)", 0Dh, 0Ah, 0
+msgPrecision       db "PRECISION: Exact (no floating-point errors)", 0Dh, 0Ah, 0
+msgSymbolic        db "SYMBOLIC: Preserved quantum number structure", 0Dh, 0Ah, 0
+msgDivisionConvention db "DIVISION CONVENTION: Leveraged for exact arithmetic", 0Dh, 0Ah, 0
+msgMethod          db "METHOD: Traditional ASM Addition", 0Dh, 0Ah, 0
+msgFieldConfig     db "FIELD CONFIGURATION: a1-a3=0, b1-b3=0, a4=1, b4=3, c-f=1", 0Dh, 0Ah, 0
+msgUTF8Enabled     db "UTF-8 CONSOLE: Enabled for proper character display", 0Dh, 0Ah, 0
+
+; Field analysis messages
+msgFieldAnalysis   db "=== FIELD ANALYSIS ===", 0Dh, 0Ah, 0
+msgActiveFields    db "ACTIVE FIELDS: a4, b4, c1-c4, d1-d4, e1-e4, f1-f4", 0Dh, 0Ah, 0
+msgZeroFields      db "ZERO FIELDS: a1-a3, b1-b3", 0Dh, 0Ah, 0
+msgCollapseStatus  db "COLLAPSE STATUS: Cannot collapse (b1-b3=0 = division by zero)", 0Dh, 0Ah, 0
+
+; ============================================================================
+; UTILITY FUNCTIONS
+; ============================================================================
+
+; Set console to UTF-8 codepage
+setUTF8Console PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+
+    ; Set console input codepage to UTF-8 (65001)
+    mov rcx, 65001
+    call SetConsoleCP
+
+    ; Set console output codepage to UTF-8 (65001)
+    mov rcx, 65001
+    call SetConsoleOutputCP
+
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+setUTF8Console ENDP
+
+; ============================================================================
+; FIELD ANALYSIS FUNCTION
+; ============================================================================
+
+analyzeFields PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+
+    ; Display field analysis header
+    lea rcx, [msgFieldAnalysis]
+    call printString
+
+    ; Display field configuration
+    lea rcx, [msgFieldConfig]
+    call printString
+
+    ; Display active fields
+    lea rcx, [msgActiveFields]
+    call printString
+
+    ; Display zero fields
+    lea rcx, [msgZeroFields]
+    call printString
+
+    ; Display collapse status
+    lea rcx, [msgCollapseStatus]
+    call printString
+
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+analyzeFields ENDP
+
+; ============================================================================
+; TRADITIONAL ASM ADDITION DEMO
+; ============================================================================
+
+traditionalAdditionDemo PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display method
+    lea rcx, [msgMethod]
+    call printString
+
+    ; Step 1: Initialize first fraction (1/3) with extended configuration
+    lea rcx, [msgStep1]
+    call printString
+
+    ; Initialize quantum number for 1/3 with extended field configuration
+    lea rcx, [nodeRoot]           ; Pointer to quantum number
+    mov rdx, 1                    ; Numerator base value
+    call initQuantumNumber
+
+    ; Set extended field configuration for 1/3
+    ; a1-a3 = 0 (already set by init)
+    ; b1-b3 = 0 (already set by init)
+    mov QWORD PTR [nodeRoot + 24], 1    ; a4 = 1 (numerator)
+    mov QWORD PTR [nodeRoot + 56], 3    ; b4 = 3 (denominator)
+
+    ; Set c1-c4 = 1
+    mov QWORD PTR [nodeRoot + 64], 1    ; c1 = 1
+    mov QWORD PTR [nodeRoot + 72], 1    ; c2 = 1
+    mov QWORD PTR [nodeRoot + 80], 1    ; c3 = 1
+    mov QWORD PTR [nodeRoot + 88], 1    ; c4 = 1
+
+    ; Set d1-d4 = 1
+    mov QWORD PTR [nodeRoot + 96], 1    ; d1 = 1
+    mov QWORD PTR [nodeRoot + 104], 1   ; d2 = 1
+    mov QWORD PTR [nodeRoot + 112], 1   ; d3 = 1
+    mov QWORD PTR [nodeRoot + 120], 1   ; d4 = 1
+
+    ; Set e1-e4 = 1
+    mov QWORD PTR [nodeRoot + 128], 1   ; e1 = 1
+    mov QWORD PTR [nodeRoot + 136], 1   ; e2 = 1
+    mov QWORD PTR [nodeRoot + 144], 1   ; e3 = 1
+    mov QWORD PTR [nodeRoot + 152], 1   ; e4 = 1
+
+    ; Set f1-f4 = 1
+    mov QWORD PTR [nodeRoot + 160], 1   ; f1 = 1
+    mov QWORD PTR [nodeRoot + 168], 1   ; f2 = 1
+    mov QWORD PTR [nodeRoot + 176], 1   ; f3 = 1
+    mov QWORD PTR [nodeRoot + 184], 1   ; f4 = 1
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; b4
+    call printQWORD
+    call printNewline
+
+    ; Step 2: Initialize second fraction (2/3) with extended configuration
+    lea rcx, [msgStep2]
+    call printString
+
+    ; Initialize quantum number for 2/3 with extended field configuration
+    lea rcx, [nodeLeft]           ; Pointer to quantum number
+    mov rdx, 2                    ; Numerator base value
+    call initQuantumNumber
+
+    ; Set extended field configuration for 2/3
+    ; a1-a3 = 0 (already set by init)
+    ; b1-b3 = 0 (already set by init)
+    mov QWORD PTR [nodeLeft + 24], 2    ; a4 = 2 (numerator)
+    mov QWORD PTR [nodeLeft + 56], 3    ; b4 = 3 (denominator)
+
+    ; Set c1-c4 = 1
+    mov QWORD PTR [nodeLeft + 64], 1    ; c1 = 1
+    mov QWORD PTR [nodeLeft + 72], 1    ; c2 = 1
+    mov QWORD PTR [nodeLeft + 80], 1    ; c3 = 1
+    mov QWORD PTR [nodeLeft + 88], 1    ; c4 = 1
+
+    ; Set d1-d4 = 1
+    mov QWORD PTR [nodeLeft + 96], 1    ; d1 = 1
+    mov QWORD PTR [nodeLeft + 104], 1   ; d2 = 1
+    mov QWORD PTR [nodeLeft + 112], 1   ; d3 = 1
+    mov QWORD PTR [nodeLeft + 120], 1   ; d4 = 1
+
+    ; Set e1-e4 = 1
+    mov QWORD PTR [nodeLeft + 128], 1   ; e1 = 1
+    mov QWORD PTR [nodeLeft + 136], 1   ; e2 = 1
+    mov QWORD PTR [nodeLeft + 144], 1   ; e3 = 1
+    mov QWORD PTR [nodeLeft + 152], 1   ; e4 = 1
+
+    ; Set f1-f4 = 1
+    mov QWORD PTR [nodeLeft + 160], 1   ; f1 = 1
+    mov QWORD PTR [nodeLeft + 168], 1   ; f2 = 1
+    mov QWORD PTR [nodeLeft + 176], 1   ; f3 = 1
+    mov QWORD PTR [nodeLeft + 184], 1   ; f4 = 1
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeLeft + 24]   ; a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 56]   ; b4
+    call printQWORD
+    call printNewline
+
+    ; Step 3: Add the fractions using traditional ASM
+    lea rcx, [msgStep3]
+    call printString
+
+    ; Display the addition operation
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; a4 of first
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; b4 of first
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 24]   ; a4 of second
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 56]   ; b4 of second
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Perform the quantum addition using traditional ASM
+    lea rcx, [nodeRoot]           ; First quantum number (1/3)
+    lea rdx, [nodeLeft]           ; Second quantum number (2/3)
+    call quantumAdd
+
+    ; Display final result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; Final a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; Final b4
+    call printQWORD
+    call printNewline
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+traditionalAdditionDemo ENDP
+
+; ============================================================================
+; MAIN DEMO FUNCTION
+; ============================================================================
+
+main PROC
+    ; Set UTF-8 console codepage
+    call setUTF8Console
+
+    ; Display UTF-8 enabled message
+    lea rcx, [msgUTF8Enabled]
+    call printString
+
+    ; Initialize diagnostic output
+    lea rcx, [msgDemoTitle]
+    call printString
+
+    ; Display calculation
+    lea rcx, [msgCalculation]
+    call printString
+
+    ; Analyze fields
+    call analyzeFields
+
+    ; Run traditional ASM demo
+    call traditionalAdditionDemo
+
+    ; Display expected result
+    lea rcx, [msgExpected]
+    call printString
+
+    ; Display precision information
+    lea rcx, [msgPrecision]
+    call printString
+
+    ; Display symbolic preservation
+    lea rcx, [msgSymbolic]
+    call printString
+
+    ; Display division convention leverage
+    lea rcx, [msgDivisionConvention]
+    call printString
+
+    ; Exit
+    xor rcx, rcx
+    call ExitProcess
+main ENDP
+
+END
