@@ -23,10 +23,27 @@ jobs:
     - name: Compile MASM Programs
       run: |
         cd quantum-number/src/main/masm
+
+        # Build individual programs
         ml64 /c hello_world.masm
         link hello_world.obj /subsystem:console /entry:main kernel32.lib /out:hello_world.exe
+
         ml64 /c QuantunNumberV8.masm
         link QuantunNumberV8.obj /subsystem:console /entry:main kernel32.lib /out:QuantunNumberV8.exe
+
+        ml64 /c QuantumNumberV8Edition2.masm
+        link QuantumNumberV8Edition2.obj /subsystem:console /entry:main kernel32.lib /out:QuantumNumberV8Edition2.exe
+
+        # Build core library
+        ml64 /c quantum_number_v8_core.masm
+
+        # Build demo programs (multi-file)
+        ml64 /c quantum_number_v8_demo.masm
+        link quantum_number_v8_core.obj quantum_number_v8_demo.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_demo.exe
+
+        # Build AI demo program
+        ml64 /c quantum_number_v8_ai_demo.masm
+        link quantum_number_v8_core.obj quantum_number_v8_ai_demo.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_ai_demo.exe
 
     - name: Upload executables
       uses: actions/upload-artifact@v4
@@ -35,3 +52,6 @@ jobs:
         path: |
           quantum-number/src/main/masm/hello_world.exe
           quantum-number/src/main/masm/QuantunNumberV8.exe
+          quantum-number/src/main/masm/QuantumNumberV8Edition2.exe
+          quantum-number/src/main/masm/quantum_number_v8_demo.exe
+          quantum-number/src/main/masm/quantum_number_v8_ai_demo.exe
