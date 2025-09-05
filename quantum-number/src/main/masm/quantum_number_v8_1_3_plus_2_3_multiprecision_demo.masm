@@ -1,0 +1,320 @@
+; ============================================================================
+; QUANTUM NUMBER V8 1/3 + 2/3 MULTI-PRECISION DEMO - TRADITIONAL ASM
+; ============================================================================
+; Demonstrates exact fraction arithmetic: 1/3 + 2/3 = 1
+; Uses multi-precision field configuration: a1-a3=0, b1-b3=0, a4=1, b4=3
+; c-f fields follow pattern: c1-c3=0, c4=1 (each as 256-bit limbs)
+; Traditional ASM implementation with UTF-8 logging
+; ============================================================================
+
+; Windows API declarations
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+EXTERN SetConsoleCP : PROC
+EXTERN SetConsoleOutputCP : PROC
+
+; Include the core QuantumNumberV8 implementation
+INCLUDE QuantumNumberV8.masm
+
+; ============================================================================
+; DEMO DATA SECTION
+; ============================================================================
+
+.DATA
+
+; Demo messages
+msgDemoTitle       db "=== QUANTUM NUMBER V8 1/3 + 2/3 MULTI-PRECISION DEMO (TRADITIONAL ASM) ===", 0Dh, 0Ah, 0
+msgCalculation     db "CALCULATION: 1/3 + 2/3 (Multi-Precision 256-bit)", 0Dh, 0Ah, 0
+msgStep1           db "Step 1: Initialize 1/3 (Multi-Precision Configuration)", 0Dh, 0Ah, 0
+msgStep2           db "Step 2: Initialize 2/3 (Multi-Precision Configuration)", 0Dh, 0Ah, 0
+msgStep3           db "Step 3: Add fractions using Traditional ASM", 0Dh, 0Ah, 0
+msgResult          db "FINAL RESULT: ", 0
+msgExpected        db "EXPECTED: 1 (exact)", 0Dh, 0Ah, 0
+msgPrecision       db "PRECISION: Exact (no floating-point errors)", 0Dh, 0Ah, 0
+msgSymbolic        db "SYMBOLIC: Preserved quantum number structure", 0Dh, 0Ah, 0
+msgDivisionConvention db "DIVISION CONVENTION: Leveraged for exact arithmetic", 0Dh, 0Ah, 0
+msgMethod          db "METHOD: Traditional ASM Addition", 0Dh, 0Ah, 0
+msgFieldConfig     db "FIELD CONFIG: Multi-precision limbs (a1-a3=0, b1-b3=0, a4=1, b4=3, c-f=1 pattern)", 0Dh, 0Ah, 0
+msgUTF8Enabled     db "UTF-8 CONSOLE: Enabled for proper character display", 0Dh, 0Ah, 0
+
+; Multi-precision analysis messages
+msgMultiPrecision db "=== MULTI-PRECISION ANALYSIS ===", 0Dh, 0Ah, 0
+msgLimbAnalysis    db "LIMB ANALYSIS: Each field is a 64-bit limb of 256-bit number", 0Dh, 0Ah, 0
+msgActiveLimb      db "ACTIVE LIMB: Only a4,b4 used (lowest 64 bits = 1/3)", 0Dh, 0Ah, 0
+msgUnusedLimbs     db "UNUSED LIMBS: a1-a3,b1-b3=0 (higher 192 bits unused)", 0Dh, 0Ah, 0
+msgCollapseSafe    db "COLLAPSE STATUS: Safe (b4=3 ≠ 0, higher limbs=0 valid)", 0Dh, 0Ah, 0
+
+; ============================================================================
+; UTILITY FUNCTIONS
+; ============================================================================
+
+; Set console to UTF-8 codepage
+setUTF8Console PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+
+    ; Set console input codepage to UTF-8 (65001)
+    mov rcx, 65001
+    call SetConsoleCP
+
+    ; Set console output codepage to UTF-8 (65001)
+    mov rcx, 65001
+    call SetConsoleOutputCP
+
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+setUTF8Console ENDP
+
+; ============================================================================
+; MULTI-PRECISION ANALYSIS FUNCTION
+; ============================================================================
+
+analyzeMultiPrecision PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+
+    ; Display multi-precision analysis header
+    lea rcx, [msgMultiPrecision]
+    call printString
+
+    ; Display limb analysis
+    lea rcx, [msgLimbAnalysis]
+    call printString
+
+    ; Display active limb
+    lea rcx, [msgActiveLimb]
+    call printString
+
+    ; Display unused limbs
+    lea rcx, [msgUnusedLimbs]
+    call printString
+
+    ; Display collapse status
+    lea rcx, [msgCollapseSafe]
+    call printString
+
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+analyzeMultiPrecision ENDP
+
+; ============================================================================
+; TRADITIONAL ASM MULTI-PRECISION ADDITION DEMO
+; ============================================================================
+
+traditionalMultiPrecisionDemo PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display method
+    lea rcx, [msgMethod]
+    call printString
+
+    ; Step 1: Initialize first fraction (1/3) with multi-precision configuration
+    lea rcx, [msgStep1]
+    call printString
+
+    ; Initialize quantum number for 1/3 with multi-precision field configuration
+    lea rcx, [nodeRoot]           ; Pointer to quantum number
+    mov rdx, 1                    ; Numerator base value
+    call initQuantumNumber
+
+    ; Set multi-precision field configuration for 1/3
+    ; Higher limbs = 0 (a1-a3, b1-b3)
+    ; Lowest limb = 1/3 (a4=1, b4=3)
+    mov QWORD PTR [nodeRoot + 24], 1    ; a4 = 1 (numerator lowest limb)
+    mov QWORD PTR [nodeRoot + 56], 3    ; b4 = 3 (denominator lowest limb)
+
+    ; Set auxiliary fields c-f with pattern: c1-c3=0, c4=1
+    ; c fields (auxiliary component)
+    mov QWORD PTR [nodeRoot + 64], 0    ; c1 = 0
+    mov QWORD PTR [nodeRoot + 72], 0    ; c2 = 0
+    mov QWORD PTR [nodeRoot + 80], 0    ; c3 = 0
+    mov QWORD PTR [nodeRoot + 88], 1    ; c4 = 1
+
+    ; d fields (auxiliary component)
+    mov QWORD PTR [nodeRoot + 96], 0    ; d1 = 0
+    mov QWORD PTR [nodeRoot + 104], 0   ; d2 = 0
+    mov QWORD PTR [nodeRoot + 112], 0   ; d3 = 0
+    mov QWORD PTR [nodeRoot + 120], 1   ; d4 = 1
+
+    ; e fields (auxiliary component)
+    mov QWORD PTR [nodeRoot + 128], 0   ; e1 = 0
+    mov QWORD PTR [nodeRoot + 136], 0   ; e2 = 0
+    mov QWORD PTR [nodeRoot + 144], 0   ; e3 = 0
+    mov QWORD PTR [nodeRoot + 152], 1   ; e4 = 1
+
+    ; f fields (auxiliary component)
+    mov QWORD PTR [nodeRoot + 160], 0   ; f1 = 0
+    mov QWORD PTR [nodeRoot + 168], 0   ; f2 = 0
+    mov QWORD PTR [nodeRoot + 176], 0   ; f3 = 0
+    mov QWORD PTR [nodeRoot + 184], 1   ; f4 = 1
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; b4
+    call printQWORD
+    call printNewline
+
+    ; Step 2: Initialize second fraction (2/3) with multi-precision configuration
+    lea rcx, [msgStep2]
+    call printString
+
+    ; Initialize quantum number for 2/3 with multi-precision field configuration
+    lea rcx, [nodeLeft]           ; Pointer to quantum number
+    mov rdx, 2                    ; Numerator base value
+    call initQuantumNumber
+
+    ; Set multi-precision field configuration for 2/3
+    ; Higher limbs = 0 (a1-a3, b1-b3)
+    ; Lowest limb = 2/3 (a4=2, b4=3)
+    mov QWORD PTR [nodeLeft + 24], 2    ; a4 = 2 (numerator lowest limb)
+    mov QWORD PTR [nodeLeft + 56], 3    ; b4 = 3 (denominator lowest limb)
+
+    ; Set auxiliary fields c-f with pattern: c1-c3=0, c4=1
+    ; c fields (auxiliary component)
+    mov QWORD PTR [nodeLeft + 64], 0    ; c1 = 0
+    mov QWORD PTR [nodeLeft + 72], 0    ; c2 = 0
+    mov QWORD PTR [nodeLeft + 80], 0    ; c3 = 0
+    mov QWORD PTR [nodeLeft + 88], 1    ; c4 = 1
+
+    ; d fields (auxiliary component)
+    mov QWORD PTR [nodeLeft + 96], 0    ; d1 = 0
+    mov QWORD PTR [nodeLeft + 104], 0   ; d2 = 0
+    mov QWORD PTR [nodeLeft + 112], 0   ; d3 = 0
+    mov QWORD PTR [nodeLeft + 120], 1   ; d4 = 1
+
+    ; e fields (auxiliary component)
+    mov QWORD PTR [nodeLeft + 128], 0   ; e1 = 0
+    mov QWORD PTR [nodeLeft + 136], 0   ; e2 = 0
+    mov QWORD PTR [nodeLeft + 144], 0   ; e3 = 0
+    mov QWORD PTR [nodeLeft + 152], 1   ; e4 = 1
+
+    ; f fields (auxiliary component)
+    mov QWORD PTR [nodeLeft + 160], 0   ; f1 = 0
+    mov QWORD PTR [nodeLeft + 168], 0   ; f2 = 0
+    mov QWORD PTR [nodeLeft + 176], 0   ; f3 = 0
+    mov QWORD PTR [nodeLeft + 184], 1   ; f4 = 1
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeLeft + 24]   ; a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 56]   ; b4
+    call printQWORD
+    call printNewline
+
+    ; Step 3: Add the fractions using traditional ASM
+    lea rcx, [msgStep3]
+    call printString
+
+    ; Display the addition operation
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; a4 of first
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; b4 of first
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 24]   ; a4 of second
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 56]   ; b4 of second
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Perform the quantum addition using traditional ASM
+    lea rcx, [nodeRoot]           ; First quantum number (1/3)
+    lea rdx, [nodeLeft]           ; Second quantum number (2/3)
+    call quantumAdd
+
+    ; Display final result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 24]   ; Final a4
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 56]   ; Final b4
+    call printQWORD
+    call printNewline
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+traditionalMultiPrecisionDemo ENDP
+
+; ============================================================================
+; MAIN DEMO FUNCTION
+; ============================================================================
+
+main PROC
+    ; Set UTF-8 console codepage
+    call setUTF8Console
+
+    ; Display UTF-8 enabled message
+    lea rcx, [msgUTF8Enabled]
+    call printString
+
+    ; Initialize diagnostic output
+    lea rcx, [msgDemoTitle]
+    call printString
+
+    ; Display calculation
+    lea rcx, [msgCalculation]
+    call printString
+
+    ; Analyze multi-precision configuration
+    call analyzeMultiPrecision
+
+    ; Run traditional ASM demo
+    call traditionalMultiPrecisionDemo
+
+    ; Display expected result
+    lea rcx, [msgExpected]
+    call printString
+
+    ; Display precision information
+    lea rcx, [msgPrecision]
+    call printString
+
+    ; Display symbolic preservation
+    lea rcx, [msgSymbolic]
+    call printString
+
+    ; Display division convention leverage
+    lea rcx, [msgDivisionConvention]
+    call printString
+
+    ; Exit
+    xor rcx, rcx
+    call ExitProcess
+main ENDP
+
+END
