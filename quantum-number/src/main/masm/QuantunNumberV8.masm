@@ -17,8 +17,10 @@ msgSigns    db "Signs: ", 0
 msgValue    db "Value: ", 0
 msgOp       db "Operation: ", 0
 msgResult   db "Result: ", 0
+msgPlus     db " + ", 0
+msgEquals   db " = ", 0
 msgNewline  db 0Dh, 0Ah, 0
-msgOverflow  db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
+msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
 
 QuantumNumberV8 STRUCT
     signs     QWORD ?
@@ -143,20 +145,58 @@ print_done:
     ret
 printString ENDP
 
-; Helper function to print QWORD in hex
+; Helper function to print QWORD in decimal
 printQWORD PROC
     ; Input: RCX = QWORD value
     ; Output: None
     push rbp
     mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
     sub rsp, 64
 
-    ; Simple hex output (placeholder for now)
-    mov rax, rcx
-    ; TODO: Implement proper hex conversion
-    lea rcx, [msgValue]
-    call printString
+    mov rax, rcx    ; Number to print
+    mov rbx, 10     ; Divisor for decimal
+    lea rsi, [rsp + 32]  ; Buffer for digits
+    mov rdi, rsi    ; End of buffer
 
+    ; Handle zero case
+    test rax, rax
+    jnz convert_loop
+    mov byte ptr [rdi], '0'
+    inc rdi
+    jmp print_number
+
+convert_loop:
+    xor rdx, rdx
+    div rbx         ; RAX = quotient, RDX = remainder
+    add dl, '0'     ; Convert to ASCII
+    dec rdi
+    mov [rdi], dl
+    test rax, rax
+    jnz convert_loop
+
+print_number:
+    ; Calculate length
+    lea rcx, [rsp + 32]
+    sub rcx, rdi
+    mov r8, rcx     ; Length
+
+    ; Print the number
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rcx, rax    ; Handle
+    mov rdx, rdi    ; Buffer
+    ; R8 = length
+    lea r9, [rsp + 40]
+    mov QWORD PTR [rsp + 32], 0  ; lpReserved
+    call WriteConsoleA
+
+    add rsp, 64
+    pop rdi
+    pop rsi
+    pop rbx
     mov rsp, rbp
     pop rbp
     ret
@@ -267,9 +307,15 @@ main PROC
     call printString
 
     ; Perform quantum addition: nodeRoot + nodeLeft
-    lea rcx, [msgOp]
+    ; Print UTF-8 equation: "42 + 58 = "
+    mov rcx, QWORD PTR [nodeRoot + 32]   ; First number (42)
+    call printQWORD
+    lea rcx, [msgPlus]
     call printString
-    ; TODO: Print UTF-8 equation like "42 + 58 = ?"
+    mov rcx, QWORD PTR [nodeLeft + 32]   ; Second number (58)
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
 
     lea rcx, [nodeRoot]           ; First quantum number
     lea rdx, [nodeLeft]           ; Second quantum number
