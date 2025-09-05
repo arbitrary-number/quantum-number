@@ -2,11 +2,11 @@ name: Build MASM Programs
 
 on:
   push:
-    paths:
-      - 'quantum-number/src/main/masm/*.masm'
+    branches:
+      - masm
   pull_request:
-    paths:
-      - 'quantum-number/src/main/masm/*.masm'
+    branches:
+      - masm
   workflow_dispatch:
     inputs:
       build_target:
