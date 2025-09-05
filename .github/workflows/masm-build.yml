@@ -8,6 +8,22 @@ on:
     paths:
       - 'quantum-number/src/main/masm/*.masm'
   workflow_dispatch:
+    inputs:
+      build_target:
+        description: 'Specific build target (leave empty for all)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - core-only
+        - demo-only
+        - ai-demo-only
+      debug_build:
+        description: 'Enable debug symbols'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build:  
