@@ -19,7 +19,16 @@ msgOp       db "Operation: ", 0
 msgResult   db "Result: ", 0
 msgPlus     db " + ", 0
 msgEquals   db " = ", 0
-msgLeftPtr  db "LEFT: ", 0
+msgLeftPtr  db "LEFT POINTER (Higher Values): ", 0
+msgRightPtr db "RIGHT POINTER (Microscopic Values): ", 0
+msgPauliX   db "PAULI-X GATE: ", 0
+msgMeasure  db "QUANTUM MEASUREMENT: ", 0
+msgCollapse db "COLLAPSED TO: ", 0
+msgRandomBit db "QUANTUM RANDOM BIT: ", 0
+msgRandomResult db "RANDOM BIT = ", 0
+msgAlgorithm db "=== QUANTUM ALGORITHM DEMO ===", 0Dh, 0Ah, 0
+msgQuantumXOR db "QUANTUM XOR: ", 0
+msgXOR       db " XOR ", 0
 msgNewline  db 0Dh, 0Ah, 0
 msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
 
@@ -286,13 +295,189 @@ quantumMultiply PROC
 handle_mult_overflow:
     lea rcx, [msgOverflow]
     call printString
-    ; TODO: Implement right pointer for microscopic values
+
+    ; Allocate new node for microscopic values (right pointer)
+    lea rax, [nodeRight]                   ; Use nodeRight for microscopic overflow
+    mov QWORD PTR [rcx + RIGHT_PTR_OFFSET], rax  ; Set rightPtr to overflow node
+
+    ; Set microscopic overflow value (fractional precision)
+    mov rax, 1                             ; Microscopic magnitude
+    mov QWORD PTR [nodeRight + 32], rax    ; Store in a1 field
+
+    ; Display microscopic overflow handling
+    lea rcx, [msgRightPtr]
+    call printString
+    mov rcx, QWORD PTR [nodeRight + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
 
 quantum_mult_done:
     mov rsp, rbp
     pop rbp
     ret
 quantumMultiply ENDP
+
+; Pauli-X quantum gate (quantum NOT gate)
+pauliXGate PROC
+    ; Input: RCX = ptr to quantum number
+    ; Output: Applies Pauli-X gate (flips all bits)
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+
+    mov rsi, rcx    ; Save quantum number pointer
+
+    ; Display gate operation
+    lea rcx, [msgPauliX]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]    ; Current value
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Apply Pauli-X: Flip all bits in the quantum number
+    mov rax, QWORD PTR [rsi + 32]    ; Load current value
+    not rax                         ; Apply Pauli-X (bitwise NOT)
+    mov QWORD PTR [rsi + 32], rax   ; Store result
+
+    ; Display result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+pauliXGate ENDP
+
+; Quantum measurement simulation
+quantumMeasure PROC
+    ; Input: RCX = ptr to quantum number
+    ; Output: Simulates quantum measurement (collapses to definite state)
+    push rbp
+    mov rbp, rsp
+
+    ; Display measurement operation
+    lea rcx, [msgMeasure]
+    call printString
+    mov rcx, QWORD PTR [rcx + 32]    ; Current quantum state
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; For simulation, we'll "measure" by taking the least significant bit
+    mov rax, QWORD PTR [rcx + 32]
+    and rax, 1                      ; Extract LSB as measurement result
+    mov QWORD PTR [rcx + 32], rax   ; Collapse to measured state
+
+    ; Display measurement result
+    lea rcx, [msgCollapse]
+    call printString
+    mov rcx, QWORD PTR [rcx + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumMeasure ENDP
+
+; Quantum Random Bit Generator
+quantumRandomBit PROC
+    ; Input: RCX = ptr to quantum number for entropy
+    ; Output: Generates random bit using quantum measurement
+    push rbp
+    mov rbp, rsp
+    push rbx
+
+    ; Display random bit generation
+    lea rcx, [msgRandomBit]
+    call printString
+
+    ; Create superposition-like state using system time/timestamp
+    rdtsc                           ; Get timestamp counter
+    mov QWORD PTR [rcx + 32], rax   ; Use as quantum entropy
+
+    ; Apply Pauli-X to create "superposition"
+    mov rax, QWORD PTR [rcx + 32]
+    not rax
+    mov QWORD PTR [rcx + 32], rax
+
+    ; Measure to get random bit
+    mov rax, QWORD PTR [rcx + 32]
+    and rax, 1                      ; Extract random bit
+    mov rbx, rax                    ; Save the random bit
+
+    ; Display result
+    lea rcx, [msgRandomResult]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    mov rax, rbx    ; Return random bit
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumRandomBit ENDP
+
+; Simple Quantum Algorithm Demonstration
+quantumAlgorithm PROC
+    ; Demonstrates a simple quantum algorithm using our framework
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+
+    ; Display algorithm start
+    lea rcx, [msgAlgorithm]
+    call printString
+
+    ; Generate quantum random numbers
+    lea rcx, [nodeRoot]
+    call quantumRandomBit
+    mov rbx, rax    ; Save first random bit
+
+    lea rcx, [nodeLeft]
+    call quantumRandomBit
+    mov rsi, rax    ; Save second random bit
+
+    ; Perform quantum XOR operation (simple quantum algorithm)
+    lea rcx, [msgQuantumXOR]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgXOR]
+    call printString
+    mov rcx, rsi
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Compute XOR result
+    mov rax, rbx
+    xor rax, rsi
+    mov rcx, rax
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumAlgorithm ENDP
 
 PUBLIC main
 main PROC
@@ -339,6 +524,17 @@ main PROC
     lea rcx, [nodeRoot]           ; First quantum number
     lea rdx, [nodeLeft]           ; Second quantum number
     call quantumMultiply
+
+    ; Demonstrate Pauli-X quantum gate
+    lea rcx, [nodeRoot]           ; Apply to first quantum number
+    call pauliXGate
+
+    ; Demonstrate quantum measurement
+    lea rcx, [nodeRoot]           ; Measure the quantum state
+    call quantumMeasure
+
+    ; Demonstrate quantum algorithm
+    call quantumAlgorithm
 
     ; Test overflow conditions with exact mathematical verification
     mov rax, 0FFFFFFFFFFFFFFFFh         ; Max QWORD
