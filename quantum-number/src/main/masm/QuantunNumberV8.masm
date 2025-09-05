@@ -19,7 +19,7 @@ msgOp       db "Operation: ", 0
 msgResult   db "Result: ", 0
 msgPlus     db " + ", 0
 msgEquals   db " = ", 0
-msgLeftPtr  db "LEFT POINTER (Higher Values): ", 0
+msgLeftPtr  db "LEFT: ", 0
 msgNewline  db 0Dh, 0Ah, 0
 msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
 
