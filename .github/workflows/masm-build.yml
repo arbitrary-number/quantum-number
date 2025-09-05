@@ -1,12 +1,12 @@
-name: Build MASM Hello World
+name: Build MASM Programs
 
 on:
   push:
     paths:
-      - 'quantum-number/src/main/masm/hello_world.masm'
+      - 'quantum-number/src/main/masm/*.masm'
   pull_request:
     paths:
-      - 'quantum-number/src/main/masm/hello_world.masm'
+      - 'quantum-number/src/main/masm/*.masm'
   workflow_dispatch:
 
 jobs:
@@ -20,14 +20,18 @@ jobs:
     - name: Setup MSVC Dev Command Prompt
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Compile MASM
+    - name: Compile MASM Programs
       run: |
         cd quantum-number/src/main/masm
         ml64 /c hello_world.masm
         link hello_world.obj /subsystem:console /entry:main kernel32.lib /out:hello_world.exe
+        ml64 /c QuantunNumberV8.masm
+        link QuantunNumberV8.obj /subsystem:console /entry:main kernel32.lib /out:QuantunNumberV8.exe
 
-    - name: Upload executable
+    - name: Upload executables
       uses: actions/upload-artifact@v4
       with:
-        name: hello-world-exe
-        path: quantum-number/src/main/masm/hello_world.exe
+        name: masm-executables
+        path: |
+          quantum-number/src/main/masm/hello_world.exe
+          quantum-number/src/main/masm/QuantunNumberV8.exe

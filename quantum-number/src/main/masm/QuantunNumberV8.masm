@@ -1,6 +1,4 @@
-OPTION 64
-.MODEL flat, stdcall
-option casemap:none
+
 
 QuantumNumberV8 STRUCT
     signs     QWORD ?
