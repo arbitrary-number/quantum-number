@@ -1,0 +1,32 @@
+name: Build MASM Hello World
+
+on:
+  push:
+    paths:
+      - 'quantum-number/src/main/masm/hello_world.masm'
+  pull_request:
+    paths:
+      - 'quantum-number/src/main/masm/hello_world.masm'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSVC
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Compile MASM
+      run: |
+        cd quantum-number/src/main/masm
+        ml64 /c hello_world.masm
+        link hello_world.obj /subsystem:console /entry:main kernel32.lib /out:hello_world.exe
+
+    - name: Upload executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: hello-world-exe
+        path: quantum-number/src/main/masm/hello_world.exe
