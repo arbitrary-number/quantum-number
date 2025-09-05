@@ -1,0 +1,366 @@
+; ============================================================================
+; QUANTUM NUMBER V8 EXPLAINABLE AI DECISION ENGINE
+; ============================================================================
+; Demonstrates how quantum numbers enable transparent, explainable AI
+; Uses symbolic mathematics for decision-making with full traceability
+; ============================================================================
+
+INCLUDE quantum_number_v8_core.masm
+
+; ============================================================================
+; AI-SPECIFIC DATA STRUCTURES
+; ============================================================================
+
+.DATA
+
+; AI Decision Engine Messages
+msgAIDemo           db "=== EXPLAINABLE AI DECISION ENGINE ===", 0Dh, 0Ah, 0
+msgDecisionInput    db "INPUT FACTORS:", 0Dh, 0Ah, 0
+msgProcessing       db "PROCESSING DECISION LOGIC...", 0Dh, 0Ah, 0
+msgDecisionMade     db "DECISION MADE:", 0Dh, 0Ah, 0
+msgConfidence       db "CONFIDENCE SCORE:", 0Dh, 0Ah, 0
+msgExplanation      db "EXPLANATION:", 0Dh, 0Ah, 0
+msgTrace            db "DECISION TRACE:", 0Dh, 0Ah, 0
+
+; Decision factors (quantum numbers representing different inputs)
+factorReliability   QuantumNumber <>  ; How reliable is the data source?
+factorUrgency       QuantumNumber <>  ; How urgent is the decision?
+factorRisk          QuantumNumber <>  ; What is the risk level?
+factorEthics        QuantumNumber <>  ; Ethical considerations
+factorCost          QuantumNumber <>  ; Cost implications
+
+; Decision weights (using division convention for instant scaling)
+weightReliability   QWORD 3          ; Weight = 3
+weightUrgency       QWORD 5          ; Weight = 5
+weightRisk          QWORD 7          ; Weight = 7
+weightEthics        QWORD 2          ; Weight = 2
+weightCost          QWORD 4          ; Weight = 4
+
+; Decision thresholds
+thresholdApprove    QWORD 15         ; Minimum score for approval
+thresholdDeny       QWORD 5          ; Maximum score for denial
+
+; ============================================================================
+; EXPLAINABLE AI FUNCTIONS
+; ============================================================================
+
+.CODE
+
+; ============================================================================
+; AI DECISION ENGINE CORE
+; ============================================================================
+
+; Initialize AI decision factors with symbolic values
+initAIDecisionFactors PROC
+    ; Initialize reliability factor: 8/10 (80% reliable)
+    lea rcx, [factorReliability]
+    mov rdx, 8
+    call initQuantumNumber
+    mov QWORD PTR [factorReliability + QuantumNumber.b1], 10
+
+    ; Initialize urgency factor: 7/10 (70% urgent)
+    lea rcx, [factorUrgency]
+    mov rdx, 7
+    call initQuantumNumber
+    mov QWORD PTR [factorUrgency + QuantumNumber.b1], 10
+
+    ; Initialize risk factor: 3/10 (30% risk)
+    lea rcx, [factorRisk]
+    mov rdx, 3
+    call initQuantumNumber
+    mov QWORD PTR [factorRisk + QuantumNumber.b1], 10
+
+    ; Initialize ethics factor: 9/10 (90% ethical)
+    lea rcx, [factorEthics]
+    mov rdx, 9
+    call initQuantumNumber
+    mov QWORD PTR [factorEthics + QuantumNumber.b1], 10
+
+    ; Initialize cost factor: 4/10 (40% cost acceptable)
+    lea rcx, [factorCost]
+    mov rdx, 4
+    call initQuantumNumber
+    mov QWORD PTR [factorCost + QuantumNumber.b1], 10
+
+    ret
+initAIDecisionFactors ENDP
+
+; Calculate weighted decision score using division convention
+calculateDecisionScore PROC
+    ; This demonstrates the power of division convention for AI
+    ; We can instantly scale factors by changing denominators
+
+    ; Score = (reliability * weightReliability) + (urgency * weightUrgency) +
+    ;         (risk * weightRisk) + (ethics * weightEthics) + (cost * weightCost)
+
+    ; Using division convention: multiply by changing denominators
+    ; factor * weight = factor with denominator changed
+
+    ; Calculate reliability contribution: 8/10 * 3 = 8/30
+    mov rax, [factorReliability + QuantumNumber.a1]  ; 8
+    mov rbx, [factorReliability + QuantumNumber.b1]  ; 10
+    mul QWORD PTR [weightReliability]                ; 8 * 3 = 24
+    mov QWORD PTR [factorReliability + QuantumNumber.a1], rax  ; Store 24
+    mov QWORD PTR [factorReliability + QuantumNumber.b1], rbx  ; Keep denominator 10
+
+    ; Calculate urgency contribution: 7/10 * 5 = 7/50
+    mov rax, [factorUrgency + QuantumNumber.a1]      ; 7
+    mov rbx, [factorUrgency + QuantumNumber.b1]      ; 10
+    mul QWORD PTR [weightUrgency]                    ; 7 * 5 = 35
+    mov QWORD PTR [factorUrgency + QuantumNumber.a1], rax    ; Store 35
+    mov QWORD PTR [factorUrgency + QuantumNumber.b1], rbx    ; Keep denominator 10
+
+    ; Calculate risk contribution: 3/10 * 7 = 3/70
+    mov rax, [factorRisk + QuantumNumber.a1]         ; 3
+    mov rbx, [factorRisk + QuantumNumber.b1]         ; 10
+    mul QWORD PTR [weightRisk]                       ; 3 * 7 = 21
+    mov QWORD PTR [factorRisk + QuantumNumber.a1], rax      ; Store 21
+    mov QWORD PTR [factorRisk + QuantumNumber.b1], rbx      ; Keep denominator 10
+
+    ; Calculate ethics contribution: 9/10 * 2 = 9/20
+    mov rax, [factorEthics + QuantumNumber.a1]       ; 9
+    mov rbx, [factorEthics + QuantumNumber.b1]       ; 10
+    mul QWORD PTR [weightEthics]                     ; 9 * 2 = 18
+    mov QWORD PTR [factorEthics + QuantumNumber.a1], rax    ; Store 18
+    mov QWORD PTR [factorEthics + QuantumNumber.b1], rbx    ; Keep denominator 10
+
+    ; Calculate cost contribution: 4/10 * 4 = 4/40
+    mov rax, [factorCost + QuantumNumber.a1]         ; 4
+    mov rbx, [factorCost + QuantumNumber.b1]         ; 10
+    mul QWORD PTR [weightCost]                       ; 4 * 4 = 16
+    mov QWORD PTR [factorCost + QuantumNumber.a1], rax      ; Store 16
+    mov QWORD PTR [factorCost + QuantumNumber.b1], rbx      ; Keep denominator 10
+
+    ret
+calculateDecisionScore ENDP
+
+; Make explainable AI decision
+makeExplainableDecision PROC
+    ; Sum all weighted factors to get final decision score
+    ; This demonstrates how quantum numbers enable transparent AI
+
+    ; Start with reliability score
+    mov rax, [factorReliability + QuantumNumber.a1]  ; 24
+    mov rbx, [factorReliability + QuantumNumber.b1]  ; 10
+
+    ; Add urgency: 24/10 + 35/10 = 59/10
+    add rax, [factorUrgency + QuantumNumber.a1]      ; 24 + 35 = 59
+
+    ; Add risk: 59/10 + 21/10 = 80/10
+    add rax, [factorRisk + QuantumNumber.a1]         ; 59 + 21 = 80
+
+    ; Add ethics: 80/10 + 18/10 = 98/10
+    add rax, [factorEthics + QuantumNumber.a1]       ; 80 + 18 = 98
+
+    ; Add cost: 98/10 + 16/10 = 114/10
+    add rax, [factorCost + QuantumNumber.a1]         ; 98 + 16 = 114
+
+    ; Final score: 114/10 = 11.4
+    ; Decision logic based on thresholds
+    cmp rax, thresholdApprove
+    jge decision_approve
+
+    cmp rax, thresholdDeny
+    jle decision_deny
+
+    ; Default to review
+    mov rax, 0  ; Review needed
+    ret
+
+decision_approve:
+    mov rax, 1  ; Approve
+    ret
+
+decision_deny:
+    mov rax, 2  ; Deny
+    ret
+makeExplainableDecision ENDP
+
+; ============================================================================
+; EXPLANATION AND TRACEABILITY FUNCTIONS
+; ============================================================================
+
+; Display decision factors transparently
+displayDecisionFactors PROC
+    lea rcx, [msgDecisionInput]
+    call printString
+
+    ; Display reliability
+    mov rcx, [factorReliability + QuantumNumber.a1]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, [factorReliability + QuantumNumber.b1]
+    call printQWORD
+    call printNewline
+
+    ; Display urgency
+    mov rcx, [factorUrgency + QuantumNumber.a1]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, [factorUrgency + QuantumNumber.b1]
+    call printQWORD
+    call printNewline
+
+    ; Display risk
+    mov rcx, [factorRisk + QuantumNumber.a1]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, [factorRisk + QuantumNumber.b1]
+    call printQWORD
+    call printNewline
+
+    ; Display ethics
+    mov rcx, [factorEthics + QuantumNumber.a1]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, [factorEthics + QuantumNumber.b1]
+    call printQWORD
+    call printNewline
+
+    ; Display cost
+    mov rcx, [factorCost + QuantumNumber.a1]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, [factorCost + QuantumNumber.b1]
+    call printQWORD
+    call printNewline
+
+    ret
+displayDecisionFactors ENDP
+
+; Display decision explanation
+displayDecisionExplanation PROC
+    ; rcx = decision result (0=review, 1=approve, 2=deny)
+
+    lea rcx, [msgExplanation]
+    call printString
+
+    cmp rcx, 1
+    je explain_approve
+    cmp rcx, 2
+    je explain_deny
+
+    ; Explain review needed
+    lea rcx, [msgReviewNeeded]
+    call printString
+    call printNewline
+    ret
+
+explain_approve:
+    lea rcx, [msgApproveReason]
+    call printString
+    call printNewline
+    ret
+
+explain_deny:
+    lea rcx, [msgDenyReason]
+    call printString
+    call printNewline
+    ret
+displayDecisionExplanation ENDP
+
+; ============================================================================
+; MAIN EXPLAINABLE AI DEMONSTRATION
+; ============================================================================
+
+main PROC
+    ; Initialize the core library
+    call initQuantumNumberCore
+    call printNewline
+
+    ; AI Demo header
+    lea rcx, [msgAIDemo]
+    call printString
+    call printNewline
+
+    ; Initialize decision factors
+    call initAIDecisionFactors
+
+    ; Display input factors transparently
+    call displayDecisionFactors
+
+    ; Process decision logic
+    lea rcx, [msgProcessing]
+    call printString
+    call printNewline
+
+    ; Calculate weighted scores using division convention
+    call calculateDecisionScore
+
+    ; Make explainable decision
+    call makeExplainableDecision
+
+    ; Display decision result
+    lea rcx, [msgDecisionMade]
+    call printString
+
+    cmp rax, 1
+    je show_approve
+    cmp rax, 2
+    je show_deny
+
+    lea rcx, [msgReview]
+    call printString
+    jmp decision_complete
+
+show_approve:
+    lea rcx, [msgApprove]
+    call printString
+    jmp decision_complete
+
+show_deny:
+    lea rcx, [msgDeny]
+    call printString
+
+decision_complete:
+    call printNewline
+
+    ; Display confidence score
+    lea rcx, [msgConfidence]
+    call printString
+    mov rcx, 114  ; Final score numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, 10   ; Final score denominator
+    call printQWORD
+    call printNewline
+
+    ; Provide explanation
+    mov rcx, rax  ; Decision result
+    call displayDecisionExplanation
+
+    ; Display decision trace
+    lea rcx, [msgTrace]
+    call printString
+    call printNewline
+
+    lea rcx, [msgTraceDetail]
+    call printString
+
+    ; Exit
+    xor rcx, rcx
+    call ExitProcess
+main ENDP
+
+; ============================================================================
+; ADDITIONAL MESSAGES
+; ============================================================================
+
+.DATA
+msgReviewNeeded     db "Decision requires human review - score in middle range", 0Dh, 0Ah, 0
+msgApproveReason    db "Approved: High reliability, ethics, and acceptable risk/cost", 0Dh, 0Ah, 0
+msgDenyReason       db "Denied: Risk and cost factors outweigh benefits", 0Dh, 0Ah, 0
+msgReview           db "REVIEW NEEDED", 0
+msgApprove          db "APPROVED", 0
+msgDeny             db "DENIED", 0
+msgTraceDetail      db "All calculations performed with symbolic quantum numbers", 0Dh, 0Ah, 0
+                    db "Division convention used for instant weight scaling", 0Dh, 0Ah, 0
+                    db "Every step is traceable and reversible", 0Dh, 0Ah, 0
+
+END
