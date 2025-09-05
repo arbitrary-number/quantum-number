@@ -153,7 +153,7 @@ printString PROC
     push rbx
     push rsi
     push rdi
-    sub rsp, 40     ; Shadow space + extra for WriteConsoleA
+    sub rsp, 48     ; Shadow space + extra for WriteConsoleA
 
     mov rsi, rcx    ; Save string pointer in RSI
 
@@ -168,22 +168,23 @@ printString PROC
 
     ; Calculate string length
     mov rdi, rsi    ; String pointer for length calculation
-    xor rdi, rdi    ; Length counter (use lower 32 bits of RDI)
+    xor rcx, rcx    ; Length counter
 strlen_loop:
-    mov al, [rsi + rdi]
+    mov al, [rdi]
     test al, al
     jz strlen_done
+    inc rcx
     inc rdi
     jmp strlen_loop
 strlen_done:
-    mov r8, rdi     ; Move length to R8
+    mov r8, rcx     ; Move length to R8
 
     ; Write to console (with all required parameters)
     mov rcx, rbx              ; hConsoleOutput
     mov rdx, rsi              ; lpBuffer (string pointer)
     ; R8 already contains length
     lea r9, [rsp + 32]        ; lpNumberOfCharsWritten
-    mov QWORD PTR [rsp + 40], 0  ; lpReserved = NULL (different location)
+    mov QWORD PTR [rsp + 40], 0  ; lpReserved = NULL
     call WriteConsoleA
 
     jmp print_done
@@ -193,7 +194,7 @@ print_error:
     nop
 
 print_done:
-    add rsp, 40
+    add rsp, 48
     pop rdi
     pop rsi
     pop rbx
