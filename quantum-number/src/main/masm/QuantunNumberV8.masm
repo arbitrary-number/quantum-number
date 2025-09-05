@@ -68,27 +68,27 @@ PUBLIC main
 main PROC
     ; Set nodeRoot.leftPtr = &nodeLeft
     lea rax, nodeLeft
-    mov [nodeRoot + LEFT_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + LEFT_PTR_OFFSET], rax
 
     ; Set nodeRoot.rightPtr = &nodeRight
     lea rax, nodeRight
-    mov [nodeRoot + RIGHT_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + RIGHT_PTR_OFFSET], rax
 
     ; Set nodeRoot.upPtr = &nodeUp
     lea rax, nodeUp
-    mov [nodeRoot + UP_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + UP_PTR_OFFSET], rax
 
     ; Set nodeRoot.downPtr = &nodeDown
     lea rax, nodeDown
-    mov [nodeRoot + DOWN_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + DOWN_PTR_OFFSET], rax
 
     ; Set nodeRoot.inPtr = &nodeIn
     lea rax, nodeIn
-    mov [nodeRoot + IN_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + IN_PTR_OFFSET], rax
 
     ; Set nodeRoot.outPtr = &nodeOut
     lea rax, nodeOut
-    mov [nodeRoot + OUT_PTR_OFFSET], rax
+    mov QWORD PTR [nodeRoot + OUT_PTR_OFFSET], rax
 
     ret
 main ENDP
