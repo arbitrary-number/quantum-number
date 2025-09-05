@@ -112,7 +112,7 @@ printString PROC
 
     ; Calculate string length
     mov rdi, rsi    ; String pointer for length calculation
-    xor rdi, rdi    ; Length counter (use RDI for length)
+    xor rdi, rdi    ; Length counter (use lower 32 bits of RDI)
 strlen_loop:
     mov al, [rsi + rdi]
     test al, al
