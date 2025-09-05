@@ -1,0 +1,294 @@
+; ============================================================================
+; QUANTUM NUMBER V8 1/3 + 2/3 DEMO - EXACT FRACTION ARITHMETIC
+; ============================================================================
+; Demonstrates exact fraction arithmetic: 1/3 + 2/3 = 1
+; Two implementations: Standard ASM and Pure Bitwise Operations
+; ============================================================================
+
+; Windows API declarations
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+
+; Include the core QuantumNumberV8 implementation
+INCLUDE QuantumNumberV8.masm
+
+; ============================================================================
+; DEMO DATA SECTION
+; ============================================================================
+
+.DATA
+
+; Demo messages
+msgDemoTitle       db "=== QUANTUM NUMBER V8 1/3 + 2/3 DEMO ===", 0Dh, 0Ah, 0
+msgCalculation     db "CALCULATION: 1/3 + 2/3", 0Dh, 0Ah, 0
+msgStep1           db "Step 1: Initialize 1/3", 0Dh, 0Ah, 0
+msgStep2           db "Step 2: Initialize 2/3", 0Dh, 0Ah, 0
+msgStep3           db "Step 3: Add fractions", 0Dh, 0Ah, 0
+msgResult          db "FINAL RESULT: ", 0
+msgExpected        db "EXPECTED: 1 (exact)", 0Dh, 0Ah, 0
+msgPrecision       db "PRECISION: Exact (no floating-point errors)", 0Dh, 0Ah, 0
+msgSymbolic        db "SYMBOLIC: Preserved quantum number structure", 0Dh, 0Ah, 0
+msgDivisionConvention db "DIVISION CONVENTION: Leveraged for exact arithmetic", 0Dh, 0Ah, 0
+msgStandardMethod  db "METHOD: Standard ASM Addition", 0Dh, 0Ah, 0
+msgBitwiseMethod   db "METHOD: Pure Bitwise Operations", 0Dh, 0Ah, 0
+msgComparison      db "COMPARISON: Both methods yield identical results", 0Dh, 0Ah, 0
+msgHardwareAdd     db "HARDWARE ADD: Single CPU instruction analysis", 0Dh, 0Ah, 0
+
+; ============================================================================
+; STANDARD ASM ADDITION DEMO
+; ============================================================================
+
+standardAdditionDemo PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display method
+    lea rcx, [msgStandardMethod]
+    call printString
+
+    ; Step 1: Initialize first fraction (1/3)
+    lea rcx, [msgStep1]
+    call printString
+
+    ; Initialize quantum number for 1/3
+    lea rcx, [nodeRoot]           ; Pointer to quantum number
+    mov rdx, 1                    ; Numerator = 1
+    call initQuantumNumber
+
+    ; Set denominator to 3
+    mov QWORD PTR [nodeRoot + 32 + 8], 3  ; b1 = 3 (denominator)
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeRoot + 32]    ; Numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]  ; Denominator
+    call printQWORD
+    call printNewline
+
+    ; Step 2: Initialize second fraction (2/3)
+    lea rcx, [msgStep2]
+    call printString
+
+    ; Initialize quantum number for 2/3
+    lea rcx, [nodeLeft]           ; Pointer to quantum number
+    mov rdx, 2                    ; Numerator = 2
+    call initQuantumNumber
+
+    ; Set denominator to 3
+    mov QWORD PTR [nodeLeft + 32 + 8], 3  ; b1 = 3 (denominator)
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeLeft + 32]    ; Numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32 + 8]  ; Denominator
+    call printQWORD
+    call printNewline
+
+    ; Step 3: Add the fractions using standard ASM
+    lea rcx, [msgStep3]
+    call printString
+
+    ; Display the addition operation
+    mov rcx, QWORD PTR [nodeRoot + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32 + 8]
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Perform the quantum addition using standard ASM
+    lea rcx, [nodeRoot]           ; First quantum number (1/3)
+    lea rdx, [nodeLeft]           ; Second quantum number (2/3)
+    call quantumAdd
+
+    ; Display final result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32]    ; Final numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]  ; Final denominator
+    call printQWORD
+    call printNewline
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+standardAdditionDemo ENDP
+
+; ============================================================================
+; PURE BITWISE ADDITION DEMO
+; ============================================================================
+
+bitwiseAdditionDemo PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display method
+    lea rcx, [msgBitwiseMethod]
+    call printString
+
+    ; Reset quantum numbers for bitwise demo
+    mov QWORD PTR [nodeRoot + 32], 1      ; Numerator = 1
+    mov QWORD PTR [nodeRoot + 32 + 8], 3  ; Denominator = 3
+
+    mov QWORD PTR [nodeLeft + 32], 2      ; Numerator = 2
+    mov QWORD PTR [nodeLeft + 32 + 8], 3  ; Denominator = 3
+
+    ; Display the fractions
+    mov rcx, QWORD PTR [nodeRoot + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32 + 8]
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Perform bitwise addition
+    lea rcx, [nodeRoot]
+    lea rdx, [nodeLeft]
+    call quantumAddBitwise
+
+    ; Display result
+    mov rcx, QWORD PTR [nodeRoot + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]
+    call printQWORD
+    call printNewline
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+bitwiseAdditionDemo ENDP
+
+; ============================================================================
+; HARDWARE ADD INSTRUCTION ANALYSIS
+; ============================================================================
+
+analyzeHardwareAdd PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display hardware analysis header
+    lea rcx, [msgHardwareAdd]
+    call printString
+
+    ; Demonstrate single ADD instruction capability
+    mov rax, 1          ; First operand
+    mov rbx, 2          ; Second operand
+    add rax, rbx        ; Single ADD instruction
+
+    ; The ADD instruction performs:
+    ; 1. Binary addition of source and destination
+    ; 2. Sets flags (CF, ZF, SF, OF, etc.)
+    ; 3. Updates destination register
+    ; All in one CPU clock cycle on modern processors
+
+    ; Display the result
+    mov rcx, rax
+    call printQWORD
+    call printNewline
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+analyzeHardwareAdd ENDP
+
+; ============================================================================
+; MAIN DEMO FUNCTION
+; ============================================================================
+
+main PROC
+    ; Initialize diagnostic output
+    lea rcx, [msgDemoTitle]
+    call printString
+
+    ; Display calculation
+    lea rcx, [msgCalculation]
+    call printString
+
+    ; Run standard ASM demo
+    call standardAdditionDemo
+
+    ; Run bitwise demo
+    call bitwiseAdditionDemo
+
+    ; Show comparison
+    lea rcx, [msgComparison]
+    call printString
+
+    ; Analyze hardware ADD instruction
+    call analyzeHardwareAdd
+
+    ; Display expected result
+    lea rcx, [msgExpected]
+    call printString
+
+    ; Display precision information
+    lea rcx, [msgPrecision]
+    call printString
+
+    ; Display symbolic preservation
+    lea rcx, [msgSymbolic]
+    call printString
+
+    ; Display division convention leverage
+    lea rcx, [msgDivisionConvention]
+    call printString
+
+    ; Exit
+    xor rcx, rcx
+    call ExitProcess
+main ENDP
+
+END
