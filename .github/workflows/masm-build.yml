@@ -9,18 +9,15 @@ on:
       - 'quantum-number/src/main/masm/hello_world.masm'
 
 jobs:
-  build:
+  build:  
     runs-on: windows-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup MSVC
-      uses: microsoft/setup-msbuild@v2
+      uses: actions/checkout@v4 
 
     - name: Setup MSVC Dev Command Prompt
-      uses: microsoft/setup-msvcdevcmd@v1
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Compile MASM
       run: |
