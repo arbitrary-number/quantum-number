@@ -127,7 +127,7 @@ strlen_done:
     mov rdx, rsi              ; lpBuffer (string pointer)
     ; R8 already contains length
     lea r9, [rsp + 32]        ; lpNumberOfCharsWritten
-    mov QWORD PTR [rsp + 32], 0  ; lpReserved = NULL
+    mov QWORD PTR [rsp + 40], 0  ; lpReserved = NULL (different location)
     call WriteConsoleA
 
     jmp print_done
@@ -190,8 +190,8 @@ print_number:
     mov rcx, rax    ; Handle
     mov rdx, rdi    ; Buffer
     ; R8 = length
-    lea r9, [rsp + 40]
-    mov QWORD PTR [rsp + 32], 0  ; lpReserved
+    lea r9, [rsp + 40]        ; lpNumberOfCharsWritten
+    mov QWORD PTR [rsp + 48], 0  ; lpReserved (different location)
     call WriteConsoleA
 
     add rsp, 64
