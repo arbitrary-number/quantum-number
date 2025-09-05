@@ -109,20 +109,20 @@ printString PROC
 
     ; Calculate string length
     mov rdi, rsi    ; String pointer for length calculation
-    xor rdx, rdx    ; Length counter
+    xor rdi, rdi    ; Length counter (use RDI for length)
 strlen_loop:
-    mov al, [rdi]
+    mov al, [rsi + rdi]
     test al, al
     jz strlen_done
-    inc rdx
     inc rdi
     jmp strlen_loop
 strlen_done:
+    mov r8, rdi     ; Move length to R8
 
     ; Write to console (with all required parameters)
     mov rcx, rbx              ; hConsoleOutput
     mov rdx, rsi              ; lpBuffer (string pointer)
-    mov r8, rdx               ; nNumberOfCharsToWrite (length)
+    ; R8 already contains length
     lea r9, [rsp + 32]        ; lpNumberOfCharsWritten
     mov QWORD PTR [rsp + 32], 0  ; lpReserved = NULL
     call WriteConsoleA
