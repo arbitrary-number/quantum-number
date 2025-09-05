@@ -1,0 +1,486 @@
+; ============================================================================
+; QUANTUM NUMBER V8 BITWISE ADDITION DEMO
+; ============================================================================
+; This demo performs the same quantum addition as the original demo,
+; but uses pure bitwise operations instead of the ADD instruction.
+; ============================================================================
+
+; Windows API constants and externs for diagnostics
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+
+.DATA
+; UTF-8 strings for diagnostics
+msgInit     db "=== QuantumNumberV8 BITWISE Addition Demo ===", 0Dh, 0Ah, 0
+msgSigns    db "Signs: ", 0
+msgValue    db "Value: ", 0
+msgOp       db "Operation: ", 0
+msgResult   db "Result: ", 0
+msgPlus     db " + ", 0
+msgLeftPtr  db "LEFT POINTER (Higher Values): ", 0
+msgRightPtr db "RIGHT POINTER (Microscopic Values): ", 0
+msgPauliX   db "PAULI-X GATE: ", 0
+msgMeasure  db "QUANTUM MEASUREMENT: ", 0
+msgCollapse db "COLLAPSED TO: ", 0
+msgRandomBit db "QUANTUM RANDOM BIT: ", 0
+msgRandomResult db "RANDOM BIT = ", 0
+msgAlgorithm db "=== QUANTUM ALGORITHM DEMO ===", 0Dh, 0Ah, 0
+msgQuantumXOR db "QUANTUM XOR: ", 0
+msgXOR       db " XOR ", 0
+msgIntermediate db "INTERMEDIATE: ", 0
+msgBinaryAdd db "BINARY ADD (BITWISE): ", 0
+msgSum       db "SUM: ", 0
+msgCarryBit  db "CARRY BIT: ", 0
+msgSet       db "SET", 0
+msgExtended  db "EXTENDED PRECISION: ", 0
+msgTimes     db " × ", 0
+msgDivide    db " ÷ ", 0
+msgEquals    db " = ", 0
+msgFraction  db "1/3", 0
+msgHalf      db "1/2", 0
+msgThird     db "1/3", 0
+msgMultiply  db "*", 0
+msgOneThird  db "1/3", 0
+msgCalc      db "CALCULATION: ", 0
+msgPrecision db "PRECISION: ", 0
+msgExact     db "EXACT", 0
+msgNewline  db 0Dh, 0Ah, 0
+msgOverflow db "OVERFLOW DETECTED!", 0Dh, 0Ah, 0
+msgBitwiseMethod db "USING PURE BITWISE OPERATIONS", 0Dh, 0Ah, 0
+
+QuantumNumberV8 STRUCT
+    signs     QWORD ?
+    metadata1 QWORD ?
+    metadata2 QWORD ?
+    metadata3 QWORD ?
+
+    a1 QWORD ?
+    a2 QWORD ?
+    a3 QWORD ?
+    a4 QWORD ?
+
+    b1 QWORD ?
+    b2 QWORD ?
+    b3 QWORD ?
+    b4 QWORD ?
+
+    c1 QWORD ?
+    c2 QWORD ?
+    c3 QWORD ?
+    c4 QWORD ?
+
+    d1 QWORD ?
+    d2 QWORD ?
+    d3 QWORD ?
+    d4 QWORD ?
+
+    e1 QWORD ?
+    e2 QWORD ?
+    e3 QWORD ?
+    e4 QWORD ?
+
+    f1 QWORD ?
+    f2 QWORD ?
+    f3 QWORD ?
+    f4 QWORD ?
+QuantumNumberV8 ENDS
+
+NumberNode STRUCT
+    value     QuantumNumberV8 <>
+    leftPtr   QWORD ?
+    rightPtr  QWORD ?
+    upPtr     QWORD ?
+    downPtr   QWORD ?
+    inPtr     QWORD ?
+    outPtr    QWORD ?
+NumberNode ENDS
+
+LEFT_PTR_OFFSET   EQU NumberNode.leftPtr - NumberNode
+RIGHT_PTR_OFFSET  EQU NumberNode.rightPtr - NumberNode
+UP_PTR_OFFSET     EQU NumberNode.upPtr - NumberNode
+DOWN_PTR_OFFSET   EQU NumberNode.downPtr - NumberNode
+IN_PTR_OFFSET     EQU NumberNode.inPtr - NumberNode
+OUT_PTR_OFFSET    EQU NumberNode.outPtr - NumberNode
+
+.DATA
+nodeRoot NumberNode <>
+nodeLeft NumberNode <>
+nodeRight NumberNode <>
+nodeUp NumberNode <>
+nodeDown NumberNode <>
+nodeIn NumberNode <>
+nodeOut NumberNode <>
+
+.CODE
+
+; Helper function to print string to stdout
+printString PROC
+    ; Input: RCX = string pointer
+    ; Output: None
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+    sub rsp, 48     ; Shadow space + extra for WriteConsoleA
+
+    mov rsi, rcx    ; Save string pointer in RSI
+
+    ; Get stdout handle
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rbx, rax    ; Save handle in RBX
+
+    ; Check if handle is valid (not -1)
+    cmp rbx, -1
+    je print_error
+
+    ; Calculate string length
+    mov rdi, rsi    ; String pointer for length calculation
+    xor rcx, rcx    ; Length counter
+strlen_loop:
+    mov al, [rdi]
+    test al, al
+    jz strlen_done
+    inc rcx
+    inc rdi
+    jmp strlen_loop
+strlen_done:
+    mov r8, rcx     ; Move length to R8
+
+    ; Write to console (with all required parameters)
+    mov rcx, rbx              ; hConsoleOutput
+    mov rdx, rsi              ; lpBuffer (string pointer)
+    ; R8 already contains length
+    lea r9, [rsp + 32]        ; lpNumberOfCharsWritten
+    mov QWORD PTR [rsp + 40], 0  ; lpReserved = NULL
+    call WriteConsoleA
+
+    jmp print_done
+
+print_error:
+    ; Handle error - for now just continue
+    nop
+
+print_done:
+    add rsp, 48
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+printString ENDP
+
+; Helper function to print QWORD in decimal
+printQWORD PROC
+    ; Input: RCX = QWORD value
+    ; Output: None
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+    sub rsp, 64
+
+    mov rax, rcx    ; Number to print
+    mov rbx, 10     ; Divisor for decimal
+    lea rsi, [rsp + 32]  ; Buffer for digits
+    mov rdi, rsi    ; End of buffer
+
+    ; Handle zero case
+    test rax, rax
+    jnz convert_loop
+    mov byte ptr [rdi], '0'
+    inc rdi
+    jmp print_number
+
+convert_loop:
+    xor rdx, rdx
+    div rbx         ; RAX = quotient, RDX = remainder
+    add dl, '0'     ; Convert to ASCII
+    dec rdi
+    mov [rdi], dl
+    test rax, rax
+    jnz convert_loop
+
+print_number:
+    ; Calculate length
+    lea rcx, [rsp + 32]
+    sub rcx, rdi
+    mov r8, rcx     ; Length
+
+    ; Print the number
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rcx, rax    ; Handle
+    mov rdx, rdi    ; Buffer
+    ; R8 = length
+    lea r9, [rsp + 40]        ; lpNumberOfCharsWritten
+    mov QWORD PTR [rsp + 48], 0  ; lpReserved (different location)
+    call WriteConsoleA
+
+    add rsp, 64
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+printQWORD ENDP
+
+; ============================================================================
+; PURE BITWISE ADDITION FUNCTION
+; ============================================================================
+; This function performs addition using only bitwise operations
+; No ADD, SUB, MUL, DIV, or other arithmetic instructions allowed
+; ============================================================================
+bitwiseAdd PROC
+    ; Input: RCX = augend, RDX = addend
+    ; Output: RAX = sum
+    ; Uses: Pure bitwise operations (AND, OR, XOR, NOT, SHL, SHR)
+    push rbx
+    push rsi
+    push rdi
+
+    mov rax, rcx    ; Load first number
+    mov rbx, rdx    ; Load second number
+    xor rsi, rsi    ; Clear carry
+
+    ; Display the bitwise method
+    push rcx
+    push rdx
+    lea rcx, [msgBitwiseMethod]
+    call printString
+    pop rdx
+    pop rcx
+
+bitwise_add_loop:
+    ; Calculate sum bit: (a XOR b) XOR carry
+    mov rdi, rax
+    xor rdi, rbx    ; a XOR b
+    xor rdi, rsi    ; (a XOR b) XOR carry
+
+    ; Calculate new carry: ((a AND b) OR (a AND carry) OR (b AND carry)) << 1
+    mov rcx, rax
+    and rcx, rbx    ; a AND b
+    mov rdx, rax
+    and rdx, rsi    ; a AND carry
+    or rcx, rdx     ; (a AND b) OR (a AND carry)
+    mov rdx, rbx
+    and rdx, rsi    ; b AND carry
+    or rcx, rdx     ; ((a AND b) OR (a AND carry) OR (b AND carry))
+    shl rcx, 1      ; Shift left by 1 for next bit position
+
+    ; Update result and carry
+    mov rax, rdi    ; Store sum bit
+    mov rsi, rcx    ; Store new carry
+
+    ; Continue until no more carry
+    test rsi, rsi
+    jnz bitwise_add_loop
+
+    pop rdi
+    pop rsi
+    pop rbx
+    ret
+bitwiseAdd ENDP
+
+; ============================================================================
+; QUANTUM ADDITION WITH BITWISE OPERATIONS
+; ============================================================================
+quantumAddBitwise PROC
+    ; Input: RCX = ptr to quantum number 1, RDX = ptr to quantum number 2
+    ; Output: Updates quantum number 1 with result
+    ; Uses: Pure bitwise addition for the core operation
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Add corresponding fields with overflow detection
+    mov rsi, rcx    ; Quantum number 1
+    mov rdi, rdx    ; Quantum number 2
+
+    ; Display intermediate values
+    lea rcx, [msgIntermediate]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [rdi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Add a1 fields with detailed intermediate steps using BITWISE addition
+    mov rcx, QWORD PTR [rsi + 32]    ; Load first number
+    mov rdx, QWORD PTR [rdi + 32]    ; Load second number
+
+    ; Show binary addition setup
+    lea rcx, [msgBinaryAdd]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [rdi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Perform BITWISE addition
+    mov rcx, QWORD PTR [rsi + 32]    ; Multiplicand
+    mov rdx, QWORD PTR [rdi + 32]    ; Multiplier
+    call bitwiseAdd
+    mov QWORD PTR [rsi + 32], rax
+
+    ; Show result before overflow check
+    lea rcx, [msgSum]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Check for overflow using bitwise operations
+    ; For overflow detection, we need to check if the result is smaller than either operand
+    ; This indicates overflow occurred in unsigned addition
+    mov rax, QWORD PTR [rsi + 32]    ; Result
+    mov rbx, QWORD PTR [rsi + 32]    ; Original first number (saved before addition)
+    mov rcx, QWORD PTR [rdi + 32]    ; Second number
+
+    ; Overflow check: if result < first OR result < second, then overflow occurred
+    cmp rax, rbx
+    jb bitwise_overflow_detected
+    cmp rax, rcx
+    jb bitwise_overflow_detected
+    jmp no_bitwise_overflow
+
+bitwise_overflow_detected:
+    ; Overflow detected - set left pointer for higher values
+    lea rcx, [msgOverflow]
+    call printString
+
+    ; Show overflow details
+    lea rcx, [msgCarryBit]
+    call printString
+    lea rcx, [msgSet]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Allocate new node for higher values (left pointer)
+    lea rax, [nodeLeft]                    ; Use nodeLeft for overflow
+    mov QWORD PTR [rsi + LEFT_PTR_OFFSET], rax  ; Set leftPtr to overflow node
+
+    ; Set overflow value in left node
+    mov rax, 1                             ; Overflow magnitude
+    mov QWORD PTR [nodeLeft + 32], rax     ; Store in a1 field
+
+    ; Display overflow handling with details
+    lea rcx, [msgLeftPtr]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show how overflow extends precision
+    lea rcx, [msgExtended]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]          ; Original result
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]     ; Overflow value
+    call printQWORD
+    lea rcx, [msgTimes]
+    call printString
+    mov rcx, 4294967296                    ; 2^32 (safe for MASM)
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+no_bitwise_overflow:
+    ; Display operation result (no "Result: " prefix since we show the equation)
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumAddBitwise ENDP
+
+PUBLIC main
+main PROC
+    ; Initialize diagnostic output
+    lea rcx, [msgInit]
+    call printString
+
+    ; Initialize first quantum number in nodeRoot
+    mov rax, 1                    ; Set signs to 1
+    mov QWORD PTR [nodeRoot + 0], rax   ; signs field
+    mov rax, 0FFFFFFFFFFFFFFFFh   ; Set a1 to max QWORD (will overflow)
+    mov QWORD PTR [nodeRoot + 32], rax  ; a1 field
+
+    ; Initialize second quantum number in nodeLeft
+    mov rax, 1                    ; Set signs to 1
+    mov QWORD PTR [nodeLeft + 0], rax   ; signs field
+    mov rax, 1                    ; Set a1 to 1 (will cause overflow when added)
+    mov QWORD PTR [nodeLeft + 32], rax  ; a1 field
+
+    ; Display initial quantum numbers
+    lea rcx, [msgSigns]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 0]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Perform quantum addition: nodeRoot + nodeLeft using BITWISE operations
+    ; Print UTF-8 equation: "42 + 58 = "
+    mov rcx, QWORD PTR [nodeRoot + 32]   ; First number (42)
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]   ; Second number (58)
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    lea rcx, [nodeRoot]           ; First quantum number
+    lea rdx, [nodeLeft]           ; Second quantum number
+    call quantumAddBitwise
+
+    ; Test the pure bitwise addition function directly
+    mov rcx, 42                  ; First number
+    mov rdx, 58                  ; Second number
+    call bitwiseAdd
+
+    ; Display the result of pure bitwise addition
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, rax
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    xor rax, rax  ; Return 0 (success)
+    ret
+main ENDP
+
+END

@@ -61,7 +61,7 @@ public class QuantumAST {
     private NodeType nodeType;
     private OperationType operationType;
     private FunctionType functionType;
-    private QuantumNumber quantumValue;
+    private SimpleQuantumNumber quantumValue;
     private String variableName;
     private List<QuantumAST> children;
     private QuantumAST parent;
@@ -74,12 +74,12 @@ public class QuantumAST {
     /**
      * Constructor for Quantum Number leaf nodes
      */
-    public QuantumAST(NodeType nodeType, QuantumNumber value) {
+    public QuantumAST(NodeType nodeType, SimpleQuantumNumber value) {
         if (nodeType != NodeType.QUANTUM_NUMBER) {
             throw new IllegalArgumentException("This constructor is only for QUANTUM_NUMBER nodes");
         }
         this.nodeType = nodeType;
-        this.quantumValue = new QuantumNumber(value);
+        this.quantumValue = new SimpleQuantumNumber(value);
         this.children = new ArrayList<>();
         this.isEvaluated = true; // Leaf nodes are already evaluated
         this.isSimplified = true;
@@ -196,7 +196,7 @@ public class QuantumAST {
     /**
      * Get the Quantum Number value (for leaf nodes)
      */
-    public QuantumNumber getQuantumValue() {
+    public SimpleQuantumNumber getQuantumValue() {
         return quantumValue;
     }
     
@@ -246,14 +246,14 @@ public class QuantumAST {
      * Quantition - Symbolic evaluation of the AST
      * This is the core process that converts symbolic expressions into Quantum Numbers
      */
-    public QuantumNumber quantition() {
+    public SimpleQuantumNumber quantition() {
         if (isEvaluated && nodeType == NodeType.QUANTUM_NUMBER) {
-            return new QuantumNumber(quantumValue);
+            return new SimpleQuantumNumber(quantumValue);
         }
         
         switch (nodeType) {
             case QUANTUM_NUMBER:
-                return new QuantumNumber(quantumValue);
+                return new SimpleQuantumNumber(quantumValue);
                 
             case OPERATION:
                 return evaluateOperation();
@@ -275,14 +275,14 @@ public class QuantumAST {
     /**
      * Evaluate operation nodes
      */
-    private QuantumNumber evaluateOperation() {
+    private SimpleQuantumNumber evaluateOperation() {
         switch (operationType) {
             case ADD:
                 if (children.size() != 2) {
                     throw new IllegalStateException("ADD operation requires exactly 2 operands");
                 }
-                QuantumNumber left = children.get(0).quantition();
-                QuantumNumber right = children.get(1).quantition();
+                SimpleQuantumNumber left = children.get(0).quantition();
+                SimpleQuantumNumber right = children.get(1).quantition();
                 return left.add(right);
                 
             case SUBTRACT:
@@ -313,7 +313,7 @@ public class QuantumAST {
                 if (children.size() != 1) {
                     throw new IllegalStateException("NEGATE operation requires exactly 1 operand");
                 }
-                QuantumNumber operand = children.get(0).quantition();
+                SimpleQuantumNumber operand = children.get(0).quantition();
                 return operand.negate();
                 
             case POWER:
@@ -328,12 +328,12 @@ public class QuantumAST {
     /**
      * Evaluate function nodes
      */
-    private QuantumNumber evaluateFunction() {
+    private SimpleQuantumNumber evaluateFunction() {
         if (children.size() != 1) {
             throw new IllegalStateException("Function requires exactly 1 argument");
         }
         
-        QuantumNumber argument = children.get(0).quantition();
+        SimpleQuantumNumber argument = children.get(0).quantition();
         
         switch (functionType) {
             case ABS:
@@ -357,19 +357,19 @@ public class QuantumAST {
     /**
      * Multiply two Quantum Numbers (simplified implementation)
      */
-    private QuantumNumber multiplyQuantumNumbers(QuantumNumber a, QuantumNumber b) {
+    private SimpleQuantumNumber multiplyQuantumNumbers(SimpleQuantumNumber a, SimpleQuantumNumber b) {
         // This is a simplified implementation
         // In a full implementation, this would handle the complex ordinal relationships
-        QuantumNumber result = new QuantumNumber();
+        SimpleQuantumNumber result = new SimpleQuantumNumber();
         
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             int valueA = a.getSignedOrdinal(i);
             int valueB = b.getSignedOrdinal(i);
             long product = (long) valueA * valueB;
             
             // Handle overflow by clamping
-            if (product > QuantumNumber.ORDINAL_MAX) product = QuantumNumber.ORDINAL_MAX;
-            if (product < QuantumNumber.ORDINAL_MIN) product = QuantumNumber.ORDINAL_MIN;
+            if (product > SimpleQuantumNumber.ORDINAL_MAX) product = SimpleQuantumNumber.ORDINAL_MAX;
+            if (product < SimpleQuantumNumber.ORDINAL_MIN) product = SimpleQuantumNumber.ORDINAL_MIN;
             
             result.setOrdinal(i, Math.abs((int) product));
             result.setSign(i, product < 0);
@@ -382,17 +382,17 @@ public class QuantumAST {
     /**
      * Divide two Quantum Numbers (with symbolic divide-by-zero handling)
      */
-    private QuantumNumber divideQuantumNumbers(QuantumNumber a, QuantumNumber b) {
+    private SimpleQuantumNumber divideQuantumNumbers(SimpleQuantumNumber a, SimpleQuantumNumber b) {
         // Check for division by zero
         if (b.isZero()) {
             // In the Quantum Number system, division by zero is handled symbolically
             // For this reference implementation, we create a special representation
-            QuantumNumber result = new QuantumNumber();
+            SimpleQuantumNumber result = new SimpleQuantumNumber();
             result.setOrdinal(0, 1);      // a = 1
             result.setOrdinal(1, 0);      // b = 0 (represents division by zero)
             result.setOrdinal(2, 1);      // c = 1
             // Set other ordinals to represent symbolic division by zero
-            for (int i = 3; i < QuantumNumber.NUM_ORDINALS; i++) {
+            for (int i = 3; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
                 result.setOrdinal(i, 1);
             }
             result.updateChecksum();
@@ -400,9 +400,9 @@ public class QuantumAST {
         }
         
         // Simplified division implementation
-        QuantumNumber result = new QuantumNumber();
+        SimpleQuantumNumber result = new SimpleQuantumNumber();
         
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             int valueA = a.getSignedOrdinal(i);
             int valueB = b.getSignedOrdinal(i);
             
@@ -424,11 +424,11 @@ public class QuantumAST {
     /**
      * Absolute value of a Quantum Number
      */
-    private QuantumNumber absoluteValue(QuantumNumber q) {
-        QuantumNumber result = new QuantumNumber(q);
+    private SimpleQuantumNumber absoluteValue(SimpleQuantumNumber q) {
+        SimpleQuantumNumber result = new SimpleQuantumNumber(q);
         
         // Set all signs to positive
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             result.setSign(i, false);
         }
         
@@ -439,12 +439,12 @@ public class QuantumAST {
     /**
      * Square root of a Quantum Number (simplified implementation)
      */
-    private QuantumNumber squareRoot(QuantumNumber q) {
+    private SimpleQuantumNumber squareRoot(SimpleQuantumNumber q) {
         // This is a very simplified implementation
         // A full implementation would handle the complex mathematical relationships
-        QuantumNumber result = new QuantumNumber();
+        SimpleQuantumNumber result = new SimpleQuantumNumber();
         
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             int value = q.getOrdinal(i);
             int sqrt = (int) Math.sqrt(value);
             result.setOrdinal(i, sqrt);
@@ -502,13 +502,13 @@ public class QuantumAST {
             case MULTIPLY:
                 // x * 1 = x
                 if (children.get(1).nodeType == NodeType.QUANTUM_NUMBER) {
-                    QuantumNumber one = QuantumNumber.one();
+                    SimpleQuantumNumber one = SimpleQuantumNumber.one();
                     if (children.get(1).quantumValue.equals(one)) {
                         return children.get(0);
                     }
                 }
                 if (children.get(0).nodeType == NodeType.QUANTUM_NUMBER) {
-                    QuantumNumber one = QuantumNumber.one();
+                    SimpleQuantumNumber one = SimpleQuantumNumber.one();
                     if (children.get(0).quantumValue.equals(one)) {
                         return children.get(1);
                     }
@@ -516,11 +516,11 @@ public class QuantumAST {
                 // x * 0 = 0
                 if (children.get(1).nodeType == NodeType.QUANTUM_NUMBER && 
                     children.get(1).quantumValue.isZero()) {
-                    return new QuantumAST(NodeType.QUANTUM_NUMBER, QuantumNumber.zero());
+                    return new QuantumAST(NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.zero());
                 }
                 if (children.get(0).nodeType == NodeType.QUANTUM_NUMBER && 
                     children.get(0).quantumValue.isZero()) {
-                    return new QuantumAST(NodeType.QUANTUM_NUMBER, QuantumNumber.zero());
+                    return new QuantumAST(NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.zero());
                 }
                 break;
         }

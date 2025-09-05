@@ -16,7 +16,7 @@ public class App
         System.out.println();
         
         // Create sample Quantum Numbers
-        QuantumNumber q1 = new QuantumNumber();
+        SimpleQuantumNumber q1 = new SimpleQuantumNumber();
         q1.setOrdinal(0, 12345);  // a = 12345
         q1.setOrdinal(1, 67890);  // b = 67890
         q1.setOrdinal(2, 1);      // c = 1
@@ -31,7 +31,7 @@ public class App
         q1.setOrdinal(11, 1);     // l = 1
         q1.updateChecksum();
         
-        QuantumNumber q2 = new QuantumNumber();
+        SimpleQuantumNumber q2 = new SimpleQuantumNumber();
         q2.setOrdinal(0, 54321);  // a = 54321
         q2.setOrdinal(1, 98765);  // b = 98765
         q2.setOrdinal(2, 1);      // c = 1
@@ -65,7 +65,7 @@ public class App
         
         // Demonstrate quantition (symbolic evaluation)
         System.out.println("Performing Quantition (Symbolic Evaluation)...");
-        QuantumNumber result = addResult.quantition();
+        SimpleQuantumNumber result = addResult.quantition();
         System.out.println("Result:");
         System.out.println(result.toString());
         System.out.println();

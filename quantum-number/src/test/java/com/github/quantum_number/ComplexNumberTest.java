@@ -17,28 +17,28 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Complex Number Tests")
 public class ComplexNumberTest {
     
-    private QuantumNumber realNumber;
-    private QuantumNumber complexNumber;
-    private QuantumNumber pureImaginary;
+    private SimpleQuantumNumber realNumber;
+    private SimpleQuantumNumber complexNumber;
+    private SimpleQuantumNumber pureImaginary;
     
     @BeforeEach
     void setUp() {
         // Create a real number (imaginary component = 1, which is neutral)
-        realNumber = new QuantumNumber();
+        realNumber = new SimpleQuantumNumber();
         realNumber.setOrdinal(0, 100);  // a = 100
         realNumber.setOrdinal(1, 200);  // b = 200
         realNumber.setOrdinal(8, 1);    // i = 1 (neutral for real numbers)
         realNumber.updateChecksum();
         
         // Create a complex number with both real and imaginary parts
-        complexNumber = new QuantumNumber();
+        complexNumber = new SimpleQuantumNumber();
         complexNumber.setOrdinal(0, 50);   // a = 50 (real part)
         complexNumber.setOrdinal(1, 100);  // b = 100 (real part)
         complexNumber.setOrdinal(8, 75);   // i = 75 (imaginary part)
         complexNumber.updateChecksum();
         
         // Create a pure imaginary number
-        pureImaginary = QuantumNumber.zero();
+        pureImaginary = SimpleQuantumNumber.zero();
         pureImaginary.setOrdinal(8, 42);   // i = 42 (pure imaginary)
         pureImaginary.updateChecksum();
     }
@@ -46,7 +46,7 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Real Component Extraction")
     void testRealComponentExtraction() {
-        QuantumNumber realPart = complexNumber.getRealComponent();
+        SimpleQuantumNumber realPart = complexNumber.getRealComponent();
         
         // Real component should have imaginary ordinal set to 1 (neutral)
         assertEquals(1, realPart.getOrdinal(8), "Real component should have imaginary ordinal = 1");
@@ -66,7 +66,7 @@ public class ComplexNumberTest {
         assertEquals(75, imaginaryPart, "Imaginary component should be 75");
         
         // Test negative imaginary component
-        QuantumNumber negativeImaginary = new QuantumNumber(complexNumber);
+        SimpleQuantumNumber negativeImaginary = new SimpleQuantumNumber(complexNumber);
         negativeImaginary.setSign(8, true); // Make imaginary part negative
         negativeImaginary.updateChecksum();
         
@@ -76,12 +76,12 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Complex Number Creation")
     void testComplexNumberCreation() {
-        QuantumNumber baseReal = new QuantumNumber();
+        SimpleQuantumNumber baseReal = new SimpleQuantumNumber();
         baseReal.setOrdinal(0, 30);
         baseReal.setOrdinal(1, 60);
         baseReal.updateChecksum();
         
-        QuantumNumber complex = QuantumNumber.createComplex(baseReal, 25);
+        SimpleQuantumNumber complex = SimpleQuantumNumber.createComplex(baseReal, 25);
         
         // Check that real part is preserved
         assertEquals(30, complex.getOrdinal(0), "Real part a ordinal should be preserved");
@@ -96,11 +96,11 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Complex Number Creation with Negative Imaginary")
     void testComplexNumberCreationNegativeImaginary() {
-        QuantumNumber baseReal = new QuantumNumber();
+        SimpleQuantumNumber baseReal = new SimpleQuantumNumber();
         baseReal.setOrdinal(0, 40);
         baseReal.updateChecksum();
         
-        QuantumNumber complex = QuantumNumber.createComplex(baseReal, -30);
+        SimpleQuantumNumber complex = SimpleQuantumNumber.createComplex(baseReal, -30);
         
         assertEquals(-30, complex.getImaginaryComponent(), "Negative imaginary component should be -30");
         assertEquals(30, complex.getOrdinal(8), "Imaginary ordinal magnitude should be 30");
@@ -112,7 +112,7 @@ public class ComplexNumberTest {
     void testPureRealNumberProperties() {
         assertEquals(1, realNumber.getImaginaryComponent(), "Pure real number should have imaginary component = 1");
         
-        QuantumNumber realPart = realNumber.getRealComponent();
+        SimpleQuantumNumber realPart = realNumber.getRealComponent();
         assertEquals(realNumber, realPart, "Real component of pure real number should equal itself");
     }
     
@@ -122,8 +122,8 @@ public class ComplexNumberTest {
         assertEquals(42, pureImaginary.getImaginaryComponent(), "Pure imaginary should have imaginary component = 42");
         
         // Real part should be zero except for imaginary ordinal
-        QuantumNumber realPart = pureImaginary.getRealComponent();
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        SimpleQuantumNumber realPart = pureImaginary.getRealComponent();
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             if (i == 8) {
                 assertEquals(1, realPart.getOrdinal(i), "Imaginary ordinal in real part should be 1");
             } else {
@@ -135,10 +135,10 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Complex Addition")
     void testComplexAddition() {
-        QuantumNumber complex1 = QuantumNumber.createComplex(realNumber, 10);
-        QuantumNumber complex2 = QuantumNumber.createComplex(realNumber, 20);
+        SimpleQuantumNumber complex1 = SimpleQuantumNumber.createComplex(realNumber, 10);
+        SimpleQuantumNumber complex2 = SimpleQuantumNumber.createComplex(realNumber, 20);
         
-        QuantumNumber sum = complex1.add(complex2);
+        SimpleQuantumNumber sum = complex1.add(complex2);
         
         // Real parts should add
         assertEquals(200, sum.getSignedOrdinal(0), "Real parts should add: 100 + 100 = 200");
@@ -153,10 +153,10 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Complex Subtraction")
     void testComplexSubtraction() {
-        QuantumNumber complex1 = QuantumNumber.createComplex(realNumber, 25);
-        QuantumNumber complex2 = QuantumNumber.createComplex(realNumber, 15);
+        SimpleQuantumNumber complex1 = SimpleQuantumNumber.createComplex(realNumber, 25);
+        SimpleQuantumNumber complex2 = SimpleQuantumNumber.createComplex(realNumber, 15);
         
-        QuantumNumber difference = complex1.subtract(complex2);
+        SimpleQuantumNumber difference = complex1.subtract(complex2);
         
         // Real parts should subtract (but will be zero since same base)
         assertEquals(0, difference.getSignedOrdinal(0), "Real parts should subtract to 0");
@@ -171,7 +171,7 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Complex Negation")
     void testComplexNegation() {
-        QuantumNumber negated = complexNumber.negate();
+        SimpleQuantumNumber negated = complexNumber.negate();
         
         // All components should be negated
         assertEquals(-complexNumber.getSignedOrdinal(0), negated.getSignedOrdinal(0), "Real part a should be negated");
@@ -185,7 +185,7 @@ public class ComplexNumberTest {
     @DisplayName("Complex Conjugate Simulation")
     void testComplexConjugateSimulation() {
         // Simulate complex conjugate by negating only the imaginary part
-        QuantumNumber conjugate = new QuantumNumber(complexNumber);
+        SimpleQuantumNumber conjugate = new SimpleQuantumNumber(complexNumber);
         conjugate.setSign(8, !conjugate.getSign(8)); // Flip imaginary sign
         conjugate.updateChecksum();
         
@@ -203,7 +203,7 @@ public class ComplexNumberTest {
     @DisplayName("Imaginary Unit Properties")
     void testImaginaryUnitProperties() {
         // Create imaginary unit (0 + 1i)
-        QuantumNumber imaginaryUnit = QuantumNumber.zero();
+        SimpleQuantumNumber imaginaryUnit = SimpleQuantumNumber.zero();
         imaginaryUnit.setOrdinal(8, 1); // i = 1
         imaginaryUnit.updateChecksum();
         
@@ -229,7 +229,7 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Zero Imaginary Component")
     void testZeroImaginaryComponent() {
-        QuantumNumber zeroImaginary = QuantumNumber.createComplex(realNumber, 0);
+        SimpleQuantumNumber zeroImaginary = SimpleQuantumNumber.createComplex(realNumber, 0);
         
         assertEquals(0, zeroImaginary.getImaginaryComponent(), "Zero imaginary component should be 0");
         assertEquals(0, zeroImaginary.getOrdinal(8), "Imaginary ordinal should be 0");
@@ -239,15 +239,15 @@ public class ComplexNumberTest {
     @Test
     @DisplayName("Large Imaginary Components")
     void testLargeImaginaryComponents() {
-        int largeImaginary = QuantumNumber.ORDINAL_MAX;
-        QuantumNumber largeComplex = QuantumNumber.createComplex(realNumber, largeImaginary);
+        int largeImaginary = SimpleQuantumNumber.ORDINAL_MAX;
+        SimpleQuantumNumber largeComplex = SimpleQuantumNumber.createComplex(realNumber, largeImaginary);
         
         assertEquals(largeImaginary, largeComplex.getImaginaryComponent(), "Large imaginary component should be preserved");
         assertTrue(largeComplex.verifyChecksum(), "Large complex should have valid checksum");
         
         // Test negative large imaginary
-        int negLargeImaginary = QuantumNumber.ORDINAL_MIN;
-        QuantumNumber negLargeComplex = QuantumNumber.createComplex(realNumber, negLargeImaginary);
+        int negLargeImaginary = SimpleQuantumNumber.ORDINAL_MIN;
+        SimpleQuantumNumber negLargeComplex = SimpleQuantumNumber.createComplex(realNumber, negLargeImaginary);
         
         assertEquals(negLargeImaginary, negLargeComplex.getImaginaryComponent(), "Large negative imaginary should be preserved");
         assertTrue(negLargeComplex.verifyChecksum(), "Large negative complex should have valid checksum");

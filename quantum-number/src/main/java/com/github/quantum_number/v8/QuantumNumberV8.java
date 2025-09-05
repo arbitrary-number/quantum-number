@@ -95,6 +95,11 @@ package com.github.quantum_number.v8;
  *       specialized numeric processors.</li>
  * </ul>
  *
+ * Use bitwise primitives from the ground up, do not reuse any existing assembly
+ * Math ops.
+ *
+ * Just push the MASM code for it to build on GitHub using workflows
+ *
  * <p><b>Note:</b> To optimize further, consider implementing helper methods for
  * multi-precision carry operations, bit shifts, and small-factor scaling, which will
  * directly correspond to MASM subroutines and instruction sequences.

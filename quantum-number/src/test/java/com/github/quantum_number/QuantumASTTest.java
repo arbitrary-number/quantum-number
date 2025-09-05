@@ -17,19 +17,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Quantum AST Tests")
 public class QuantumASTTest {
     
-    private QuantumNumber testNumber1;
-    private QuantumNumber testNumber2;
+    private SimpleQuantumNumber testNumber1;
+    private SimpleQuantumNumber testNumber2;
     private QuantumAST leafNode1;
     private QuantumAST leafNode2;
     
     @BeforeEach
     void setUp() {
-        testNumber1 = new QuantumNumber();
+        testNumber1 = new SimpleQuantumNumber();
         testNumber1.setOrdinal(0, 100);
         testNumber1.setOrdinal(1, 200);
         testNumber1.updateChecksum();
         
-        testNumber2 = new QuantumNumber();
+        testNumber2 = new SimpleQuantumNumber();
         testNumber2.setOrdinal(0, 50);
         testNumber2.setOrdinal(1, 150);
         testNumber2.updateChecksum();
@@ -68,10 +68,10 @@ public class QuantumASTTest {
     @DisplayName("Quantition - Addition")
     void testQuantitionAddition() {
         QuantumAST addNode = QuantumAST.createOperation(QuantumAST.OperationType.ADD, leafNode1, leafNode2);
-        QuantumNumber result = addNode.quantition();
+        SimpleQuantumNumber result = addNode.quantition();
         
         // Should equal manual addition
-        QuantumNumber expected = testNumber1.add(testNumber2);
+        SimpleQuantumNumber expected = testNumber1.add(testNumber2);
         assertEquals(expected, result, "Quantition result should equal manual addition");
         assertTrue(result.verifyChecksum(), "Result should have valid checksum");
     }
@@ -80,10 +80,10 @@ public class QuantumASTTest {
     @DisplayName("Quantition - Subtraction")
     void testQuantitionSubtraction() {
         QuantumAST subNode = QuantumAST.createOperation(QuantumAST.OperationType.SUBTRACT, leafNode1, leafNode2);
-        QuantumNumber result = subNode.quantition();
+        SimpleQuantumNumber result = subNode.quantition();
         
         // Should equal manual subtraction
-        QuantumNumber expected = testNumber1.subtract(testNumber2);
+        SimpleQuantumNumber expected = testNumber1.subtract(testNumber2);
         assertEquals(expected, result, "Quantition result should equal manual subtraction");
         assertTrue(result.verifyChecksum(), "Result should have valid checksum");
     }
@@ -92,7 +92,7 @@ public class QuantumASTTest {
     @DisplayName("Quantition - Multiplication")
     void testQuantitionMultiplication() {
         QuantumAST mulNode = QuantumAST.createOperation(QuantumAST.OperationType.MULTIPLY, leafNode1, leafNode2);
-        QuantumNumber result = mulNode.quantition();
+        SimpleQuantumNumber result = mulNode.quantition();
         
         // Should perform ordinal-wise multiplication
         assertNotNull(result, "Multiplication result should not be null");
@@ -103,7 +103,7 @@ public class QuantumASTTest {
     @DisplayName("Quantition - Division")
     void testQuantitionDivision() {
         QuantumAST divNode = QuantumAST.createOperation(QuantumAST.OperationType.DIVIDE, leafNode1, leafNode2);
-        QuantumNumber result = divNode.quantition();
+        SimpleQuantumNumber result = divNode.quantition();
         
         // Should handle division including symbolic divide-by-zero
         assertNotNull(result, "Division result should not be null");
@@ -113,12 +113,12 @@ public class QuantumASTTest {
     @Test
     @DisplayName("Quantition - Division by Zero")
     void testQuantitionDivisionByZero() {
-        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, QuantumNumber.zero());
+        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.zero());
         QuantumAST divByZeroNode = QuantumAST.createOperation(QuantumAST.OperationType.DIVIDE, leafNode1, zeroNode);
         
         // Should handle symbolic division by zero
         assertDoesNotThrow(() -> {
-            QuantumNumber result = divByZeroNode.quantition();
+            SimpleQuantumNumber result = divByZeroNode.quantition();
             assertNotNull(result, "Division by zero should return symbolic result");
             assertTrue(result.verifyChecksum(), "Symbolic division by zero should have valid checksum");
         }, "Division by zero should not throw exception");
@@ -133,8 +133,8 @@ public class QuantumASTTest {
         assertEquals(QuantumAST.OperationType.NEGATE, negNode.getOperationType(), "Operation type should be NEGATE");
         assertEquals(1, negNode.getChildren().size(), "Unary operation should have 1 child");
         
-        QuantumNumber result = negNode.quantition();
-        QuantumNumber expected = testNumber1.negate();
+        SimpleQuantumNumber result = negNode.quantition();
+        SimpleQuantumNumber expected = testNumber1.negate();
         assertEquals(expected, result, "Negation result should equal manual negation");
     }
     
@@ -147,12 +147,12 @@ public class QuantumASTTest {
         assertEquals(QuantumAST.FunctionType.ABS, absNode.getFunctionType(), "Function type should be ABS");
         assertEquals(1, absNode.getChildren().size(), "Function should have 1 argument");
         
-        QuantumNumber result = absNode.quantition();
+        SimpleQuantumNumber result = absNode.quantition();
         assertNotNull(result, "Absolute value result should not be null");
         assertTrue(result.verifyChecksum(), "Result should have valid checksum");
         
         // All signs should be positive
-        for (int i = 0; i < QuantumNumber.NUM_ORDINALS; i++) {
+        for (int i = 0; i < SimpleQuantumNumber.NUM_ORDINALS; i++) {
             assertFalse(result.getSign(i), "All signs should be positive in absolute value");
         }
     }
@@ -164,7 +164,7 @@ public class QuantumASTTest {
         
         assertEquals(QuantumAST.FunctionType.SQRT, sqrtNode.getFunctionType(), "Function type should be SQRT");
         
-        QuantumNumber result = sqrtNode.quantition();
+        SimpleQuantumNumber result = sqrtNode.quantition();
         assertNotNull(result, "Square root result should not be null");
         assertTrue(result.verifyChecksum(), "Result should have valid checksum");
     }
@@ -173,7 +173,7 @@ public class QuantumASTTest {
     @DisplayName("Complex AST Construction")
     void testComplexASTConstruction() {
         // Create (a + b) * c
-        QuantumNumber testNumber3 = new QuantumNumber();
+        SimpleQuantumNumber testNumber3 = new SimpleQuantumNumber();
         testNumber3.setOrdinal(0, 25);
         testNumber3.updateChecksum();
         QuantumAST leafNode3 = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, testNumber3);
@@ -215,7 +215,7 @@ public class QuantumASTTest {
     @Test
     @DisplayName("AST Simplification - Addition with Zero")
     void testSimplificationAdditionWithZero() {
-        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, QuantumNumber.zero());
+        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.zero());
         QuantumAST addNode = QuantumAST.createOperation(QuantumAST.OperationType.ADD, leafNode1, zeroNode);
         
         QuantumAST simplified = addNode.simplify();
@@ -228,7 +228,7 @@ public class QuantumASTTest {
     @Test
     @DisplayName("AST Simplification - Multiplication with One")
     void testSimplificationMultiplicationWithOne() {
-        QuantumAST oneNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, QuantumNumber.one());
+        QuantumAST oneNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.one());
         QuantumAST mulNode = QuantumAST.createOperation(QuantumAST.OperationType.MULTIPLY, leafNode1, oneNode);
         
         QuantumAST simplified = mulNode.simplify();
@@ -240,7 +240,7 @@ public class QuantumASTTest {
     @Test
     @DisplayName("AST Simplification - Multiplication with Zero")
     void testSimplificationMultiplicationWithZero() {
-        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, QuantumNumber.zero());
+        QuantumAST zeroNode = new QuantumAST(QuantumAST.NodeType.QUANTUM_NUMBER, SimpleQuantumNumber.zero());
         QuantumAST mulNode = QuantumAST.createOperation(QuantumAST.OperationType.MULTIPLY, leafNode1, zeroNode);
         
         QuantumAST simplified = mulNode.simplify();

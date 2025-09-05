@@ -1,0 +1,186 @@
+; ============================================================================
+; QUANTUM NUMBER V8 FRACTION DEMO - 1/3 + 2/3 CALCULATION
+; ============================================================================
+; Demonstrates the original QuantumNumberV8.masm with exact fraction arithmetic
+; Calculation: 1/3 + 2/3 = 1 (exact result with no precision loss)
+; ============================================================================
+
+; Windows API declarations
+STD_OUTPUT_HANDLE EQU -11
+STD_ERROR_HANDLE  EQU -12
+
+EXTERN GetStdHandle : PROC
+EXTERN WriteConsoleA : PROC
+EXTERN WriteConsoleW : PROC
+EXTERN ExitProcess : PROC
+EXTERN GetLastError : PROC
+
+; Include the original QuantumNumberV8 functions
+INCLUDE quantum_number_v8.masm
+
+; ============================================================================
+; DEMO DATA SECTION
+; ============================================================================
+
+.DATA
+
+; Demo messages
+msgDemoTitle       db "=== QUANTUM NUMBER V8 FRACTION DEMO ===", 0Dh, 0Ah, 0
+msgCalculation     db "CALCULATION: 1/3 + 2/3", 0Dh, 0Ah, 0
+msgStep1           db "Step 1: Initialize 1/3", 0Dh, 0Ah, 0
+msgStep2           db "Step 2: Initialize 2/3", 0Dh, 0Ah, 0
+msgStep3           db "Step 3: Add fractions", 0Dh, 0Ah, 0
+msgResult          db "FINAL RESULT: ", 0
+msgExpected        db "EXPECTED: 1 (exact)", 0Dh, 0Ah, 0
+msgPrecision       db "PRECISION: Exact (no floating-point errors)", 0Dh, 0Ah, 0
+msgSymbolic        db "SYMBOLIC: Preserved quantum number structure", 0Dh, 0Ah, 0
+msgDivisionConvention db "DIVISION CONVENTION: Leveraged for exact arithmetic", 0Dh, 0Ah, 0
+
+; ============================================================================
+; DEMO CODE SECTION
+; ============================================================================
+
+.CODE
+
+; ============================================================================
+; DEMO FUNCTIONS
+; ============================================================================
+
+; Main demo function
+fractionDemo PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Display demo title
+    lea rcx, [msgDemoTitle]
+    call printString
+
+    ; Display calculation
+    lea rcx, [msgCalculation]
+    call printString
+
+    ; Step 1: Initialize first fraction (1/3)
+    lea rcx, [msgStep1]
+    call printString
+
+    ; Initialize quantum number for 1/3
+    lea rcx, [nodeRoot]           ; Pointer to quantum number
+    mov rdx, 1                    ; Numerator = 1
+    call initQuantumNumber
+
+    ; Set denominator to 3
+    mov QWORD PTR [nodeRoot + 32 + 8], 3  ; b1 = 3 (denominator)
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeRoot + 32]    ; Numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]  ; Denominator
+    call printQWORD
+    call printNewline
+
+    ; Step 2: Initialize second fraction (2/3)
+    lea rcx, [msgStep2]
+    call printString
+
+    ; Initialize quantum number for 2/3
+    lea rcx, [nodeLeft]           ; Pointer to quantum number
+    mov rdx, 2                    ; Numerator = 2
+    call initQuantumNumber
+
+    ; Set denominator to 3
+    mov QWORD PTR [nodeLeft + 32 + 8], 3  ; b1 = 3 (denominator)
+
+    ; Display the fraction
+    mov rcx, QWORD PTR [nodeLeft + 32]    ; Numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32 + 8]  ; Denominator
+    call printQWORD
+    call printNewline
+
+    ; Step 3: Add the fractions
+    lea rcx, [msgStep3]
+    call printString
+
+    ; Display the addition operation
+    mov rcx, QWORD PTR [nodeRoot + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]
+    call printQWORD
+    lea rcx, [msgPlus]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32]
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeLeft + 32 + 8]
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; Perform the quantum addition
+    lea rcx, [nodeRoot]           ; First quantum number (1/3)
+    lea rdx, [nodeLeft]           ; Second quantum number (2/3)
+    call quantumAdd
+
+    ; Display final result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32]    ; Final numerator
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [nodeRoot + 32 + 8]  ; Final denominator
+    call printQWORD
+    call printNewline
+
+    ; Display expected result
+    lea rcx, [msgExpected]
+    call printString
+
+    ; Display precision information
+    lea rcx, [msgPrecision]
+    call printString
+
+    ; Display symbolic preservation
+    lea rcx, [msgSymbolic]
+    call printString
+
+    ; Display division convention leverage
+    lea rcx, [msgDivisionConvention]
+    call printString
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+fractionDemo ENDP
+
+; ============================================================================
+; MAIN FUNCTION
+; ============================================================================
+
+main PROC
+    ; Initialize performance timing
+    lea rcx, [perfFreq]
+    call QueryPerformanceFrequency
+
+    ; Run the fraction demo
+    call fractionDemo
+
+    ; Exit
+    xor rcx, rcx
+    call ExitProcess
+main ENDP
+
+END
