@@ -68,6 +68,19 @@ msgStep6 db "Step 6: ", 0
 msgMinus db " - ", 0
 msgBecomes db " becomes ", 0
 
+; Euclidean Algorithm Messages
+msgEuclideanHeader db "=== EUCLIDEAN ALGORITHM WITH PURE BITWISE OPERATIONS ===", 0
+msgGCDDemo db "GREATEST COMMON DIVISOR: GCD(48, 18) = ?", 0
+msgGCDResult db "GCD(48, 18) = ", 0
+msgBitwiseStep db "BITWISE STEP ", 0
+msgCompare db "COMPARE: ", 0
+msgSubtract db "SUBTRACT: ", 0
+msgShift db "SHIFT RIGHT: ", 0
+msgPowerOf2 db "POWER OF 2 OPTIMIZATION: ", 0
+msgFinalGCD db "FINAL GCD: ", 0
+msgBitPosition db "BIT POSITION: ", 0
+msgCommonFactors db "COMMON FACTORS REMOVED: ", 0
+
 QuantumNumberV8 STRUCT
     signs     QWORD ?
     metadata1 QWORD ?
@@ -735,6 +748,9 @@ enhancedFractionalMath PROC
     ; Example 5: Complex fraction with decimals
     call decimalToFractionDemo
 
+    ; NEW: Euclidean Algorithm with Pure Bitwise Operations
+    call euclideanBitwiseGCD
+
     pop rdi
     pop rsi
     pop rbx
@@ -1398,5 +1414,156 @@ no_overflow:
     xor rax, rax  ; Return 0 (success)
     ret
 main ENDP
+
+; Euclidean Algorithm with Pure Bitwise Operations
+euclideanBitwiseGCD PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    ; Header for Euclidean algorithm
+    lea rcx, [msgNewline]
+    call printString
+    mov rcx, OFFSET msgEuclideanHeader
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show the problem: GCD(48, 18)
+    mov rcx, OFFSET msgGCDDemo
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Initialize values: a = 48, b = 18
+    mov rbx, 48     ; First number (a)
+    mov rsi, 18     ; Second number (b)
+    mov rdi, 0      ; Step counter
+
+euclidean_loop:
+    ; Display current step
+    inc rdi
+    lea rcx, [msgBitwiseStep]
+    call printString
+    mov rcx, rdi
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Show current values
+    lea rcx, [msgCompare]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgMinus]
+    call printString
+    mov rcx, rsi
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Check if b == 0 (base case)
+    test rsi, rsi
+    jz euclidean_done
+
+    ; Check if both are even (power of 2 optimization)
+    mov rax, rbx
+    and rax, rsi
+    and rax, 1
+    jnz no_power_of_2_opt
+
+    ; Both are even - divide by 2 using right shift
+    lea rcx, [msgPowerOf2]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgShift]
+    call printString
+    mov rcx, 1
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    shr rbx, 1      ; a = a >> 1
+    shr rsi, 1      ; b = b >> 1
+    jmp euclidean_loop
+
+no_power_of_2_opt:
+    ; Compare a and b using bitwise operations
+    mov rax, rbx
+    mov rdx, rsi
+    cmp rax, rdx
+    jae subtract_case
+
+    ; b > a case: swap using XOR swap (no temp register needed)
+    lea rcx, [msgSubtract]
+    call printString
+    mov rcx, rsi
+    call printQWORD
+    lea rcx, [msgMinus]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    ; XOR swap: a = a XOR b, b = b XOR a, a = a XOR b
+    xor rbx, rsi    ; a = a XOR b
+    xor rsi, rbx    ; b = b XOR a (which is now original a)
+    xor rbx, rsi    ; a = a XOR b (which is now original b)
+
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+    jmp euclidean_loop
+
+subtract_case:
+    ; a >= b case: a = a - b
+    lea rcx, [msgSubtract]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgMinus]
+    call printString
+    mov rcx, rsi
+    call printQWORD
+    lea rcx, [msgEquals]
+    call printString
+
+    sub rbx, rsi    ; a = a - b
+
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+    jmp euclidean_loop
+
+euclidean_done:
+    ; Display final result
+    lea rcx, [msgFinalGCD]
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Verify result: GCD(48, 18) should be 6
+    mov rcx, OFFSET msgGCDResult
+    call printString
+    mov rcx, rbx
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+euclideanBitwiseGCD ENDP
 
 END
