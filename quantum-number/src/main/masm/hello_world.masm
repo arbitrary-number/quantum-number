@@ -1,5 +1,5 @@
 ; Hello World in MASM64
-; This program prints "Hello, World!" to the console for testing
+; This program prints "Hello, World!" to the console for testing.
 
 OPTION 64
 .MODEL flat, stdcall
