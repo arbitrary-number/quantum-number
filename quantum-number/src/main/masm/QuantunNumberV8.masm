@@ -379,6 +379,222 @@ quantum_add_done:
     ret
 quantumAdd ENDP
 
+; Quantum division with full division convention implementation
+quantumDivide PROC
+    ; Input: RCX = ptr to quantum number 1 (numerator), RDX = ptr to quantum number 2 (denominator)
+    ; Output: Updates quantum number 1 with result using division convention
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+
+    mov rsi, rcx    ; Save numerator pointer
+    mov rdi, rdx    ; Save denominator pointer
+
+    ; Display division operation
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]    ; Current numerator value
+    call printQWORD
+    lea rcx, [msgDivide]
+    call printString
+    mov rcx, QWORD PTR [rdi + 32]    ; Current denominator value
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Check for division by zero
+    mov rax, QWORD PTR [rdi + 32]
+    test rax, rax
+    jz handle_divide_by_zero
+
+    ; Implement the division convention: Q = (±a ± g) / (±b ± g) / (±c ± h) / ((±d(±b ± h)) / (±eb(±i)) / (±fb(±j)))
+
+    ; Step 1: Calculate (±a ± g) - using ordinals a and g
+    mov rax, QWORD PTR [rsi + 32]    ; Load a (numerator a1)
+    mov rbx, QWORD PTR [rsi + 96]    ; Load g (numerator g1)
+    mov rcx, QWORD PTR [rsi + 0]     ; Load sign for a
+    mov rdx, QWORD PTR [rsi + 20]    ; Load sign for g
+
+    ; Apply signs to a and g
+    test rcx, rcx
+    jz a_positive
+    neg rax
+a_positive:
+    test rdx, rdx
+    jz g_positive
+    neg rbx
+g_positive:
+    add rax, rbx                    ; (±a ± g)
+
+    ; Step 2: Calculate (±b ± g) - using ordinals b and g from denominator
+    mov rbx, QWORD PTR [rdi + 40]    ; Load b (denominator b1)
+    mov rcx, QWORD PTR [rdi + 96]    ; Load g (denominator g1)
+    mov rdx, QWORD PTR [rdi + 1]     ; Load sign for b
+    mov r8, QWORD PTR [rdi + 21]     ; Load sign for g
+
+    ; Apply signs to b and g
+    test rdx, rdx
+    jz b_positive
+    neg rbx
+b_positive:
+    test r8, r8
+    jz g2_positive
+    neg rcx
+g2_positive:
+    add rbx, rcx                    ; (±b ± g)
+
+    ; First division: (±a ± g) / (±b ± g)
+    test rbx, rbx
+    jz handle_divide_by_zero
+    xchg rax, rbx
+    cqo
+    idiv rbx                        ; Result in RAX
+
+    ; Step 3: Calculate (±c ± h) - using ordinals c and h
+    mov rbx, QWORD PTR [rdi + 48]    ; Load c (denominator c1)
+    mov rcx, QWORD PTR [rdi + 104]   ; Load h (denominator h1)
+    mov rdx, QWORD PTR [rdi + 2]     ; Load sign for c
+    mov r8, QWORD PTR [rdi + 22]     ; Load sign for h
+
+    ; Apply signs to c and h
+    test rdx, rdx
+    jz c_positive
+    neg rbx
+c_positive:
+    test r8, r8
+    jz h_positive
+    neg rcx
+h_positive:
+    add rbx, rcx                    ; (±c ± h)
+
+    ; Second division: result / (±c ± h)
+    test rbx, rbx
+    jz handle_divide_by_zero
+    xchg rax, rbx
+    cqo
+    idiv rbx                        ; Result in RAX
+
+    ; Step 4: Calculate complex denominator (±d(±b ± h)) / (±eb(±i)) / (±fb(±j))
+    ; This is the most complex part of the division convention
+
+    ; Calculate (±b ± h) first
+    mov rbx, QWORD PTR [rdi + 40]    ; Load b
+    mov rcx, QWORD PTR [rdi + 104]   ; Load h
+    mov rdx, QWORD PTR [rdi + 1]     ; Load sign for b
+    mov r8, QWORD PTR [rdi + 22]     ; Load sign for h
+
+    test rdx, rdx
+    jz b2_positive
+    neg rbx
+b2_positive:
+    test r8, r8
+    jz h2_positive
+    neg rcx
+h2_positive:
+    add rbx, rcx                    ; (±b ± h)
+
+    ; Calculate (±d(±b ± h))
+    mov rcx, QWORD PTR [rdi + 56]    ; Load d
+    mov rdx, QWORD PTR [rdi + 3]     ; Load sign for d
+
+    test rdx, rdx
+    jz d_positive
+    neg rcx
+d_positive:
+    imul rcx, rbx                   ; d * (±b ± h)
+
+    ; Calculate (±eb(±i))
+    mov rbx, QWORD PTR [rdi + 112]   ; Load e
+    mov rdx, QWORD PTR [rdi + 120]   ; Load i
+    mov r8, QWORD PTR [rdi + 23]     ; Load sign for e
+    mov r9, QWORD PTR [rdi + 24]     ; Load sign for i
+
+    test r8, r8
+    jz e_positive
+    neg rbx
+e_positive:
+    test r9, r9
+    jz i_positive
+    neg rdx
+i_positive:
+    imul rbx, rdx                   ; e * (±i)
+
+    ; Calculate (±fb(±j))
+    mov rdx, QWORD PTR [rdi + 128]   ; Load f
+    mov r8, QWORD PTR [rdi + 136]    ; Load j
+    mov r9, QWORD PTR [rdi + 25]     ; Load sign for f
+    mov r10, QWORD PTR [rdi + 26]    ; Load sign for j
+
+    test r9, r9
+    jz f_positive
+    neg rdx
+f_positive:
+    test r10, r10
+    jz j_positive
+    neg r8
+j_positive:
+    imul rdx, r8                    ; f * (±j)
+
+    ; Combine: (±d(±b ± h)) / (±eb(±i)) / (±fb(±j))
+    ; First division: (±d(±b ± h)) / (±eb(±i))
+    test rbx, rbx
+    jz handle_divide_by_zero
+    xchg rcx, rbx
+    cqo
+    idiv rbx                        ; Result in RAX
+
+    ; Second division: result / (±fb(±j))
+    test rdx, rdx
+    jz handle_divide_by_zero
+    xchg rax, rdx
+    cqo
+    idiv rdx                        ; Complex denominator in RAX
+
+    ; Final division: previous result / complex denominator
+    test rax, rax
+    jz handle_divide_by_zero
+    xchg rax, rcx                   ; RCX = complex denominator
+    mov rax, QWORD PTR [rsi + 32]   ; Load current result
+    cqo
+    idiv rcx                        ; Final result in RAX
+
+    ; Store the result
+    mov QWORD PTR [rsi + 32], rax
+
+    ; Display result
+    lea rcx, [msgResult]
+    call printString
+    mov rcx, QWORD PTR [rsi + 32]
+    call printQWORD
+    lea rcx, [msgNewline]
+    call printString
+
+    jmp quantum_div_done
+
+handle_divide_by_zero:
+    ; Handle division by zero symbolically
+    lea rcx, [msgDivide]
+    call printString
+    lea rcx, [msgQuestion]
+    call printString
+    lea rcx, [msgNewline]
+    call printString
+
+    ; Set symbolic division by zero result
+    mov rax, 0FFFFFFFFFFFFFFFFh     ; Special marker for division by zero
+    mov QWORD PTR [rsi + 32], rax
+
+quantum_div_done:
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+quantumDivide ENDP
+
 ; Quantum multiplication with fractional precision
 quantumMultiply PROC
     ; Input: RCX = ptr to quantum number 1, RDX = ptr to quantum number 2
@@ -1373,6 +1589,11 @@ main PROC
     lea rcx, [nodeRoot]           ; First quantum number
     lea rdx, [nodeLeft]           ; Second quantum number
     call quantumAdd
+
+    ; Perform quantum division test using the division convention
+    lea rcx, [nodeRoot]           ; Numerator quantum number
+    lea rdx, [nodeLeft]           ; Denominator quantum number
+    call quantumDivide
 
     ; Perform quantum multiplication test
     lea rcx, [nodeRoot]           ; First quantum number
