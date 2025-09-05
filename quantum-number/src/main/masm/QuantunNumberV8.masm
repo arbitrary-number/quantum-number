@@ -94,7 +94,7 @@ printString PROC
     push rbx
     push rsi
     push rdi
-    sub rsp, 32     ; Shadow space
+    sub rsp, 40     ; Shadow space + extra for WriteConsoleA
 
     mov rsi, rcx    ; Save string pointer in RSI
 
@@ -102,6 +102,10 @@ printString PROC
     mov rcx, STD_OUTPUT_HANDLE
     call GetStdHandle
     mov rbx, rax    ; Save handle in RBX
+
+    ; Check if handle is valid (not -1)
+    cmp rbx, -1
+    je print_error
 
     ; Calculate string length
     mov rdi, rsi    ; String pointer for length calculation
@@ -115,13 +119,22 @@ strlen_loop:
     jmp strlen_loop
 strlen_done:
 
-    ; Write to console
+    ; Write to console (with all required parameters)
     mov rcx, rbx              ; hConsoleOutput
-    mov r8, rdx               ; nNumberOfCharsToWrite
-    lea r9, [rsp + 24]        ; lpNumberOfCharsWritten
+    mov rdx, rsi              ; lpBuffer (string pointer)
+    mov r8, rdx               ; nNumberOfCharsToWrite (length)
+    lea r9, [rsp + 32]        ; lpNumberOfCharsWritten
+    mov QWORD PTR [rsp + 32], 0  ; lpReserved = NULL
     call WriteConsoleA
 
-    add rsp, 32
+    jmp print_done
+
+print_error:
+    ; Handle error - for now just continue
+    nop
+
+print_done:
+    add rsp, 40
     pop rdi
     pop rsi
     pop rbx
