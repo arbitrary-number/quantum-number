@@ -18,7 +18,6 @@ msgValue    db "Value: ", 0
 msgOp       db "Operation: ", 0
 msgResult   db "Result: ", 0
 msgPlus     db " + ", 0
-msgEquals   db " = ", 0
 msgLeftPtr  db "LEFT POINTER (Higher Values): ", 0
 msgRightPtr db "RIGHT POINTER (Microscopic Values): ", 0
 msgPauliX   db "PAULI-X GATE: ", 0
@@ -44,7 +43,6 @@ msgThird     db "⅓", 0
 msgMultiply  db "×", 0
 msgOneThird  db "1/3", 0
 msgCalc      db "CALCULATION: ", 0
-msgResult    db "RESULT: ", 0
 msgPrecision db "PRECISION: ", 0
 msgExact     db "EXACT", 0
 msgNewline  db 0Dh, 0Ah, 0
@@ -367,7 +365,7 @@ handle_overflow_left:
     call printQWORD
     lea rcx, [msgTimes]
     call printString
-    mov rcx, 18446744073709551616          ; 2^64
+    mov rcx, 4294967296                    ; 2^32 (safe for MASM)
     call printQWORD
     lea rcx, [msgNewline]
     call printString
