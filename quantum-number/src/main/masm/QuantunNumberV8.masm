@@ -91,22 +91,27 @@ printString PROC
     ; Output: None
     push rbp
     mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
     sub rsp, 32     ; Shadow space
+
+    mov rsi, rcx    ; Save string pointer in RSI
 
     ; Get stdout handle
     mov rcx, STD_OUTPUT_HANDLE
     call GetStdHandle
-    mov rbx, rax
+    mov rbx, rax    ; Save handle in RBX
 
     ; Calculate string length
-    mov rsi, rcx    ; String pointer
+    mov rdi, rsi    ; String pointer for length calculation
     xor rdx, rdx    ; Length counter
 strlen_loop:
-    mov al, [rsi]
+    mov al, [rdi]
     test al, al
     jz strlen_done
     inc rdx
-    inc rsi
+    inc rdi
     jmp strlen_loop
 strlen_done:
 
@@ -116,6 +121,10 @@ strlen_done:
     lea r9, [rsp + 24]        ; lpNumberOfCharsWritten
     call WriteConsoleA
 
+    add rsp, 32
+    pop rdi
+    pop rsi
+    pop rbx
     mov rsp, rbp
     pop rbp
     ret
