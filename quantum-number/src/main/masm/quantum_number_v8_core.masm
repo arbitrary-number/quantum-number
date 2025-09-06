@@ -238,6 +238,49 @@ printNewline PROC
     ret
 printNewline ENDP
 
+; Print single character
+printChar PROC
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push rsi
+    push rdi
+    sub rsp, 48
+
+    ; RCX contains the character to print
+    mov rsi, rcx    ; Save character
+
+    ; Get stdout handle
+    mov rcx, STD_OUTPUT_HANDLE
+    call GetStdHandle
+    mov rbx, rax
+
+    cmp rbx, -1
+    je print_char_error
+
+    ; Write character to console
+    mov rcx, rbx        ; hConsoleOutput
+    lea rdx, [rsi]      ; Buffer (address of character)
+    mov r8, 1           ; Length = 1
+    lea r9, [rsp + 32]  ; lpNumberOfCharsWritten
+    mov QWORD PTR [rsp + 40], 0  ; lpReserved
+    call WriteConsoleA
+
+    jmp print_char_done
+
+print_char_error:
+    nop
+
+print_char_done:
+    add rsp, 48
+    pop rdi
+    pop rsi
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+printChar ENDP
+
 ; ============================================================================
 ; QUANTUM NUMBER OPERATIONS
 ; ============================================================================

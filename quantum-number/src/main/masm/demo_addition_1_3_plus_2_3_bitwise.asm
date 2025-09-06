@@ -396,6 +396,16 @@ fractionAddBitwise PROC
     mov QWORD PTR [rbx + 72], 0      ; b2
     mov QWORD PTR [rbx + 80], 0      ; b3
 
+    ; Copy signs and metadata
+    mov rax, QWORD PTR [rsi + 0]     ; signs
+    mov QWORD PTR [rbx + 0], rax
+    mov rax, QWORD PTR [rsi + 8]     ; metadata1
+    mov QWORD PTR [rbx + 8], rax
+    mov rax, QWORD PTR [rsi + 16]    ; metadata2
+    mov QWORD PTR [rbx + 16], rax
+    mov rax, QWORD PTR [rsi + 24]    ; metadata3
+    mov QWORD PTR [rbx + 24], rax
+
     jmp addition_complete
 
 denominators_different:
@@ -429,9 +439,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'a'
-    call printQWORD
+    call printChar
     mov rcx, '1'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 32]
@@ -446,9 +456,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'a'
-    call printQWORD
+    call printChar
     mov rcx, '2'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 40]
@@ -463,9 +473,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'a'
-    call printQWORD
+    call printChar
     mov rcx, '3'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 48]
@@ -480,9 +490,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'a'
-    call printQWORD
+    call printChar
     mov rcx, '4'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 56]
@@ -492,25 +502,25 @@ analyzeTermsBitwise PROC
     mov rcx, QWORD PTR [rsi + 56]
     call printQWORD
     mov rcx, ' '
-    call printQWORD
+    call printChar
     mov rcx, '('
-    call printQWORD
+    call printChar
     mov rcx, '1'
-    call printQWORD
+    call printChar
     mov rcx, ' '
-    call printQWORD
+    call printChar
     mov rcx, 'X'
-    call printQWORD
+    call printChar
     mov rcx, 'O'
-    call printQWORD
+    call printChar
     mov rcx, 'R'
-    call printQWORD
+    call printChar
     mov rcx, ' '
-    call printQWORD
+    call printChar
     mov rcx, '2'
-    call printQWORD
+    call printChar
     mov rcx, ')'
-    call printQWORD
+    call printChar
     lea rcx, [msgNewline]
     call printString
 
@@ -518,9 +528,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'b'
-    call printQWORD
+    call printChar
     mov rcx, '1'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 64]
@@ -535,9 +545,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'b'
-    call printQWORD
+    call printChar
     mov rcx, '2'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 72]
@@ -552,9 +562,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'b'
-    call printQWORD
+    call printChar
     mov rcx, '3'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 80]
@@ -569,9 +579,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'b'
-    call printQWORD
+    call printChar
     mov rcx, '4'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 88]
@@ -587,9 +597,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'c'
-    call printQWORD
+    call printChar
     mov rcx, '1'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 96]
@@ -604,9 +614,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'c'
-    call printQWORD
+    call printChar
     mov rcx, '4'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 120]
@@ -621,9 +631,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'e'
-    call printQWORD
+    call printChar
     mov rcx, '1'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 160]
@@ -638,9 +648,9 @@ analyzeTermsBitwise PROC
     lea rcx, [msgTerm]
     call printString
     mov rcx, 'e'
-    call printQWORD
+    call printChar
     mov rcx, '4'
-    call printQWORD
+    call printChar
     lea rcx, [msgValue]
     call printString
     mov rcx, QWORD PTR [rsi + 184]
