@@ -22,9 +22,22 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Link executable (standalone demo - no external dependencies)
+REM Link executable (standalone demo - locate kernel32.lib automatically)
+echo Locating kernel32.lib...
+set "KERNEL32_LIB="
+for /f "delims=" %%K in ('dir /s /b "C:\Program Files (x86)\Windows Kits\10\Lib" ^| findstr /i kernel32.lib') do (
+    set "KERNEL32_LIB=%%K"
+    goto :found_kernel32
+)
+echo ERROR: Could not find kernel32.lib
+echo Please ensure Windows SDK is installed
+pause
+exit /b 1
+
+:found_kernel32
+echo Using kernel32.lib from: %KERNEL32_LIB%
 echo Linking demo_addition_1_3_plus_2_3.exe...
-link /nologo /subsystem:console /entry:main demo_addition_1_3_plus_2_3.obj
+link /nologo /subsystem:console /entry:main demo_addition_1_3_plus_2_3.obj "%KERNEL32_LIB%"
 if errorlevel 1 (
     echo ERROR: Linking failed
     pause
