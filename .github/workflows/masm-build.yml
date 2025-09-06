@@ -61,6 +61,9 @@ jobs:
         ml64 /c quantum_number_v8_ai_demo.masm
         link quantum_number_v8_core.obj quantum_number_v8_ai_demo.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_ai_demo.exe
 
+        # Build core QuantumNumberV8 library first
+        ml64 /c QuantumNumberV8.masm
+
         # Build 1/3 + 2/3 demo program
         ml64 /c quantum_number_v8_1_3_plus_2_3_demo.masm
         link quantum_number_v8_1_3_plus_2_3_demo.obj QuantumNumberV8.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_1_3_plus_2_3_demo.exe
@@ -86,6 +89,13 @@ jobs:
         ml64 /c quantum_number_v8_1_3_plus_2_3_corrected_bitwise_demo.masm
         link quantum_number_v8_1_3_plus_2_3_corrected_bitwise_demo.obj QuantumNumberV8.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:quantum_number_v8_1_3_plus_2_3_corrected_bitwise_demo.exe
 
+        # Build new standalone demos (no external dependencies)
+        ml64 /c demo_addition_1_3_plus_2_3.asm
+        link demo_addition_1_3_plus_2_3.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:demo_addition_1_3_plus_2_3.exe
+
+        ml64 /c demo_addition_1_3_plus_2_3_bitwise.asm
+        link demo_addition_1_3_plus_2_3_bitwise.obj /subsystem:console /entry:main kernel32.lib user32.lib /out:demo_addition_1_3_plus_2_3_bitwise.exe
+
     - name: Upload executables
       uses: actions/upload-artifact@v4
       with:
@@ -103,3 +113,5 @@ jobs:
           quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_multiprecision_bitwise_demo.exe
           quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_corrected_demo.exe
           quantum-number/src/main/masm/quantum_number_v8_1_3_plus_2_3_corrected_bitwise_demo.exe
+          quantum-number/src/main/masm/demo_addition_1_3_plus_2_3.exe
+          quantum-number/src/main/masm/demo_addition_1_3_plus_2_3_bitwise.exe

@@ -1,6 +1,6 @@
 @echo off
 REM Build script for demo_addition_1_3_plus_2_3.asm (Conventional Math Demo)
-REM QuantumNumberV8 1/3 + 2/3 = 3/3 Conventional Demo
+REM QuantumNumberV8 1/3 + 2/3 Conventional Demo
 
 echo Building QuantumNumberV8 1/3 + 2/3 Conventional Demo...
 echo.
@@ -22,7 +22,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Link executable
+REM Link executable (standalone demo - no external dependencies)
 echo Linking demo_addition_1_3_plus_2_3.exe...
 link /nologo /subsystem:console /entry:main demo_addition_1_3_plus_2_3.obj
 if errorlevel 1 (

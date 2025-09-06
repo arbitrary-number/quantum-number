@@ -1,6 +1,6 @@
 @echo off
 REM Build script for demo_addition_1_3_plus_2_3_bitwise.asm (Bitwise Demo)
-REM QuantumNumberV8 1/3 + 2/3 = 3/3 Bitwise Demo
+REM QuantumNumberV8 1/3 + 2/3 Bitwise Demo
 
 echo Building QuantumNumberV8 1/3 + 2/3 Bitwise Demo...
 echo.
@@ -22,7 +22,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Link executable
+REM Link executable (standalone demo - no external dependencies)
 echo Linking demo_addition_1_3_plus_2_3_bitwise.exe...
 link /nologo /subsystem:console /entry:main demo_addition_1_3_plus_2_3_bitwise.obj
 if errorlevel 1 (
