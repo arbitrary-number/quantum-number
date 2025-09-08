@@ -1,0 +1,23 @@
+; QuantumNumberV8.def - Module Definition File
+; Defines exports for QuantumNumberV8.dll
+
+LIBRARY QuantumNumberV8
+
+EXPORTS
+    ; C Interface Functions (extern "C" linkage)
+    QN_Add                @1
+    QN_Divide             @2
+    QN_Multiply           @3
+    QN_PauliX             @4
+    QN_BitwiseMultiply    @5
+    QN_BitwiseDivide      @6
+
+    ; MASM Procedure Functions (stdcall linkage)
+    quantumAdd            @10
+    quantumDivide         @11
+    quantumMultiply       @12
+    pauliXGate            @13
+    bitwiseMultiply       @14
+    bitwiseDivide         @15
+
+; Note: Ordinal numbers help maintain binary compatibility when adding new exports

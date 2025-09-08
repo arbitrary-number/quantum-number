@@ -43,6 +43,7 @@ msgThird     db "1/3", 0
 msgMultiply  db "*", 0
 msgOneThird  db "1/3", 0
 msgCalc      db "CALCULATION: ", 0
+helloMsg     db "Hello from addMASMInner", 0
 msgPrecision db "PRECISION: ", 0
 msgExact     db "EXACT", 0
 msgNewline  db 0Dh, 0Ah, 0
@@ -1556,8 +1557,8 @@ decimalToFractionDemo PROC
     ret
 decimalToFractionDemo ENDP
 
-PUBLIC main
-main PROC
+PUBLIC main2
+main2 PROC
     ; Initialize diagnostic output
     lea rcx, [msgInit]
     call printString
@@ -1639,7 +1640,7 @@ no_overflow:
 
     xor rax, rax  ; Return 0 (success)
     ret
-main ENDP
+main2 ENDP
 
 ; Euclidean Algorithm with Pure Bitwise Operations
 euclideanBitwiseGCD PROC
@@ -2410,6 +2411,67 @@ commitFinalImplementation ENDP
 ; ============================================================================
 ; ADDITIONAL MESSAGE STRINGS FOR SYMBOLIC POLYNOMIAL OPERATIONS
 ; ============================================================================
+
+PUBLIC addMASMInnerAsm
+
+addMASMInnerAsm PROC
+    ; Print start
+    push rcx
+    push rdx
+    push r8
+    push r9
+    ;lea rcx, helloMsg
+    ;call printString
+    pop r9
+    pop r8
+    pop rdx
+    pop rcx
+
+; q1 = RCX, q2 = RDX, q3 = R8
+    mov rax, [rcx + 56]        ; q1->a4
+    add rax, [rdx + 56]        ; q1->a4 + q2->a4
+    mov [r8 + 56], rax         ; q3->a4
+; Check carry from add - use ADC for next
+; Add a3 with carry from a4 addition
+    mov rax, [rcx + 48]     ; q1->a3
+    adc rax, [rdx + 48]     ; q2->a3 + carry from a4 addition
+    mov [r8 + 48], rax
+; Add a2 with carry from a3 addition
+    mov rax, [rcx + 40]     ; q1->a2
+    adc rax, [rdx + 40]     ; q2->a2 + carry from a3 addition
+    mov [r8 + 40], rax
+; Add a1 with carry from a2 addition
+    mov rax, [rcx + 32]     ; q1->a1
+    adc rax, [rdx + 32]     ; q2->a1 + carry from a2 addition
+    mov [r8 + 32], rax
+; Add a1 with carry from a2 addition unconditionally, since zero will work
+    mov rax, [r9 + 56]  ; load overflow a4
+    adc rax, 0          ; add carry (0 or 1)
+    mov [r9 + 56], rax  ; store back overflow a4
+
+done:
+    ; Print end
+    push rcx
+    push rdx
+    push r8
+    push r9
+    ;lea rcx, helloMsg
+    ;call printString
+    pop r9
+    pop r8
+    pop rdx
+    pop rcx
+
+    ret
+addMASMInnerAsm ENDP
+
+; ============================================================================
+; IMPLEMENTATION STATUS PROC (Placeholder moved due to size)
+; ============================================================================
+
+; ================================================
+; ADDITIONAL MESSAGE STRINGS FOR SYMBOLIC POLYNOMIAL OPERATIONS
+; ================================================
 
 .DATA
 msgPolynomialHeader     db "=== SYMBOLIC POLYNOMIAL OPERATIONS FOR EXPLAINABLE AI ===", 0

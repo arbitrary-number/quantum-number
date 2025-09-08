@@ -24,3 +24,4 @@ fp256
 hs_err_pid*
 replay_pid*
 context
+/quantum-number/src/main/masm/build

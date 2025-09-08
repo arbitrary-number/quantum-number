@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.20)
+
+# Project name and supported languages
+project(QuantumNumberV8 C ASM_MASM)
+
+# Enable MASM explicitly (in case needed for older CMake versions)
+enable_language(ASM_MASM)
+
+# Source files for the static library
+set(QUANTUM_SOURCES
+    QuantumNumberV8.asm
+    QuantumNumberV8.c
+)
+
+# Create the static library from C + MASM sources
+add_library(QuantumNumberV8 STATIC ${QUANTUM_SOURCES})
+
+# Ensure MASM file is handled with correct language
+set_source_files_properties(QuantumNumberV8.asm PROPERTIES LANGUAGE ASM_MASM)
+
+# Set linker language for static lib (C handles both ASM and C)
+set_target_properties(QuantumNumberV8 PROPERTIES LINKER_LANGUAGE C)
+
+# Include current directory so headers like QuantumNumberV8.h can be found
+target_include_directories(QuantumNumberV8 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# -----------------------------------------------
+# Optional: Build a test executable using the lib
+# -----------------------------------------------
+
+# Test program using the library
+add_executable(QuantumNumberV8Test main.c)
+
+# Link test program with the static library
+target_link_libraries(QuantumNumberV8Test PRIVATE QuantumNumberV8)
+
+# Use same include directory
+target_include_directories(QuantumNumberV8Test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
