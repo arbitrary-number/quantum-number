@@ -80,6 +80,8 @@ msgFinalGCD db "FINAL GCD: ", 0
 msgBitPosition db "BIT POSITION: ", 0
 msgCommonFactors db "COMMON FACTORS REMOVED: ", 0
 
+
+; (±a / (±b / ±c)) * (±d / (±e / ±f))
 QuantumNumberV8 STRUCT
     signs     QWORD ?
     metadata1 QWORD ?
@@ -2415,19 +2417,8 @@ commitFinalImplementation ENDP
 PUBLIC addMASMInnerAsm
 
 addMASMInnerAsm PROC
-    ; Print start
-    push rcx
-    push rdx
-    push r8
-    push r9
-    ;lea rcx, helloMsg
-    ;call printString
-    pop r9
-    pop r8
-    pop rdx
-    pop rcx
 
-; q1 = RCX, q2 = RDX, q3 = R8
+; q1 = RCX, q2 = RDX, q3 = R8, q4 = R9
     mov rax, [rcx + 56]        ; q1->a4
     add rax, [rdx + 56]        ; q1->a4 + q2->a4
     mov [r8 + 56], rax         ; q3->a4
@@ -2448,22 +2439,42 @@ addMASMInnerAsm PROC
     mov rax, [r9 + 56]  ; load overflow a4
     adc rax, 0          ; add carry (0 or 1)
     mov [r9 + 56], rax  ; store back overflow a4
-
 done:
-    ; Print end
-    push rcx
-    push rdx
-    push r8
-    push r9
-    ;lea rcx, helloMsg
-    ;call printString
-    pop r9
-    pop r8
-    pop rdx
-    pop rcx
-
     ret
 addMASMInnerAsm ENDP
+
+PUBLIC subMASMInnerAsm
+
+subMASMInnerAsm PROC
+    ; q1 = RCX, q2 = RDX, q3 = R8
+    mov     rax, [rcx + 56]        ; q1->a4
+    sub     rax, [rdx + 56]        ; q1->a4 - q2->a4
+    mov     [r8 + 56], rax         ; q3->a4
+
+    mov     rax, [rcx + 48]
+    sbb     rax, [rdx + 48]
+    mov     [r8 + 48], rax
+
+    mov     rax, [rcx + 40]
+    sbb     rax, [rdx + 40]
+    mov     [r8 + 40], rax
+
+    mov     rax, [rcx + 32]
+    sbb     rax, [rdx + 32]
+    mov     [r8 + 32], rax
+
+    sbb     [r8], rax
+    and     [r8], rax
+
+    ; Now check if borrow occurred
+    ;setc    al                  ; AL = 1 if carry (borrow)
+    ;movzx   rax, al             ; RAX = 0 or 1 (return value)
+    ;sbb rax, rax   ; CF -> RAX = 0 or -1
+    setc     al             ; AL = 0 or 1
+    or       byte ptr [r8], al  ; set LSB bit of signs
+    
+    ret
+subMASMInnerAsm ENDP
 
 ; ============================================================================
 ; IMPLEMENTATION STATUS PROC (Placeholder moved due to size)

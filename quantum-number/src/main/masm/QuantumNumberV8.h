@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 // Quantum number struct
+// (±a / (±b / ±c)) * (±d / (±e / ±f))
 typedef struct QuantumNumberV8 {
     uint64_t signs;
     uint64_t metadata1;
